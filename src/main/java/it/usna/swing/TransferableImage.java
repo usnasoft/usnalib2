@@ -12,7 +12,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  * Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
  * TransferableImage trans = new TransferableImage(image);
  * c.setContents(trans, null);
- * </pre>  
+ * </pre>
  * @author a.flaccomio
  */
 public class TransferableImage implements Transferable {
