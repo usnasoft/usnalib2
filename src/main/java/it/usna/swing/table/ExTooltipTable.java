@@ -10,7 +10,6 @@ import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
-
 /**
  * <p>Title: ExTootipTable</p>
  * <p>extends ToolTipTable providing new constructors and sorting support.</p>

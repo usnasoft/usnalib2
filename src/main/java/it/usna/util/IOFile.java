@@ -2,16 +2,16 @@ package it.usna.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 /**
  * <p>Title: AppProperties</p>
@@ -51,19 +51,36 @@ public class IOFile {
 	 * @throws IOException
 	 */
 	public static String readFile(final File srFile) throws IOException {
-		String ret = "";
-		try (BufferedReader r = new BufferedReader(new FileReader(srFile))) {
-			String line;
-			while((line = r.readLine()) != null) {
-				ret += line + '\n';
-			}
-		}
-		return ret;
+//		String ret = "";
+//		try (BufferedReader r = new BufferedReader(new FileReader(srFile))) {
+//			String line;
+//			while((line = r.readLine()) != null) {
+//				ret += line + '\n';
+//			}
+//		}
+//		return ret;
+		return readFile(srFile.toPath());
+	}
+	
+	public static String readFile(final Path srFile) throws IOException {
+		return Files.newBufferedReader(srFile).lines().collect(Collectors.joining("\n"));
+//		String ret = "";
+//		try(BufferedReader r = Files.newBufferedReader(srFile)) {
+//			String line;
+//			while((line = r.readLine()) != null) {
+//				ret += line + '\n';
+//			}
+//		}
+//		return ret;
 	}
 	
 	public static void writeFile(final File dtFile, final String txt) throws IOException {
-		try (BufferedWriter w = new BufferedWriter(new FileWriter(dtFile))) {
-			w.write(txt.replace("\n", lineSeparator)); // SO specific
+		writeFile(dtFile.toPath(), txt);
+	}
+	
+	public static void writeFile(final Path dtFile, final String txt) throws IOException {
+		try(BufferedWriter writer = Files.newBufferedWriter(dtFile)) {
+			writer.write(txt.replace("\n", lineSeparator)); // SO specific
 		}
 	}
 

@@ -172,10 +172,11 @@ public class UsnaTableModel extends AbstractTableModel {
 	 * @return int index or -1 if not found
 	 */
 	public int rowOf(final Object cell, final int col) {
-		for (int i = 0; i < getRowCount(); i++) {
+		for (int i = 0; i < lines.size(); i++) {
 			if (getValueAt(i, col).equals(cell))
 				return i;
 		}
+//		Stream<Object[]> s = lines.stream();
 		return -1;
 	}
 
