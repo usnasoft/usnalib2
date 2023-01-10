@@ -20,4 +20,8 @@ public class UsnaObservable<T, M> {
 	public void removeListeners() {
 		listeners.clear();
 	}
+	
+	public void removeListener(UsnaEventListener<T, M> l) {
+		listeners.remove(l);
+	}
 }
