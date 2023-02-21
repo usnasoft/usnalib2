@@ -1,15 +1,20 @@
 package it.usna.swing;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.util.ArrayList;
+
+import javax.swing.SwingConstants;
 	 
 public class AKDockLayout extends BorderLayout {
 	private static final long serialVersionUID = 1L;
-	private java.util.List<Component> north = new ArrayList<Component>(1);
-	private java.util.List<Component> south = new ArrayList<Component>(1);
-	private java.util.List<Component> east = new ArrayList<Component>(1);
-	private java.util.List<Component> west = new ArrayList<Component>(1);
+	private java.util.List<Component> north = new ArrayList<>(1);
+	private java.util.List<Component> south = new ArrayList<>(1);
+	private java.util.List<Component> east = new ArrayList<>(1);
+	private java.util.List<Component> west = new ArrayList<>(1);
 	private Component center = null;
 	private int northHeight, southHeight, eastWidth, westWidth;
 
