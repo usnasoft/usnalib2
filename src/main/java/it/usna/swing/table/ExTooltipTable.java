@@ -2,6 +2,7 @@ package it.usna.swing.table;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.swing.Icon;
@@ -66,9 +67,17 @@ public class ExTooltipTable extends TooltipTable {
 	public void clearSort() {
 		getRowSorter().setSortKeys(Collections.<RowSorter.SortKey>emptyList());
 	}
+	
+	public void sortByColumn(final int col, final SortOrder order) {
+		getRowSorter().setSortKeys(Collections.<RowSorter.SortKey>singletonList(new RowSorter.SortKey(col, order)));
+	}
 
-	public void sortByColumn(final int col, final boolean ascending) {
-		getRowSorter().setSortKeys(Collections.<RowSorter.SortKey>singletonList(new RowSorter.SortKey(col, ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING)));
+	public int getSelectedModelRow() {
+		return convertRowIndexToModel(getSelectedRow());
+	}
+
+	public int[] getSelectedModelRows() {
+		return Arrays.stream(getSelectedRows()).map(i -> convertRowIndexToModel(i)).toArray();
 	}
 
 	/*public int findFirstRow(final int col, final Object colVal) {

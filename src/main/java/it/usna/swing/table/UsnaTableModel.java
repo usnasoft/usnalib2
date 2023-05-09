@@ -176,7 +176,6 @@ public class UsnaTableModel extends AbstractTableModel {
 			if (getValueAt(i, col).equals(cell))
 				return i;
 		}
-//		Stream<Object[]> s = lines.stream();
 		return -1;
 	}
 
