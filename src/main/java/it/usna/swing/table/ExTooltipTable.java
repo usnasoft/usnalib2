@@ -73,7 +73,8 @@ public class ExTooltipTable extends TooltipTable {
 	}
 
 	public int getSelectedModelRow() {
-		return convertRowIndexToModel(getSelectedRow());
+		int sel = getSelectedRow();
+		return sel >= 0 ? convertRowIndexToModel(sel) : -1;
 	}
 
 	public int[] getSelectedModelRows() {

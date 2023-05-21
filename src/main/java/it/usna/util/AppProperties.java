@@ -1,9 +1,12 @@
 package it.usna.util;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -46,14 +49,14 @@ public class AppProperties extends Properties {
 
 	/** Save the properties on the file */
 	public void store() throws IOException {
-		try (FileWriter file = new FileWriter(fileName)) {
-			super.store(file, null);
+		try (Writer w = Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8)) {
+			super.store(w, null);
 		}
 	}
 
 	public void load(final boolean acceptEmpty) throws IOException {
-		try (FileReader file = new FileReader(fileName)) {
-			super.load(file);
+		try (Reader r = Files.newBufferedReader(Paths.get(fileName), StandardCharsets.UTF_8)) {
+			super.load(r);
 		} catch(FileNotFoundException e) {
 			if(acceptEmpty == false) {
 				throw e;
