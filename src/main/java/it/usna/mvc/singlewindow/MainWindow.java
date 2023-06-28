@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
 	public void setExtendedState(int state) {
 		if(Toolkit.getDefaultToolkit().isFrameStateSupported(state)) {
 			super.setExtendedState(state);
-		} else if(state == MAXIMIZED_HORIZ) {
+		} else if(state == MAXIMIZED_HORIZ && getExtendedState() != JFrame.MAXIMIZED_BOTH) {
 			final Rectangle currentBounds = getBounds();
 			Rectangle screen = getCurrentScreenBounds();
 			currentBounds.x = screen.x;
