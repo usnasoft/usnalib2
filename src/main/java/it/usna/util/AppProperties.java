@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
@@ -57,7 +58,7 @@ public class AppProperties extends Properties {
 	public void load(final boolean acceptEmpty) throws IOException {
 		try (Reader r = Files.newBufferedReader(Paths.get(fileName), StandardCharsets.UTF_8)) {
 			super.load(r);
-		} catch(FileNotFoundException e) {
+		} catch(FileNotFoundException | NoSuchFileException e) {
 			if(acceptEmpty == false) {
 				throw e;
 			}
