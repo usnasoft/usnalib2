@@ -25,7 +25,7 @@ public class ImgApp {
 	
 	public static void error(final Throwable t) {
 		final String message = t.getMessage();
-		JOptionPane.showMessageDialog(null, "Error: " + ((message != null && message.length() > 0) ? message : t.toString()), "Errore", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Error: " + ((message != null && message.length() > 0) ? message : t.toString()), "Error", JOptionPane.ERROR_MESSAGE);
 		//t.printStackTrace();
 	}
 

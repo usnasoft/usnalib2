@@ -1,6 +1,5 @@
 package it.usna.examples.mvcdeskeditor;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
@@ -27,13 +26,9 @@ public class EdController extends ControllerImpl<EdModel> {
 	}
 	
 	private void loadProperties() throws IOException {
-		try {
-			final AppProperties prop = new AppProperties(EdApp.PROP_FILE);
-			prop.load(true);
-			desktop.loadProperties(prop);
-		} catch (FileNotFoundException e) {
-			// No file, probably first run
-		}
+		final AppProperties prop = new AppProperties(EdApp.PROP_FILE);
+		prop.load(true);
+		desktop.loadProperties(prop);
 	}
 	
 	private void storeProperties() {
@@ -41,8 +36,7 @@ public class EdController extends ControllerImpl<EdModel> {
 		desktop.storeProperties(prop);
 		try {
 			prop.store(false);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			EdApp.error(ex);
 		}
 	}

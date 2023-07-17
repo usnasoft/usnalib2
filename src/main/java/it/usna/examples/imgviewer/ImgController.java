@@ -1,6 +1,5 @@
 package it.usna.examples.imgviewer;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import it.usna.mvc.controller.ControllerImpl;
@@ -26,13 +25,9 @@ public class ImgController extends ControllerImpl<ImgModel> {
 	}
 	
 	private void loadProperties() throws IOException {
-		try {
-			final AppProperties prop = new AppProperties(ImgApp.PROP_FILE);
-			prop.load(true);
-			desktop.loadProperties(prop);
-		} catch (FileNotFoundException e) {
-			// No file, probably first run
-		}
+		final AppProperties prop = new AppProperties(ImgApp.PROP_FILE);
+		prop.load(true);
+		desktop.loadProperties(prop);
 	}
 	
 	private void storeProperties() {
@@ -40,8 +35,7 @@ public class ImgController extends ControllerImpl<ImgModel> {
 		desktop.storeProperties(prop);
 		try {
 			prop.store(false);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			ImgApp.error(ex);
 		}
 	}
