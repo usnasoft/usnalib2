@@ -22,10 +22,9 @@ import it.usna.util.AppProperties;
  * @version 1.0
  */
 public class TooltipTable extends JTable {
-
 	private static final long serialVersionUID = 1L;
-	private final static String COL_WIDTH = "COL_W";
-	private final static String COL_POSITION = "COL_P";
+	protected final static String COL_WIDTH_PROP = "COL_W";
+	protected final static String COL_POSITION_PROP = "COL_P";
 
 	private TableColumn[] hiddenColumns;
 
@@ -120,7 +119,7 @@ public class TooltipTable extends JTable {
 		for(int i = 0; i < pos.length; i++) {
 			pos[i] = convertColumnIndexToModel(i) + "";
 		}
-		prop.setMultipleProperty(prefix + "." + COL_POSITION, pos, ',');
+		prop.setMultipleProperty(prefix + "." + COL_POSITION_PROP, pos, ',');
 	}
 
 	/**
@@ -129,7 +128,7 @@ public class TooltipTable extends JTable {
 	 */
 	public void loadColPos(final AppProperties prop, final String prefix) {
 		try { // in case a newer/older version had a different number of columns
-			String pos[] = prop.getMultipleProperty(prefix + "." + COL_POSITION, ',');
+			String pos[] = prop.getMultipleProperty(prefix + "." + COL_POSITION_PROP, ',');
 			if(pos != null) {
 				int i;
 				for(i = 0; i < pos.length; i++) {
@@ -154,11 +153,11 @@ public class TooltipTable extends JTable {
 			int vc = convertColumnIndexToView(col);
 			w[col] = (vc >= 0) ? columnModel.getColumn(vc).getWidth() + "" : "0";
 		}
-		prop.setMultipleProperty(prefix + "." + COL_WIDTH, w, ',');
+		prop.setMultipleProperty(prefix + "." + COL_WIDTH_PROP, w, ',');
 	}
 
 	public void loadColWidth(final AppProperties prop, final String prefix) {
-		String w[] = prop.getMultipleProperty(prefix + "." + COL_WIDTH, ',');
+		String w[] = prop.getMultipleProperty(prefix + "." + COL_WIDTH_PROP, ',');
 		final int modelCol = dataModel.getColumnCount();
 		if(w != null && w.length == modelCol) { // in case a newer/older version had a different number of columns
 			for (int i = 0; i < modelCol; i++) {
