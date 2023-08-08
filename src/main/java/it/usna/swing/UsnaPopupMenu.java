@@ -71,11 +71,13 @@ public class UsnaPopupMenu extends JPopupMenu {
 	 */
 	public MouseListener getMouseListener() {
 		return new MouseAdapter() {
+			@Override
 			public void mousePressed(java.awt.event.MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doPopup(e);
 				}
 			}
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doPopup(e);
