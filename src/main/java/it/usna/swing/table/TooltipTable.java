@@ -45,7 +45,7 @@ public class TooltipTable extends JTable {
 	}
 
 	public void setHeadersTooltip(final String ... headerTips) {
-		tableHeader = new JTableHeader(super.columnModel) {
+		tableHeader = new JTableHeader(columnModel) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
