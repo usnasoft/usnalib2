@@ -17,7 +17,7 @@ public class CLI {
 	}
 	
 	/**
-	 * Verify existance of an entry
+	 * Verify existance of an entry (and mark it as used)
 	 * @param entry name
 	 * @return entry index or -1
 	 */
@@ -32,7 +32,21 @@ public class CLI {
 	}
 	
 	/**
-	 * Verify existance of an entry (accepts synonyms)
+	 * Same as hasEntry but doesn't mark entry as used
+	 * @param entry name
+	 * @return entry index or -1
+	 */
+	public int indexOf(String name) {
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equals(name)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Verify existance of an entry - accepts synonyms (and mark it as used)
 	 * @param entry name
 	 * @return entry index or -1
 	 */
@@ -47,9 +61,9 @@ public class CLI {
 	}
 	
 	/**
-	 * get the string following given entry
+	 * get the string following given entry (and mark it as used)
 	 * @param entryIndex
-	 * @return
+	 * @return parameter value, null if parameter doues not exists
 	 */
 	public String getParameter(int entryIndex) {
 		if(args.length > entryIndex + 1) {
@@ -63,12 +77,14 @@ public class CLI {
 	/**
 	 * get the parIndex-th (base is 0) string following given entry
 	 * @param entryIndex
-	 * @return
+	 * @param parIndex; 0 for first parameter
+	 * @return parameter value, null if parameter doues not exists
 	 */
 	public String getParameter(int entryIndex, int parIndex) {
-		if(args.length > entryIndex + parIndex + 1) {
-			used[entryIndex + parIndex + 1] = true;
-			return args[entryIndex + parIndex + 1];
+		int idx = entryIndex + parIndex + 1;
+		if(args.length > idx) {
+			used[idx] = true;
+			return args[idx];
 		} else {
 			return null;
 		}

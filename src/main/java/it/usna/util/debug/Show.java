@@ -1,27 +1,22 @@
 package it.usna.util.debug;
 
-/**
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 
+/**
  * <p>Varoius objects rendering</p>
  * <p>Copyright (c) 2003</p>
  * <p>Company: USNA</p>
  * @author Antonio Flaccomio
  * @version 1.0
  */
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-
 public class Show {
 	/**
-	 * Una rappresentazione dell'oggetto viene mandata sullo standard output
+	 * Object representation on standard input standard output
 	 * @param o Object
 	 */
 	public static void show(final Object o) {
@@ -29,7 +24,7 @@ public class Show {
 	}
 
 	/**
-	 * Ritorna una rappresentazione dell'oggetto convertito in stringa
+	 * Object representation as String
 	 * @param o Object
 	 * @return String
 	 */
@@ -55,8 +50,6 @@ public class Show {
 			return mapToString((Map<?, ?>) o);
 		} else if (o instanceof Class) {
 			return classToString((Class<?>) o);
-		} else if (o instanceof ResultSet) {
-			return resultSetToString((ResultSet) o);
 		} else {
 			return o.toString();
 		}
@@ -138,49 +131,5 @@ public class Show {
 			res += m[i] + " \n";
 		}
 		return res;
-	}
-	
-	/**
-	 * Render full ResultSet; the ResultSet is consumed.
-	 * @param rs
-	 * @return
-	 */
-	public static String fullResultSetToString(final ResultSet rs) {
-		try {
-			String res = resultSetHeader(rs) + "\n";
-			final int count = rs.getMetaData().getColumnCount();
-			while(rs.next()) {
-				for (int i = 1; i <= count; i++) {
-					res += rs.getObject(i) + "\t";
-				}
-				res += "\n";
-			}
-			return res;
-		} catch (SQLException e) {
-			return e.toString();
-		}
-	}
-
-	private static String resultSetHeader(final ResultSet rs) throws SQLException {
-		String res = "";
-		final ResultSetMetaData rsmd = rs.getMetaData();
-		final int count = rsmd.getColumnCount();
-		for (int i = 1; i <= count; i++) {
-			res += rsmd.getColumnName(i) + "\t";
-		}
-		return res;
-	}
-	
-	private static String resultSetToString(final ResultSet rs) {
-		try {
-			String res = resultSetHeader(rs) + "\n";
-			final int count = rs.getMetaData().getColumnCount();
-			for (int i = 1; i <= count; i++) {
-				res += rs.getObject(i) + "\t";
-			}
-			return res;
-		} catch (SQLException e) {
-			return e.toString();
-		}
 	}
 }

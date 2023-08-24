@@ -84,8 +84,7 @@ public class AppProperties extends Properties {
 	 */
 	public int getIntProperty(final String key, final int defaultValue) {
 		try {
-			final String val = getProperty(key);
-			return Integer.parseInt(val);
+			return Integer.parseInt(getProperty(key));
 		} catch (RuntimeException e) { // NumberFormatException, NullPointerException
 			return defaultValue;
 		}
@@ -93,8 +92,7 @@ public class AppProperties extends Properties {
 
 	public int getIntProperty(final String key) {
 		try {
-			final String val = getProperty(key);
-			return Integer.parseInt(val);
+			return Integer.parseInt(getProperty(key));
 		} catch (RuntimeException e) { // NumberFormatException, NullPointerException
 			return 0;
 		}

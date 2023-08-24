@@ -10,19 +10,20 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
 public class UsnaSwingUtils {
-	public final static String LF_NMBUS = "Nimbus";
+	public final static String LF_NIMBUS = "Nimbus";
 
-	public static void setLookAndFeel(String lf) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	public static boolean setLookAndFeel(String lf) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if (lf.equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
-					break;
+					return true;
 				}
 			}
 		} catch (Exception e) {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
+		return false;
 	}
 	
 //	https://stackoverflow.com/questions/1043872/are-there-any-built-in-methods-in-java-to-increase-font-size

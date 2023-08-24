@@ -7,9 +7,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
+import it.usna.swing.UsnaSwingUtils;
 import it.usna.swing.gadget.CalendarPanel;
 
 /**
@@ -25,12 +24,7 @@ public class UsnaCalendar extends JFrame {
 	public CalendarPanel calPanel = null;
 
 	public UsnaCalendar() throws Exception {
-		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-			if ("Nimbus".equals(info.getName())) {
-				UIManager.setLookAndFeel(info.getClassName());
-				break;
-			}
-		}
+		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
 		initialize();
 	}
 

@@ -18,7 +18,7 @@ import javax.swing.text.NumberFormatter;
  * <p>Formatted field for integer numbers (long) with minimum
  * and maximum values specified.<br>
  * Can also generate buttons to increment and decrement the value.</p>
- * <p>Copyright (c) 2021 - 2006 as IntegerTextFieeld</p>
+ * <p>Copyright (c) 2021 - 2006 as IntegerTextField</p>
  * <p>Company: USNA</p>
  * @version 2.0
  * @author Antonio Flaccomio

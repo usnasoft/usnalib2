@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.SoftBevelBorder;
 
+import it.usna.swing.UsnaSwingUtils;
 import it.usna.swing.gadget.CalculatorPanel;
 
 /**
@@ -39,12 +40,7 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 	 * This is the default constructor
 	 */
 	public UsnaCalculator() throws Exception {
-		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-			if ("Nimbus".equals(info.getName())) {
-				UIManager.setLookAndFeel(info.getClassName());
-				break;
-			}
-		}
+		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
 		initialize();
 	}
 
