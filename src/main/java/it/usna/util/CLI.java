@@ -91,8 +91,14 @@ public class CLI {
 	}
 	
 	/**
-	 * return an array of unused (no hasEntry(...) or getParameter(..)) entries
-	 * @return
+	 * Get unused entries
+	 * @return an array of unused (no call to hasEntry(...) or getParameter(..))
+	 * <pre>
+	 * if(cli.unused().length > 0) {
+	 *	System.err.println("Wrong parameter(s): " + Arrays.stream(cli.unused()).collect(Collectors.joining("; ")));
+	 *	System.exit(1);
+	 * }
+	 * </pre>
 	 */
 	public String[] unused() {
 		ArrayList<String> u = new ArrayList<>();

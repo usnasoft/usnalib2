@@ -12,8 +12,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.SoftBevelBorder;
 
 import it.usna.swing.UsnaSwingUtils;
