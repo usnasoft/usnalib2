@@ -1,6 +1,7 @@
 package it.usna.swing.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -13,6 +14,7 @@ import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -31,7 +33,7 @@ import javax.swing.text.JTextComponent;
  * <p>Generic find/replace dialog; replace currently not working for jTextPane</p>
  * <p>Company: USNA</p>
  * @author Antonio Flaccomio
- * @version 2.0
+ * @version 2.1
  */
 public class FindReplaceDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
@@ -55,6 +57,7 @@ public class FindReplaceDialog extends JDialog {
 	private Supplier<JTextComponent> textComp;
 
 	private ResourceBundle labels;
+	private Component horizontalStrut;
 
 	public FindReplaceDialog(final Window owner, final Supplier<JTextComponent> textComp, final boolean replace, final ResourceBundle labels) {
 		super(owner);
@@ -164,10 +167,10 @@ public class FindReplaceDialog extends JDialog {
 		if (jPanel == null) {
 			jPanel = new JPanel();
 			GridBagLayout gbl_jPanel = new GridBagLayout();
-			gbl_jPanel.columnWidths = new int[] {65, 222};
-			gbl_jPanel.rowHeights = new int[]{20, 20, 23, 0};
-			gbl_jPanel.columnWeights = new double[]{0.0, 0.0};
-			gbl_jPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+//			gbl_jPanel.columnWidths = new int[] {65, 222};
+//			gbl_jPanel.rowHeights = new int[]{20, 20, 23, 0};
+//			gbl_jPanel.columnWeights = new double[]{0.0, 0.0};
+//			gbl_jPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 			jPanel.setLayout(gbl_jPanel);
 			jLabel = new JLabel();
 			jLabel.setText(labels.getString("lbl_find"));
@@ -186,7 +189,7 @@ public class FindReplaceDialog extends JDialog {
 			gbc_jTextFind.gridy = 0;
 			jPanel.add(getJTextFind(), gbc_jTextFind);
 			jLabel1 = new JLabel();
-			jLabel1.setText("Replace with:");
+			jLabel1.setText(labels.getString("lbl_replaceWith"));
 			GridBagConstraints gbc_jLabel1 = new GridBagConstraints();
 			gbc_jLabel1.anchor = GridBagConstraints.WEST;
 			gbc_jLabel1.insets = new Insets(0, 0, 5, 5);
@@ -264,28 +267,36 @@ public class FindReplaceDialog extends JDialog {
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridx = 0;
 			gridBagConstraints6.anchor = GridBagConstraints.WEST;
-			gridBagConstraints6.insets = new Insets(0, 0, 0, 12);
+			gridBagConstraints6.insets = new Insets(1, 20, 3, 0);
 			gridBagConstraints6.gridy = 0;
 			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 			gridBagConstraints5.gridx = 0;
 			gridBagConstraints5.anchor = GridBagConstraints.NORTHWEST;
 			gridBagConstraints5.weighty = 10.0D;
-			gridBagConstraints5.insets = new Insets(0, 0, 0, 12);
+			gridBagConstraints5.insets = new Insets(0, 20, 1, 0);
 			gridBagConstraints5.gridy = 1;
 			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-			gridBagConstraints4.gridx = 1;
+			gridBagConstraints4.gridx = 2;
 			gridBagConstraints4.anchor = GridBagConstraints.WEST;
-			gridBagConstraints4.insets = new Insets(0, 12, 0, 0);
+			gridBagConstraints4.insets = new Insets(1, 0, 3, 20);
 			gridBagConstraints4.gridy = 0;
 			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.gridx = 1;
+			gridBagConstraints3.gridx = 2;
 			gridBagConstraints3.anchor = GridBagConstraints.NORTHWEST;
 			gridBagConstraints3.weighty = 10.0D;
-			gridBagConstraints3.insets = new Insets(0, 12, 0, 0);
+			gridBagConstraints3.insets = new Insets(0, 0, 1, 20);
 			gridBagConstraints3.gridy = 1;
 			jOptionsPanel = new JPanel();
-			jOptionsPanel.setLayout(new GridBagLayout());
+			GridBagLayout gbl_jOptionsPanel = new GridBagLayout();
+			gbl_jOptionsPanel.columnWidths = new int[] {1, 1, 0};
+			jOptionsPanel.setLayout(gbl_jOptionsPanel);
 			jOptionsPanel.setBorder(BorderFactory.createLineBorder(SystemColor.controlShadow, 1));
+			GridBagConstraints gbc_horizontalStrut_1 = new GridBagConstraints();
+			gbc_horizontalStrut_1.weightx = 1.0;
+			gbc_horizontalStrut_1.insets = new Insets(0, 0, 5, 5);
+			gbc_horizontalStrut_1.gridx = 1;
+			gbc_horizontalStrut_1.gridy = 0;
+			jOptionsPanel.add(getHorizontalStrut(), gbc_horizontalStrut_1);
 			jOptionsPanel.add(getJRadioBackward(), gridBagConstraints3);
 			jOptionsPanel.add(getJRadioForward(), gridBagConstraints4);
 			jOptionsPanel.add(getJRadioFromStart(), gridBagConstraints6);
@@ -481,5 +492,11 @@ public class FindReplaceDialog extends JDialog {
 			textComp.get().setText(textComp.get().getText().replace(findText, jTextReplace.getText()));
 			jButtonReplace.setEnabled(false);
 		}
+	}
+	private Component getHorizontalStrut() {
+		if (horizontalStrut == null) {
+			horizontalStrut = Box.createHorizontalStrut(20);
+		}
+		return horizontalStrut;
 	}
 }

@@ -20,6 +20,7 @@ public class EdController extends ControllerImpl<EdModel> {
 		desktop.validate();
 	}
 	
+	@Override
 	public boolean closeApp() {
 		storeProperties();
 		return super.closeApp();
