@@ -1,8 +1,6 @@
 package it.usna.swing.dialog;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,7 +12,6 @@ import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -57,7 +54,6 @@ public class FindReplaceDialog extends JDialog {
 	private Supplier<JTextComponent> textComp;
 
 	private ResourceBundle labels;
-	private Component horizontalStrut;
 
 	public FindReplaceDialog(final Window owner, final Supplier<JTextComponent> textComp, final boolean replace, final ResourceBundle labels) {
 		super(owner);
@@ -82,18 +78,8 @@ public class FindReplaceDialog extends JDialog {
 		this(owner, () -> textComponent, replace);
 	}
 
-//	@Override
-//	public void setVisible(final boolean visible) {
-//		super.setVisible(visible);
-//		jButtonReplace.setEnabled(false);
-//	}
-
-	/**
-	 * This method initializes this
-	 * @return void
-	 */
 	private void initialize() {
-		this.setMinimumSize(new Dimension(280, 10));
+//		this.setMinimumSize(new Dimension(280, 10));
 		this.setContentPane(getJContentPane());
 		ButtonGroup group = new ButtonGroup();
 		group.add(jRadioForward);
@@ -111,10 +97,6 @@ public class FindReplaceDialog extends JDialog {
 		pack();
 	}
 
-	/**
-	 * This method initializes jContentPane
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			BorderLayout borderLayout = new BorderLayout();
@@ -129,10 +111,6 @@ public class FindReplaceDialog extends JDialog {
 		return jContentPane;
 	}
 
-	/**
-	 * This method initializes jPanelButtons	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getJButtonsPanel() {
 		if (jButtonsPanel == null) {
 			jButtonsPanel = new JPanel();
@@ -145,14 +123,9 @@ public class FindReplaceDialog extends JDialog {
 		return jButtonsPanel;
 	}
 
-	/**
-	 * This method initializes jButtonFind	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getJButtonFind() {
 		if (jButtonFind == null) {
 			jButtonFind = new JButton(labels.getString("btnFind"));
-			//jButtonFind.setMargin(new Insets(2, 8, 2, 8));
 			getRootPane().setDefaultButton(jButtonFind);
 			jButtonFind.addActionListener(event -> doFind());
 		}
@@ -167,10 +140,6 @@ public class FindReplaceDialog extends JDialog {
 		if (jPanel == null) {
 			jPanel = new JPanel();
 			GridBagLayout gbl_jPanel = new GridBagLayout();
-//			gbl_jPanel.columnWidths = new int[] {65, 222};
-//			gbl_jPanel.rowHeights = new int[]{20, 20, 23, 0};
-//			gbl_jPanel.columnWeights = new double[]{0.0, 0.0};
-//			gbl_jPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 			jPanel.setLayout(gbl_jPanel);
 			jLabel = new JLabel();
 			jLabel.setText(labels.getString("lbl_find"));
@@ -214,10 +183,6 @@ public class FindReplaceDialog extends JDialog {
 		return jPanel;
 	}
 
-	/**
-	 * This method initializes jTextFind	
-	 * @return javax.swing.JTextField	
-	 */
 	private JTextField getJTextFind() {
 		if (jTextFind == null) {
 			jTextFind = new JTextField(25);
@@ -226,10 +191,6 @@ public class FindReplaceDialog extends JDialog {
 		return jTextFind;
 	}
 
-	/**
-	 * This method initializes jCheckCase	
-	 * @return javax.swing.JCheckBox	
-	 */
 	private JCheckBox getJCheckCase() {
 		if (jCheckCase == null) {
 			jCheckCase = new JCheckBox();
@@ -239,10 +200,6 @@ public class FindReplaceDialog extends JDialog {
 		return jCheckCase;
 	}
 
-	/**
-	 * This method initializes jRadioBackward	
-	 * @return javax.swing.JRadioButton	
-	 */
 	private JRadioButton getJRadioBackward() {
 		if (jRadioBackward == null) {
 			jRadioBackward = new JRadioButton();
@@ -259,43 +216,39 @@ public class FindReplaceDialog extends JDialog {
 	}
 
 	/**
-	 * This method initializes jPanel1	
+	 * This method initializes jOptionsPanel	
 	 * @return javax.swing.JPanel	
 	 */
 	private JPanel getJOptionsPanel() {
 		if (jOptionsPanel == null) {
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
-			gridBagConstraints6.gridx = 0;
+			gridBagConstraints6.insets = new Insets(3, 0, 0, 0);
+			gridBagConstraints6.gridx = 1;
 			gridBagConstraints6.anchor = GridBagConstraints.WEST;
-			gridBagConstraints6.insets = new Insets(1, 30, 3, 0);
 			gridBagConstraints6.gridy = 0;
 			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
-			gridBagConstraints5.gridx = 0;
+			gridBagConstraints5.insets = new Insets(2, 0, 3, 0);
+			gridBagConstraints5.gridx = 1;
 			gridBagConstraints5.anchor = GridBagConstraints.NORTHWEST;
 			gridBagConstraints5.weighty = 10.0D;
-			gridBagConstraints5.insets = new Insets(0, 30, 1, 0);
 			gridBagConstraints5.gridy = 1;
 			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-			gridBagConstraints4.gridx = 2;
+			gridBagConstraints4.insets = new Insets(3, 0, 0, 0);
+			gridBagConstraints4.gridx = 3;
 			gridBagConstraints4.anchor = GridBagConstraints.WEST;
-			gridBagConstraints4.insets = new Insets(1, 0, 3, 30);
 			gridBagConstraints4.gridy = 0;
 			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.gridx = 2;
+			gridBagConstraints3.insets = new Insets(2, 0, 3, 0);
+			gridBagConstraints3.gridx = 3;
 			gridBagConstraints3.anchor = GridBagConstraints.NORTHWEST;
 			gridBagConstraints3.weighty = 10.0D;
-			gridBagConstraints3.insets = new Insets(0, 0, 1, 30);
 			gridBagConstraints3.gridy = 1;
 			jOptionsPanel = new JPanel();
 			GridBagLayout gbl_jOptionsPanel = new GridBagLayout();
-			gbl_jOptionsPanel.columnWidths = new int[] {1, 1, 0};
+			gbl_jOptionsPanel.columnWidths = new int[] {30, 1, 30, 1, 30};
+			gbl_jOptionsPanel.columnWeights = new double[]{2.0, 1.0, 3.0, 1.0, 2.0};
 			jOptionsPanel.setLayout(gbl_jOptionsPanel);
 			jOptionsPanel.setBorder(BorderFactory.createLineBorder(SystemColor.controlShadow, 1));
-			GridBagConstraints gbc_horizontalStrut_1 = new GridBagConstraints();
-			gbc_horizontalStrut_1.weightx = 1.0;
-			gbc_horizontalStrut_1.gridx = 1;
-			gbc_horizontalStrut_1.gridy = 0;
-			jOptionsPanel.add(getHorizontalStrut(), gbc_horizontalStrut_1);
 			jOptionsPanel.add(getJRadioBackward(), gridBagConstraints3);
 			jOptionsPanel.add(getJRadioForward(), gridBagConstraints4);
 			jOptionsPanel.add(getJRadioFromStart(), gridBagConstraints6);
@@ -304,10 +257,6 @@ public class FindReplaceDialog extends JDialog {
 		return jOptionsPanel;
 	}
 
-	/**
-	 * This method initializes jRadioForward	
-	 * @return javax.swing.JRadioButton	
-	 */
 	private JRadioButton getJRadioForward() {
 		if (jRadioForward == null) {
 			jRadioForward = new JRadioButton();
@@ -324,10 +273,6 @@ public class FindReplaceDialog extends JDialog {
 		return jRadioForward;
 	}
 
-	/**
-	 * This method initializes jRadioFromStart	
-	 * @return javax.swing.JRadioButton	
-	 */
 	private JRadioButton getJRadioFromStart() {
 		if (jRadioFromStart == null) {
 			jRadioFromStart = new JRadioButton();
@@ -342,10 +287,6 @@ public class FindReplaceDialog extends JDialog {
 		return jRadioFromStart;
 	}
 
-	/**
-	 * This method initializes jRadioFromEnd	
-	 * @return javax.swing.JRadioButton	
-	 */
 	private JRadioButton getJRadioFromEnd() {
 		if (jRadioFromEnd == null) {
 			jRadioFromEnd = new JRadioButton();
@@ -360,24 +301,14 @@ public class FindReplaceDialog extends JDialog {
 		return jRadioFromEnd;
 	}
 
-	/**
-	 * This method initializes jButtonClose	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getJButtonClose() {
 		if (jButtonClose == null) {
 			jButtonClose = new JButton(labels.getString("dlgClose"));
-			//jButtonClose.setMargin(new Insets(2, 8, 2, 8));
 			jButtonClose.addActionListener(event -> dispose());
 		}
 		return jButtonClose;
 	}
 
-	/**
-	 * This method initializes jTextReplace	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
 	private JTextField getJTextReplace() {
 		if (jTextReplace == null) {
 			jTextReplace = new JTextField(25);
@@ -386,31 +317,19 @@ public class FindReplaceDialog extends JDialog {
 		return jTextReplace;
 	}
 
-	/**
-	 * This method initializes jButtonReplace	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getJButtonReplace() {
 		if (jButtonReplace == null) {
 			jButtonReplace = new JButton();
 			jButtonReplace.setText(labels.getString("lbl_replace"));
-			//jButtonReplace.setMargin(new Insets(2, 8, 2, 8));
 			jButtonReplace.addActionListener(event -> doReplace());
 		}
 		return jButtonReplace;
 	}
 
-	/**
-	 * This method initializes jButtonReplaceAll	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getJButtonReplaceAll() {
 		if (jButtonReplaceAll == null) {
 			jButtonReplaceAll = new JButton();
 			jButtonReplaceAll.setText(labels.getString("lbl_replaceAll"));
-			//jButtonReplaceAll.setMargin(new Insets(2, 8, 2, 8));
 			jButtonReplaceAll.addActionListener(event -> doReplaceAll());
 		}
 		return jButtonReplaceAll;
@@ -491,11 +410,5 @@ public class FindReplaceDialog extends JDialog {
 			textComp.get().setText(textComp.get().getText().replace(findText, jTextReplace.getText()));
 			jButtonReplace.setEnabled(false);
 		}
-	}
-	private Component getHorizontalStrut() {
-		if (horizontalStrut == null) {
-			horizontalStrut = Box.createHorizontalStrut(20);
-		}
-		return horizontalStrut;
 	}
 }
