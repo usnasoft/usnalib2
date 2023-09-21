@@ -8,7 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -134,6 +136,16 @@ public class AppProperties extends Properties {
 	 */
 	public boolean setMultipleProperty(final String key, final String[] array, final char sep) {
 		String val = Arrays.stream(array).collect(Collectors.joining(sep + ""));
+		return val.equals(super.setProperty(key, val)) == false;
+	}
+	
+	public List<String> getMultiplePropertyAsList(final String key, final char sep) {
+		final String val = getProperty(key);
+		return (val == null) ? new ArrayList<>(0) : new ArrayList<>(Arrays.asList(val.split(sep + "")));
+	}
+	
+	public boolean setMultiplePropertyAsList(final String key, final List<String> array, final char sep) {
+		String val = array.stream().collect(Collectors.joining(sep + ""));
 		return val.equals(super.setProperty(key, val)) == false;
 	}
 	
