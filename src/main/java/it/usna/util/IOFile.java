@@ -104,4 +104,21 @@ public class IOFile {
 		}
 		return "";
 	}
+	
+	/**
+	 * Add a specified extension if path has no extension
+	 * @param path
+	 * @param ext
+	 * @return
+	 */
+	public static Path addExtension(Path path, String ext) {
+		String fileName = path.getFileName().toString();
+		if(Files.notExists(path) && fileName.endsWith("." + ext) == false) {
+			int lastDotIdx = fileName.lastIndexOf(".");
+			if(lastDotIdx < 0 || fileName.length() - lastDotIdx > MAX_EXTENSION_LEN + 1) {
+				return path.getParent().resolve(fileName + "." + ext);
+			}
+		}
+		return path;
+	}
 }
