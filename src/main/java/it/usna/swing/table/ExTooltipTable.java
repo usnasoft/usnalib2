@@ -119,7 +119,7 @@ public class ExTooltipTable extends TooltipTable {
 		}
 	}
 	
-	public void activateSingleStringCellCopy() {
+	public void activateSingleCellStringCopy() {
 		getActionMap().put("copy", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			@Override
