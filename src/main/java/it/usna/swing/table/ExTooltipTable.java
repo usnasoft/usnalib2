@@ -2,9 +2,13 @@ package it.usna.swing.table;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -113,5 +117,17 @@ public class ExTooltipTable extends TooltipTable {
 				columnModel.getColumn(c).setPreferredWidth(width);
 			}
 		}
+	}
+	
+	public void activateSingleStringCellCopy() {
+		getActionMap().put("copy", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Object cellValue = getValueAt(getSelectedRow(), getSelectedColumn());
+				StringSelection stringSelection = new StringSelection(cellTooltipValue(cellValue, true, 0, 0));
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
+			}
+		});
 	}
 }
