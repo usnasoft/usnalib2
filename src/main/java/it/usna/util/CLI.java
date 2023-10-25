@@ -60,6 +60,24 @@ public class CLI {
 		return -1;
 	}
 	
+	public int rejectEntry(String name) {
+		int ind = indexOf(name);
+		if(ind >= 0) {
+			used[ind] = false;
+		}
+		return ind;
+	}
+	
+	public int rejectEntry(String ... synonyms) {
+		for(String name: synonyms) {
+			int idx = rejectEntry(name);
+			if(idx >= 0) {
+				return idx;
+			}
+		}
+		return -1;
+	}
+	
 	/**
 	 * get the string following given entry (and mark it as used)
 	 * @param entryIndex
