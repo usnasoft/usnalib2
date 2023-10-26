@@ -36,7 +36,7 @@ public class CLI {
 	 * @param entry name
 	 * @return entry index or -1
 	 */
-	public int indexOf(String name) {
+	private int indexOf(String name) {
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equals(name)) {
 				return i;
