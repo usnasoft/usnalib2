@@ -37,7 +37,6 @@ public class TooltipTable extends JTable {
 	/**
 	 * Create a table with specified TableModel
 	 * @param tm TableModel
-	 * @param header String[]
 	 */
 	public TooltipTable(final TableModel tm) {
 		super(tm);
@@ -124,7 +123,8 @@ public class TooltipTable extends JTable {
 
 	/**
 	 * Restore columns position and visibility (columns must be original - model order - position; call restoreColumns() otherwise)
-	 * @param prefix String the prefix used to distinguish attributes among tables if more than one table is saved on the same Properties object
+	 * @param prop AppProperties instance where data is stored
+	 * @param prefix the prefix used to distinguish attributes among tables if more than one table is saved on the same Properties object
 	 */
 	public void loadColPos(final AppProperties prop, final String prefix) {
 		try { // in case a newer/older version had a different number of columns
@@ -144,7 +144,8 @@ public class TooltipTable extends JTable {
 
 	/**
 	 * Save table column width
-	 * @param prefix String the prefix used to distinguish attributes among tables if more than one table is saved on the same Properties object
+	 * @param prop instance where data is stored
+	 * @param prefix the prefix used to distinguish attributes among tables if more than one table is saved on the same Properties object
 	 */
 	public void saveColWidth(final AppProperties prop, final String prefix) {
 		final int modelCol = dataModel.getColumnCount();
@@ -184,7 +185,8 @@ public class TooltipTable extends JTable {
 
 	/**
 	 * Hide a column
-	 * @param modelInd int column index in the table model
+	 * @param modelInd column to hide index in the table model
+	 * @return the previous view index or -1 if column was not visible
 	 */
 	public int hideColumn(final int modelInd) {
 		final int pos = convertColumnIndexToView(modelInd);
@@ -201,7 +203,8 @@ public class TooltipTable extends JTable {
 
 	/**
 	 * Previously hidden column will be shown
-	 * @param modelInd int column index in the table model
+	 * @param modelInd column index to show in the table model
+	 * @return true if the column was previously hidden
 	 */
 	public boolean showColumn(final int modelInd) {
 		if (hiddenColumns != null && hiddenColumns[modelInd] != null) {
@@ -214,8 +217,8 @@ public class TooltipTable extends JTable {
 
 	/**
 	 * Previously hidden column will be shown
-	 * @param modelInd int column index in the table model
-	 * @param int viewPos new column position; if < 0 try to hint
+	 * @param modelInd column index to show in the table model
+	 * @param viewPos new column position; if < 0 try to hint
 	 */
 	public void showColumn(final int modelInd, int viewPos) {
 		if(showColumn(modelInd)) {
