@@ -126,7 +126,7 @@ public class TooltipTable extends JTable {
 	 * @param prop AppProperties instance where data is stored
 	 * @param prefix the prefix used to distinguish attributes among tables if more than one table is saved on the same Properties object
 	 */
-	public void loadColPos(final AppProperties prop, final String prefix) {
+	public boolean loadColPos(final AppProperties prop, final String prefix) {
 		try { // in case a newer/older version had a different number of columns
 			String pos[] = prop.getMultipleProperty(prefix + "." + COL_POSITION_PROP, ',');
 			if(pos != null) {
@@ -138,8 +138,10 @@ public class TooltipTable extends JTable {
 				while(i < getColumnCount()) { // getColumnCount() decreases a every iteration
 					hideColumn(convertColumnIndexToModel(i));
 				}
+				return true;
 			}
 		} catch(Exception e) {}
+		return false;
 	}
 
 	/**
@@ -157,7 +159,7 @@ public class TooltipTable extends JTable {
 		prop.setMultipleProperty(prefix + "." + COL_WIDTH_PROP, w, ',');
 	}
 
-	public void loadColWidth(final AppProperties prop, final String prefix) {
+	public boolean loadColWidth(final AppProperties prop, final String prefix) {
 		String w[] = prop.getMultipleProperty(prefix + "." + COL_WIDTH_PROP, ',');
 		final int modelCol = dataModel.getColumnCount();
 		if(w != null && w.length == modelCol) { // in case a newer/older version had a different number of columns
@@ -167,7 +169,9 @@ public class TooltipTable extends JTable {
 					columnModel.getColumn(vc).setPreferredWidth(Integer.parseInt(w[i]));	
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
 	public void restoreColumns() {
