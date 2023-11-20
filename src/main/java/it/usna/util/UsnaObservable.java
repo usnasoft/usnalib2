@@ -9,6 +9,10 @@ public class UsnaObservable<T, M> {
 		listeners.add(l);
 	}
 	
+	public boolean hasListener(UsnaEventListener<T, M> l) {
+		return listeners.contains(l);
+	}
+	
 	public synchronized void fireEvent(T type, M msg) {
 		listeners.forEach(l -> l.update(type, msg));
 	}
