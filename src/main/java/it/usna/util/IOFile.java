@@ -93,7 +93,7 @@ public class IOFile {
 		if (fileName.length() > 0) {
 			final int ultimoDot = fileName.lastIndexOf('.');
 			if (ultimoDot > 0 && fileName.length() - ultimoDot <= MAX_EXTENSION_LEN + 1) {
-				// Ok, e' un'estensione valida.
+				// Ok, it's a valid extension
 				final int penultimoDot = fileName.lastIndexOf('.', ultimoDot - 1);
 				if (penultimoDot > 0 && ultimoDot - penultimoDot <= MAX_EXTENSION_LEN + 1) {
 					return fileName.substring(penultimoDot + 1);

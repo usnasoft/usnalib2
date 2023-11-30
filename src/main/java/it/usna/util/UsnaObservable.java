@@ -2,6 +2,11 @@ package it.usna.util;
 
 import java.util.ArrayList;
 
+/**
+ * @see it.usna.util.UsnaEventListener<T, M>
+ * @param <T> message
+ * @param <M> message details
+ */
 public class UsnaObservable<T, M> {
 	private ArrayList<UsnaEventListener<T, M>> listeners = new ArrayList<>();
 	
@@ -9,8 +14,10 @@ public class UsnaObservable<T, M> {
 		listeners.add(l);
 	}
 	
-	public boolean hasListener(UsnaEventListener<T, M> l) {
-		return listeners.contains(l);
+	public synchronized void addUniqueListener(UsnaEventListener<T, M> l) {
+		if(listeners.contains(l) == false) {
+			listeners.add(l);
+		}
 	}
 	
 	public synchronized void fireEvent(T type, M msg) {

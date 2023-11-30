@@ -81,7 +81,7 @@ public class CLI {
 	/**
 	 * get the string following given entry (and mark it as used)
 	 * @param entryIndex
-	 * @return parameter value, null if parameter doues not exists
+	 * @return parameter value, null if parameter does not exists
 	 */
 	public String getParameter(int entryIndex) {
 		if(args.length > entryIndex + 1) {
