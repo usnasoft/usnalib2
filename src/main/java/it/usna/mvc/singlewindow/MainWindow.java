@@ -38,6 +38,11 @@ public class MainWindow extends JFrame {
 	public void loadProperties(final AppProperties prop) {
 		loadProperties(prop, -1, -1);
 	}
+	
+	public void loadProperties(final AppProperties prop, float defWidth, float defHeight) {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		loadProperties(prop, (int)(screenSize.width * defWidth), (int)(screenSize.height * defHeight));
+	}
 
 	public void loadProperties(final AppProperties prop, int defWidth, int defHeight) {
 		int width, height, xPos, yPos;
