@@ -35,15 +35,24 @@ public class MainWindow extends JFrame {
 		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 	}
 	
+	/*
+	 * Load windows stored position and size; default position is middle; default size is width/2, height/2
+	 */
 	public void loadProperties(final AppProperties prop) {
 		loadProperties(prop, -1, -1);
 	}
 	
+	/*
+	 * Load windows stored position and size; default position is middle; default size is screenSize.width * defWidth, screenSize.height * defHeight
+	 */
 	public void loadProperties(final AppProperties prop, float defWidth, float defHeight) {
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		loadProperties(prop, (int)(screenSize.width * defWidth), (int)(screenSize.height * defHeight));
 	}
 
+	/*
+	 * Load windows stored position and size; default position is middle; default size is defWidth, defHeight
+	 */
 	public void loadProperties(final AppProperties prop, int defWidth, int defHeight) {
 		int width, height, xPos, yPos;
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
