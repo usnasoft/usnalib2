@@ -23,26 +23,15 @@ public class MainWindow extends JFrame {
 	protected final static String PROP_YPOS = "APP_USNA_YPOS";
 	protected final static String PROP_EXT = "APP_USNA_EXTENDED";
 
-	protected void center() {
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		final Dimension frameSize = getSize();
-		if (frameSize.height > screenSize.height) {
-			frameSize.height = screenSize.height;
-		}
-		if (frameSize.width > screenSize.width) {
-			frameSize.width = screenSize.width;
-		}
-		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-	}
-	
-	/*
+	/**
 	 * Load windows stored position and size; default position is middle; default size is width/2, height/2
 	 */
 	public void loadProperties(final AppProperties prop) {
-		loadProperties(prop, -1, -1);
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		loadProperties(prop, screenSize.width / 2, screenSize.height / 2);
 	}
-	
-	/*
+
+	/**
 	 * Load windows stored position and size; default position is middle; default size is screenSize.width * defWidth, screenSize.height * defHeight
 	 */
 	public void loadProperties(final AppProperties prop, float defWidth, float defHeight) {
@@ -50,30 +39,26 @@ public class MainWindow extends JFrame {
 		loadProperties(prop, (int)(screenSize.width * defWidth), (int)(screenSize.height * defHeight));
 	}
 
-	/*
+	/**
 	 * Load windows stored position and size; default position is middle; default size is defWidth, defHeight
 	 */
 	public void loadProperties(final AppProperties prop, int defWidth, int defHeight) {
-		int width, height, xPos, yPos;
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		if(prop.containsKey(PROP_WIDTH)) {
-			width = prop.getIntProperty(PROP_WIDTH);
-			height = prop.getIntProperty(PROP_HEIGHT, 380);
-			xPos = prop.getIntProperty(PROP_XPOS, 0);
-			yPos = prop.getIntProperty(PROP_YPOS, 0);
-			
-			if(isLocationInScreenBounds(xPos, yPos) == false) {
-				xPos = (screenSize.width - width) / 2;
-				yPos = (screenSize.height - height) / 2;
-			}
+		int width = prop.getIntProperty(PROP_WIDTH, defWidth);
+		int height = prop.getIntProperty(PROP_HEIGHT, defHeight);
+		int xPos = prop.getIntProperty(PROP_XPOS, -1);
+		int yPos;
+		if(xPos < 0) {
+			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			xPos = (screenSize.width - width) / 2;
+			yPos = (screenSize.height - height) / 2;
 		} else {
-			if(defWidth < 0) {
-				width = screenSize.width / 2;
-				height = screenSize.height / 2;
-			} else {
-				width = defWidth;
-				height = defHeight;
-			}
+			yPos = prop.getIntProperty(PROP_YPOS, 0);
+		}
+
+		if(isLocationInScreenBounds(xPos, yPos) == false) {
+			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			width = Math.min(width, screenSize.width);
+			height = Math.min(height, screenSize.height);
 			xPos = (screenSize.width - width) / 2;
 			yPos = (screenSize.height - height) / 2;
 		}
@@ -85,7 +70,7 @@ public class MainWindow extends JFrame {
 			setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
 	}
-	
+
 	private static boolean isLocationInScreenBounds(int x, int y) {
 		GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		for(GraphicsDevice graphicsDevice: graphicsDevices) {
@@ -96,7 +81,7 @@ public class MainWindow extends JFrame {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Windows do not support MAXIMIZED_HORIZ (return to NORMAL not implemented)
 	 */
@@ -127,6 +112,10 @@ public class MainWindow extends JFrame {
 		return graphicsDevices[0].getDefaultConfiguration().getBounds();
 	}
 
+	/**
+	 * Stores current XPOS, YPOS, WIDTH, WIDTH or PROP_EXT on a given AppProperties object
+	 * @param prop
+	 */
 	public void storeProperties(final AppProperties prop) {
 		final boolean extState = (getExtendedState() == JFrame.MAXIMIZED_BOTH);
 		prop.setBoolProperty(PROP_EXT, extState);
@@ -136,5 +125,17 @@ public class MainWindow extends JFrame {
 			prop.setIntProperty(PROP_XPOS, this.getX());
 			prop.setIntProperty(PROP_YPOS, this.getY());
 		}
+	}
+	
+	protected void center() {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final Dimension frameSize = getSize();
+		if (frameSize.height > screenSize.height) {
+			frameSize.height = screenSize.height;
+		}
+		if (frameSize.width > screenSize.width) {
+			frameSize.width = screenSize.width;
+		}
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 	}
 }
