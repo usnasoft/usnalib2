@@ -126,6 +126,7 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		return bClose;
 	}
 	
+	@Override
 	public void lostOwnership(Clipboard arg0, Transferable arg1) {
 		// Defined in ClipboardOwner interface
 	}
