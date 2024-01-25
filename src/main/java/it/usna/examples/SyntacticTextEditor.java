@@ -53,7 +53,9 @@ public class SyntacticTextEditor extends JFrame {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				manager.undo();
+				try {
+					manager.undo();
+				} catch(RuntimeException ex) {}
 			}
 		};
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, SHORTCUT_KEY), "undo_usna");
@@ -63,7 +65,9 @@ public class SyntacticTextEditor extends JFrame {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				manager.redo();
+				try {
+					manager.redo();
+				} catch(RuntimeException ex) {}
 			}
 		};
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, SHORTCUT_KEY), "redo_usna");

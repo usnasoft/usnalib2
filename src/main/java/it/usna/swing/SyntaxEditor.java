@@ -1,6 +1,5 @@
 package it.usna.swing;
 
-import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
@@ -11,7 +10,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
@@ -50,6 +48,7 @@ public class SyntaxEditor extends JTextPane {
 			private static final long serialVersionUID = 1L;
 
 			@Override
+//			https://stackoverflow.com/questions/34644306/undo-and-redo-in-jtextpane-ignoring-style-changes
 			public void undoableEditHappened(UndoableEditEvent e) {
 				//  Check for an attribute change
 				AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent)e.getEdit();
