@@ -19,13 +19,21 @@ public class UsnaObservable<T, M> {
 			listeners.add(l);
 		}
 	}
-	
+
 	public synchronized void fireEvent(T type, M msg) {
-		listeners.forEach(l -> l.update(type, msg));
+		listeners.forEach(l -> {
+			//try {
+				l.update(type, msg);
+			//} catch (RuntimeException e) {}
+		});
 	}
 	
 	public synchronized void fireEvent(T type) {
-		listeners.forEach(l -> l.update(type, null));
+		listeners.forEach(l -> {
+			//try {
+				l.update(type, null);
+			//} catch (RuntimeException e) {}
+		});
 	}
 	
 	public synchronized void removeListeners() {

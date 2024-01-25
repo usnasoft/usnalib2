@@ -16,71 +16,74 @@ public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	private final static Style DEF_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 	private final StyledDocument doc;
-	private ArrayDeque<Syntax> blocks = new ArrayDeque<>();
-	private ArrayList<Syntax> syntax = new ArrayList<>();
+	private ArrayDeque<BlockSyntax> blocks = new ArrayDeque<>();
+	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 
 	public SyntaxEditor() {
 		this.doc = getStyledDocument();
 		doc.addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				analize();
+				analizeDocument();
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				analize();
+				analizeDocument();
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
 			}
 		});
 	}
 
-	//	public void append(String str) {
-	//		try {
-	//			doc.insertString(doc.getLength(), str, null);
-	//		} catch (BadLocationException e) {
-	//			//			LOG.error("", e);
-	//		}
-	//	}
-	//
-	//	public void append(String str, Style style) {
-	//		try {
-	//			doc.insertString(doc.getLength(), str, style);
-	//		} catch (BadLocationException e) {
-	//			//			LOG.error("", e);
-	//		}
-	//	}
-	//
-	//	public void insert(String str, int pos) {
-	//		try {
-	//			doc.insertString(pos, str, null);
-	//		} catch (BadLocationException e) {
-	//			//			LOG.error("", e);
-	//		}
-	//	}
-	//
-	//	public void insert(String str, int pos, Style style) {
-	//		try {
-	//			doc.insertString(pos, str, style);
-	//		} catch (BadLocationException e) {
-	//			//			LOG.error("", e);
-	//		}
-	//	}
+	public void append(String str) {
+		try {
+			doc.insertString(doc.getLength(), str, null);
+		} catch (BadLocationException e) {
+			//			LOG.error("", e);
+		}
+	}
+
+	public void append(String str, Style style) {
+		try {
+			doc.insertString(doc.getLength(), str, style);
+		} catch (BadLocationException e) {
+			//			LOG.error("", e);
+		}
+	}
+
+	public void insert(String str, int pos) {
+		try {
+			doc.insertString(pos, str, null);
+		} catch (BadLocationException e) {
+			//			LOG.error("", e);
+		}
+	}
+
+	public void insert(String str, int pos, Style style) {
+		try {
+			doc.insertString(pos, str, style);
+		} catch (BadLocationException e) {
+			//			LOG.error("", e);
+		}
+	}
 
 	public void setText(String str, Style style) {
 		setText(str);
 		doc.setCharacterAttributes(0, doc.getLength(), style, true);
 	}
 
-	public void addSyntax(Syntax s) {
+	public void addSyntax(BlockSyntax s) {
 		syntax.add(s);
 	}
+	
+	public void addKeywords(String[] words, Style style ) {
+		//todo
+	}
 
-	private void analize() {
+	private void analizeDocument() {
 		try {
 			blocks.clear();
 			String txt = doc.getText(0, doc.getLength());
@@ -95,7 +98,7 @@ public class SyntaxEditor extends JTextPane {
 				if(blocks.isEmpty() == false && blocks.peek().inner()) {
 					adv = analyzeSyntax(blocks.peek(), txt, i, true);
 				} else {
-					for(Syntax syn: syntax) {
+					for(BlockSyntax syn: syntax) {
 						adv = analyzeSyntax(syn, txt, i, false);
 					}
 				}
@@ -114,33 +117,39 @@ public class SyntaxEditor extends JTextPane {
 		}
 	}
 
-	private int analyzeSyntax(Syntax syn, String txt, int index, boolean close) {
+	private int analyzeSyntax(BlockSyntax syn, String txt, int index, boolean close) {
 		int adv = 1;
-		String start = syn.init();
-		String end = syn.end();
-		if(close == false && txt.substring(index).startsWith(start)) {
+		String start = syn.init;
+		String end = syn.end;
+		String escape = syn.escape;
+		if(close == false && txt.startsWith(start, index)) {
 			blocks.push(syn);
 			adv = start.length();
-		} else if(txt.substring(index).startsWith(end) && blocks.isEmpty() == false && blocks.peek() == syn) {
-			adv = end.length();
-			int a = adv;
-			SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, a, syn.style, true)); // style on block end
-			blocks.pop();
+		} else if(blocks.isEmpty() == false && blocks.peek() == syn) {
+			if(escape != null && txt.startsWith(escape, index)) {
+				adv = escape.length() + end.length();
+			} else if(txt.startsWith(end, index)) {
+				adv = end.length();
+				int a = adv;
+				SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, a, syn.style, true)); // style on block end
+				blocks.pop();
+			}
 		}
 		return adv;
 	}
 
-	public static class Syntax {
+	public static class BlockSyntax {
 		private String init;
 		private String end;
+		private String escape;
 		private Style style;
-		
-		public Syntax(String init, String end, String escape, Style style) {
+
+		public BlockSyntax(String init, String end, String escape, Style style) {
 			this(init, end, style);
-			//todo
+			this.escape = escape;
 		}
 
-		public Syntax(String init, String end, Style style) {
+		public BlockSyntax(String init, String end, Style style) {
 			this.init = init;
 			this.end = end;
 			this.style = style;
@@ -152,6 +161,10 @@ public class SyntaxEditor extends JTextPane {
 
 		public String end() {
 			return end;
+		}
+
+		public String escape() {
+			return escape;
 		}
 
 		public Style style() {

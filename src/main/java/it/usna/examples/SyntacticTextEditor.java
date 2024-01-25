@@ -21,7 +21,7 @@ import it.usna.swing.UsnaSwingUtils;
 
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
-	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	public SyntacticTextEditor() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(SyntacticTextEditor.class.getResource("/img/usna16.gif")));
@@ -31,11 +31,11 @@ public class SyntacticTextEditor extends JFrame {
 		SyntaxEditor editor = new SyntaxEditor();
 		Style styleComment = editor.addStyle("red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
-		editor.addSyntax(new SyntaxEditor.Syntax("//", "\n", styleComment));
-		editor.addSyntax(new SyntaxEditor.Syntax("/*", "*/", styleComment));
+		editor.addSyntax(new SyntaxEditor.BlockSyntax("//", "\n", styleComment));
+		editor.addSyntax(new SyntaxEditor.BlockSyntax("/*", "*/", styleComment));
 		Style styleStr = editor.addStyle("green", null);
-		StyleConstants.setForeground(styleStr, Color.BLUE);
-		editor.addSyntax(new SyntaxEditor.Syntax("\"", "\"", styleStr));
+		StyleConstants.setForeground(styleStr, Color.GREEN);
+		editor.addSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
 		
 		UndoManager manager = new UndoManager();
 		editor.getDocument().addUndoableEditListener(manager);
