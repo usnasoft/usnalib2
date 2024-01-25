@@ -38,7 +38,7 @@ public class SyntacticTextEditor extends JFrame {
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
 		Style styleBrachets = editor.addStyle("brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
-		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
+//		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
 
 		UndoManager manager = editor.activateUndo();
 		
