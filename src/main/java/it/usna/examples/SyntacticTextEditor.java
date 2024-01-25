@@ -36,9 +36,11 @@ public class SyntacticTextEditor extends JFrame {
 		Style styleStr = editor.addStyle("green", null);
 		StyleConstants.setForeground(styleStr, Color.GREEN);
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
-		
-		UndoManager manager = new UndoManager();
-		editor.getDocument().addUndoableEditListener(manager);
+		Style styleBrachets = editor.addStyle("brachets", null);
+		StyleConstants.setBold(styleBrachets, true);
+		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
+
+		UndoManager manager = editor.activateUndo();
 		
 		JPanel jContentPane = new JPanel();
 		JScrollPane scrollPane = new JScrollPane();

@@ -1,5 +1,6 @@
 package it.usna.swing;
 
+import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
@@ -7,17 +8,23 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.undo.UndoManager;
 
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	private final static Style DEF_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 	private final StyledDocument doc;
+	private UndoManager undoManager = null;
 	private ArrayDeque<BlockSyntax> blocks = new ArrayDeque<>();
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
+	private ArrayList<Keywords> keywords = new ArrayList<>();
 
 	public SyntaxEditor() {
 		this.doc = getStyledDocument();
@@ -36,6 +43,23 @@ public class SyntaxEditor extends JTextPane {
 			public void changedUpdate(DocumentEvent e) {
 			}
 		});
+	}
+
+	public UndoManager activateUndo() {
+		undoManager = new UndoManager() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void undoableEditHappened(UndoableEditEvent e) {
+				//  Check for an attribute change
+				AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent)e.getEdit();
+				if(event.getType().equals(DocumentEvent.EventType.CHANGE) == false) {
+					super.undoableEditHappened(e);
+				}
+			}
+		};
+		doc.addUndoableEditListener(undoManager);
+		return undoManager;
 	}
 
 	public void append(String str) {
@@ -78,12 +102,13 @@ public class SyntaxEditor extends JTextPane {
 	public void addSyntax(BlockSyntax s) {
 		syntax.add(s);
 	}
-	
-	public void addKeywords(String[] words, Style style ) {
-		//todo
+
+	public void addKeywords(Keywords words) {
+		keywords.add(words);
 	}
 
 	private void analizeDocument() {
+//		doc.removeUndoableEditListener(undoManager);
 		try {
 			blocks.clear();
 			String txt = doc.getText(0, doc.getLength());
@@ -92,28 +117,40 @@ public class SyntaxEditor extends JTextPane {
 			SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(0, length, DEF_STYLE, true));
 
 			int adv;
-			for(int i = 0; i < length; i += adv) {
-				adv = 1;
+			nextChar:
+				for(int i = 0; i < length; i += adv) {
+					if(blocks.isEmpty() == false && blocks.peek().inner()) {
+						adv = analyzeSyntax(blocks.peek(), txt, i, true);
+						if(adv > 0) {
+							continue;
+						}
+					} else {
+						for(BlockSyntax syn: syntax) {
+							adv = analyzeSyntax(syn, txt, i, false);
+							if(adv > 0) {
+								continue nextChar;
+							}
+						}
+					}
 
-				if(blocks.isEmpty() == false && blocks.peek().inner()) {
-					adv = analyzeSyntax(blocks.peek(), txt, i, true);
-				} else {
-					for(BlockSyntax syn: syntax) {
-						adv = analyzeSyntax(syn, txt, i, false);
+					adv = 1;
+					if(blocks.isEmpty() == false) {
+						Style docStyle = blocks.peek().style;
+						final int j = i;
+						SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(j, 1, docStyle, true));
+					}
+					if(blocks.isEmpty() || blocks.peek().inner() == false) {
+						for(Keywords k: keywords) {
+							adv = analyzeKeys(k, txt, i);
+						}
 					}
 				}
-
-				if(blocks.isEmpty() == false) {
-					Style docStyle = blocks.peek().style;
-					final int j = i;
-					final int a = adv;
-					SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(j, a, docStyle, true));
-				}
-			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch(RuntimeException e) {
 			e.printStackTrace();
+		} finally {
+//			doc.addUndoableEditListener(undoManager);
 		}
 	}
 
@@ -125,17 +162,35 @@ public class SyntaxEditor extends JTextPane {
 		if(close == false && txt.startsWith(start, index)) {
 			blocks.push(syn);
 			adv = start.length();
+			int a = adv;
+			SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, a, syn.style, true)); // style on block start
+			return adv;
 		} else if(blocks.isEmpty() == false && blocks.peek() == syn) {
 			if(escape != null && txt.startsWith(escape, index)) {
 				adv = escape.length() + end.length();
+				int a = adv;
+				SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, a, syn.style, true)); // style on block escape
+				return adv;
 			} else if(txt.startsWith(end, index)) {
 				adv = end.length();
 				int a = adv;
 				SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, a, syn.style, true)); // style on block end
 				blocks.pop();
+				return adv;
 			}
 		}
-		return adv;
+		return -1;
+	}
+
+	private int analyzeKeys(Keywords k, String txt, int index) {
+		for(String key: k.keys) {
+			if(txt.startsWith(key, index)) {
+				int l = key.length();
+				SwingUtilities.invokeLater(() -> doc.setCharacterAttributes(index, l, k.style, true));
+				return l;
+			}
+		}
+		return 1;
 	}
 
 	public static class BlockSyntax {
@@ -173,6 +228,16 @@ public class SyntaxEditor extends JTextPane {
 
 		public boolean inner() {
 			return true;
+		}
+	}
+
+	public static class Keywords {
+		private String[] keys;
+		private Style style;
+
+		public Keywords(String[] keys, Style style) {
+			this.keys = keys;
+			this.style = style;
 		}
 	}
 }
