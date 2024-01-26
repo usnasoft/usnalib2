@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -16,10 +15,11 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.undo.UndoManager;
 
+import it.usna.mvc.singlewindow.MainWindow;
 import it.usna.swing.SyntaxEditor;
 import it.usna.swing.UsnaSwingUtils;
 
-public class SyntacticTextEditor extends JFrame {
+public class SyntacticTextEditor extends MainWindow {
 	private static final long serialVersionUID = 1L;
 	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
@@ -38,7 +38,7 @@ public class SyntacticTextEditor extends JFrame {
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
 		Style styleBrachets = editor.addStyle("brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
-//		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
+		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
 
 		UndoManager manager = editor.activateUndo();
 		
@@ -53,9 +53,9 @@ public class SyntacticTextEditor extends JFrame {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
+				if(manager.canUndo()) {
 					manager.undo();
-				} catch(RuntimeException ex) {}
+				}
 			}
 		};
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, SHORTCUT_KEY), "undo_usna");
@@ -65,9 +65,9 @@ public class SyntacticTextEditor extends JFrame {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
+				if(manager.canRedo()) {
 					manager.redo();
-				} catch(RuntimeException ex) {}
+				}
 			}
 		};
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, SHORTCUT_KEY), "redo_usna");
@@ -75,6 +75,7 @@ public class SyntacticTextEditor extends JFrame {
 		
 		setContentPane(jContentPane);
 		setSize(600, 400);
+		center();
 		setVisible(true);
 	}
 	
