@@ -39,19 +39,12 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 	 */
 	public UsnaCalculator() throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
-		initialize();
-	}
-
-	/**
-	 * This method initializes this
-	 * @return void
-	 */
-	private void initialize() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(UsnaCalendar.class.getResource("/img/usna16.gif")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(UsnaCalculator.class.getResource("/img/usna16.gif")));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setContentPane(getJContentPane());
 		this.setTitle("USNA Calculator");
 		this.pack();
+		setLocationRelativeTo(null);
 	}
 
 	/**

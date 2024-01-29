@@ -25,15 +25,12 @@ public class UsnaCalendar extends JFrame {
 
 	public UsnaCalendar() throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
-		initialize();
-	}
-
-	private void initialize() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(UsnaCalendar.class.getResource("/img/usna16.gif")));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(new java.awt.Dimension(220,206));
         this.setTitle("USNA Calendar");
         this.setContentPane(getCalPanel());
+        setLocationRelativeTo(null);
 	}
 
 	/**

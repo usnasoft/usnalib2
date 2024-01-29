@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -15,11 +16,10 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.undo.UndoManager;
 
-import it.usna.mvc.singlewindow.MainWindow;
 import it.usna.swing.SyntaxEditor;
 import it.usna.swing.UsnaSwingUtils;
 
-public class SyntacticTextEditor extends MainWindow {
+public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
@@ -29,14 +29,14 @@ public class SyntacticTextEditor extends MainWindow {
 		setTitle("USNA syntactic editor");
 		
 		SyntaxEditor editor = new SyntaxEditor();
-		Style styleComment = editor.addStyle("red", null);
+		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("//", "\n", styleComment));
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("/*", "*/", styleComment));
-		Style styleStr = editor.addStyle("green", null);
+		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, Color.GREEN);
 		editor.addSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
-		Style styleBrachets = editor.addStyle("brachets", null);
+		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
 		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}"}, styleBrachets));
 
@@ -75,7 +75,8 @@ public class SyntacticTextEditor extends MainWindow {
 		
 		setContentPane(jContentPane);
 		setSize(600, 400);
-		center();
+//		center();
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	

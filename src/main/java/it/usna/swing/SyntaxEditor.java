@@ -7,11 +7,11 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.undo.UndoManager;
 
@@ -25,8 +25,13 @@ public class SyntaxEditor extends JTextPane {
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
 
+	//https://github.com/yannrichet/jxtextpane/blob/master/src/main/java/org/irsn/javax/swing/DefaultSyntaxColorizer.java#L284
 	public SyntaxEditor() {
 		this.doc = getStyledDocument();
+		
+		Element rootElement = doc.getDefaultRootElement();
+        doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
+		
 		doc.addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
@@ -55,18 +60,30 @@ public class SyntaxEditor extends JTextPane {
 		undoManager = new UndoManager() {
 			private static final long serialVersionUID = 1L;
 
-			@Override
-			//			https://stackoverflow.com/questions/34644306/undo-and-redo-in-jtextpane-ignoring-style-changes
-			public synchronized void undoableEditHappened(UndoableEditEvent e) {
-				//  Check for an attribute change
-				javax.swing.event.DocumentEvent event = (javax.swing.event.DocumentEvent)e.getEdit();
-				if(event.getType().equals(DocumentEvent.EventType.CHANGE) == false) {
-					super.undoableEditHappened(e);
-				} else {
-					//					UndoableEdit ed = e.getEdit();
-					//					ed.die();
-				}
-			}
+//			@Override
+////						https://stackoverflow.com/questions/34644306/undo-and-redo-in-jtextpane-ignoring-style-changes
+//			public synchronized void undoableEditHappened(UndoableEditEvent e) {
+//				//  Check for an attribute change
+//				javax.swing.event.DocumentEvent event = (javax.swing.event.DocumentEvent)e.getEdit();
+//				if(event.getType().equals(DocumentEvent.EventType.CHANGE) == false) {
+////					super.undoableEditHappened(e);
+//					addEdit(e.getEdit());
+//				} else {
+//					//					UndoableEdit ed = e.getEdit();
+//					//					ed.die();
+//				}
+//			}
+			
+//			@Override
+//			public boolean addEdit(UndoableEdit anEdit) {
+//				super.addEdit(anEdit);
+//				return false;
+//			}
+			
+//			@Override
+//			public void getEdit()  {
+//				
+//			}
 		};
 		doc.addUndoableEditListener(undoManager);
 		return undoManager;
@@ -103,12 +120,14 @@ public class SyntaxEditor extends JTextPane {
 
 	private synchronized void analizeDocument() {
 		try {
-//						doc.removeUndoableEditListener(undoManager);
+						doc.removeUndoableEditListener(undoManager);
 			blocks.clear();
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
 			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
+//			doc.getDefaultRootElement().
+//			System.out.println(doc.getCharacterElement(0).);
 
 			int adv;
 			nextChar:
@@ -130,7 +149,7 @@ public class SyntaxEditor extends JTextPane {
 					adv = 1;
 					if(blocks.isEmpty() == false) {
 						Style docStyle = blocks.peek().style;
-						doc.setCharacterAttributes(i, 1, docStyle, true);
+						doc.setCharacterAttributes(i, 1, docStyle, false);
 					}
 					if(blocks.isEmpty() || blocks.peek().inner() == false) {
 						for(Keywords k: keywords) {
@@ -143,7 +162,7 @@ public class SyntaxEditor extends JTextPane {
 		} catch(RuntimeException e) {
 			e.printStackTrace();
 		} finally {
-//						doc.addUndoableEditListener(undoManager);
+						doc.addUndoableEditListener(undoManager);
 		}
 	}
 
@@ -155,16 +174,16 @@ public class SyntaxEditor extends JTextPane {
 		if(close == false && txt.startsWith(start, index)) {
 			blocks.push(syn);
 			adv = start.length();
-			doc.setCharacterAttributes(index, adv, syn.style, true); // style on block start
+			doc.setCharacterAttributes(index, adv, syn.style, false); // style on block start
 			return adv;
 		} else if(blocks.isEmpty() == false && blocks.peek() == syn) {
 			if(escape != null && txt.startsWith(escape, index)) {
 				adv = escape.length() + end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, true); // style on block escape
+				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block escape
 				return adv;
 			} else if(txt.startsWith(end, index)) {
 				adv = end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, true); // style on block end
+				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block end
 				blocks.pop();
 				return adv;
 			}
@@ -176,7 +195,7 @@ public class SyntaxEditor extends JTextPane {
 		for(String key: k.keys) {
 			if(txt.startsWith(key, index)) {
 				int l = key.length();
-				doc.setCharacterAttributes(index, l, k.style, true);
+				doc.setCharacterAttributes(index, l, k.style, false);
 				return l;
 			}
 		}
