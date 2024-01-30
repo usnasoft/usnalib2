@@ -8,8 +8,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
@@ -29,8 +27,10 @@ public class SyntaxEditor extends JTextPane {
 	public SyntaxEditor() {
 		this.doc = getStyledDocument();
 		
-		Element rootElement = doc.getDefaultRootElement();
-        doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
+
+		
+//		Element rootElement = doc.getDefaultRootElement();
+//        doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
 		
 		doc.addDocumentListener(new DocumentListener() {
 			@Override
@@ -55,6 +55,11 @@ public class SyntaxEditor extends JTextPane {
 			}
 		});
 	}
+	
+	@Override
+    public boolean getScrollableTracksViewportWidth() {
+        return getUI().getPreferredSize(this).width <= getParent().getSize().width;
+    }
 
 	public UndoManager activateUndo() {
 		undoManager = new UndoManager() {
@@ -118,6 +123,7 @@ public class SyntaxEditor extends JTextPane {
 		keywords.add(words);
 	}
 
+	// todo perdiamo i cambi di struttura ???
 	private synchronized void analizeDocument() {
 		try {
 						doc.removeUndoableEditListener(undoManager);
@@ -125,13 +131,16 @@ public class SyntaxEditor extends JTextPane {
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
-			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
+//			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
+			
 //			doc.getDefaultRootElement().
 //			System.out.println(doc.getCharacterElement(0).);
 
 			int adv;
 			nextChar:
 				for(int i = 0; i < length; i += adv) {
+//					doc.getParagraphElement(i);
+					
 					if(blocks.isEmpty() == false && blocks.peek().inner()) {
 						adv = analyzeSyntax(blocks.peek(), txt, i, true);
 						if(adv > 0) {
@@ -150,12 +159,17 @@ public class SyntaxEditor extends JTextPane {
 					if(blocks.isEmpty() == false) {
 						Style docStyle = blocks.peek().style;
 						doc.setCharacterAttributes(i, 1, docStyle, false);
+						continue;
 					}
 					if(blocks.isEmpty() || blocks.peek().inner() == false) {
 						for(Keywords k: keywords) {
 							adv = analyzeKeys(k, txt, i);
+							continue;
 						}
 					}
+//					if(Character.isWhitespace(doc.getText(i, 1).codePointAt(0)) == false && Character.isISOControl(doc.getText(i, 1).codePointAt(0))) {
+						doc.setCharacterAttributes(i, 1, DEF_STYLE, false);
+//					}
 				}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -194,9 +208,9 @@ public class SyntaxEditor extends JTextPane {
 	private int analyzeKeys(Keywords k, String txt, int index) {
 		for(String key: k.keys) {
 			if(txt.startsWith(key, index)) {
-				int l = key.length();
-				doc.setCharacterAttributes(index, l, k.style, false);
-				return l;
+				int adv = key.length();
+				doc.setCharacterAttributes(index, adv, k.style, false);
+				return adv;
 			}
 		}
 		return 1;

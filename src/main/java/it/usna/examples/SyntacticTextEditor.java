@@ -43,8 +43,7 @@ public class SyntacticTextEditor extends JFrame {
 		UndoManager manager = editor.activateUndo();
 		
 		JPanel jContentPane = new JPanel();
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(editor);
+		JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jContentPane.setLayout(new BorderLayout());
 		
 		jContentPane.add(scrollPane, BorderLayout.CENTER);
