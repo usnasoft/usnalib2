@@ -34,9 +34,7 @@ import javax.swing.text.JTextComponent;
  */
 public class FindReplaceDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
-	private JPanel jContentPane = null;
 	private JPanel jButtonsPanel = null;
-	private JButton jButtonFind = null;
 	private JPanel jPanel = null;
 	private JLabel jLabel = null;
 	private JTextField jTextFind = null;
@@ -46,13 +44,12 @@ public class FindReplaceDialog extends JDialog {
 	private JRadioButton jRadioForward = null;
 	private JRadioButton jRadioFromStart = null;
 	private JRadioButton jRadioFromEnd = null;
-	private JButton jButtonClose = null;
-	private JLabel jLabel1 = null;
+	private JLabel replaceWithLabel = null;
 	private JTextField jTextReplace = null;
 	private JButton jButtonReplace = null;
 	private JButton jButtonReplaceAll = null;
 	private Supplier<JTextComponent> textComp;
-
+//	private boolean keepFocus = false; 
 	private ResourceBundle labels;
 
 	public FindReplaceDialog(final Window owner, final Supplier<JTextComponent> textComp, final boolean replace, final ResourceBundle labels) {
@@ -61,6 +58,7 @@ public class FindReplaceDialog extends JDialog {
 		this.labels = labels;
 		initialize();
 		enableReplace(replace);
+		pack();
 	}
 
 	public FindReplaceDialog(final Window owner, final Supplier<JTextComponent> textComp, final boolean replace) {
@@ -69,6 +67,7 @@ public class FindReplaceDialog extends JDialog {
 		this.labels = ResourceBundle.getBundle("it.usna.swing.dialog.LabelsFindBundle");
 		initialize();
 		enableReplace(replace);
+		pack();
 	}
 
 	/**
@@ -77,72 +76,60 @@ public class FindReplaceDialog extends JDialog {
 	public FindReplaceDialog(final Window owner, final JTextComponent textComponent, final boolean replace) {
 		this(owner, () -> textComponent, replace);
 	}
+	
+//	public void setKeepFocus(boolean keep) {
+//		keepFocus = keep;
+//	}
 
 	private void initialize() {
 //		this.setMinimumSize(new Dimension(280, 10));
-		this.setContentPane(getJContentPane());
+		JPanel jContentPane = new JPanel(new BorderLayout(0, 4));
+		jContentPane.setBorder(BorderFactory.createEmptyBorder(2, 4, 0, 4));
+		jContentPane.add(getJButtonsPanel(), BorderLayout.SOUTH);
+		jContentPane.add(getMainPanel(), BorderLayout.NORTH);
+		jContentPane.add(getJOptionsPanel(), BorderLayout.CENTER);
+		
+		this.setContentPane(jContentPane);
 		ButtonGroup group = new ButtonGroup();
 		group.add(jRadioForward);
 		group.add(jRadioBackward);
 		jButtonReplace.setEnabled(false);
-		getRootPane().setDefaultButton(jButtonFind);
 	}
 
 	public void enableReplace(final boolean replace) {
-		jLabel1.setVisible(replace);
+		replaceWithLabel.setVisible(replace);
 		jTextReplace.setVisible(replace);
 		jButtonReplace.setVisible(replace);
 		jButtonReplaceAll.setVisible(replace);
 		this.setTitle(replace ? labels.getString("titleFindReplace") : labels.getString("titleFind"));
-		pack();
-	}
-
-	private JPanel getJContentPane() {
-		if (jContentPane == null) {
-			BorderLayout borderLayout = new BorderLayout();
-			borderLayout.setVgap(4);
-			jContentPane = new JPanel();
-			jContentPane.setBorder(BorderFactory.createEmptyBorder(2, 4, 0, 4));
-			jContentPane.setLayout(borderLayout);
-			jContentPane.add(getJButtonsPanel(), BorderLayout.SOUTH);
-			jContentPane.add(getJPanel(), BorderLayout.NORTH);
-			jContentPane.add(getJOptionsPanel(), BorderLayout.CENTER);
-		}
-		return jContentPane;
 	}
 
 	private JPanel getJButtonsPanel() {
 		if (jButtonsPanel == null) {
 			jButtonsPanel = new JPanel();
 			jButtonsPanel.setLayout(new FlowLayout());
-			jButtonsPanel.add(getJButtonFind(), null);
+			
+			JButton jButtonFind = new JButton(labels.getString("btnFind"));
+			jButtonFind.addActionListener(event -> doFind());
+			jButtonsPanel.add(jButtonFind, null);
 			jButtonsPanel.add(getJButtonReplace(), null);
 			jButtonsPanel.add(getJButtonReplaceAll(), null);
-			jButtonsPanel.add(getJButtonClose(), null);
+			
+			JButton jButtonClose = new JButton(labels.getString("dlgClose"));
+			jButtonClose.addActionListener(event -> dispose());
+			jButtonsPanel.add(jButtonClose, null);
+			
+			getRootPane().setDefaultButton(jButtonFind);
 		}
 		return jButtonsPanel;
 	}
 
-	private JButton getJButtonFind() {
-		if (jButtonFind == null) {
-			jButtonFind = new JButton(labels.getString("btnFind"));
-			getRootPane().setDefaultButton(jButtonFind);
-			jButtonFind.addActionListener(event -> doFind());
-		}
-		return jButtonFind;
-	}
-
-	/**
-	 * This method initializes jPanel	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getJPanel() {
+	private JPanel getMainPanel() {
 		if (jPanel == null) {
 			jPanel = new JPanel();
 			GridBagLayout gbl_jPanel = new GridBagLayout();
 			jPanel.setLayout(gbl_jPanel);
-			jLabel = new JLabel();
-			jLabel.setText(labels.getString("lbl_find"));
+			jLabel = new JLabel(labels.getString("lbl_find"));
 			jLabel.setDisplayedMnemonic(KeyEvent.VK_UNDEFINED);
 			GridBagConstraints gbc_jLabel = new GridBagConstraints();
 			gbc_jLabel.anchor = GridBagConstraints.WEST;
@@ -157,14 +144,13 @@ public class FindReplaceDialog extends JDialog {
 			gbc_jTextFind.gridx = 1;
 			gbc_jTextFind.gridy = 0;
 			jPanel.add(getJTextFind(), gbc_jTextFind);
-			jLabel1 = new JLabel();
-			jLabel1.setText(labels.getString("lbl_replaceWith"));
+			replaceWithLabel = new JLabel(labels.getString("lbl_replaceWith"));
 			GridBagConstraints gbc_jLabel1 = new GridBagConstraints();
 			gbc_jLabel1.anchor = GridBagConstraints.WEST;
 			gbc_jLabel1.insets = new Insets(0, 0, 3, 3);
 			gbc_jLabel1.gridx = 0;
 			gbc_jLabel1.gridy = 1;
-			jPanel.add(jLabel1, gbc_jLabel1);
+			jPanel.add(replaceWithLabel, gbc_jLabel1);
 			GridBagConstraints gbc_jTextReplace = new GridBagConstraints();
 			gbc_jTextReplace.weightx = 1.0;
 			gbc_jTextReplace.fill = GridBagConstraints.HORIZONTAL;
@@ -194,8 +180,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JCheckBox getJCheckCase() {
 		if (jCheckCase == null) {
-			jCheckCase = new JCheckBox();
-			jCheckCase.setText(labels.getString("lbl_case"));
+			jCheckCase = new JCheckBox(labels.getString("lbl_case"));
 			jCheckCase.setMnemonic(KeyEvent.VK_C);
 		}
 		return jCheckCase;
@@ -203,8 +188,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JRadioButton getJRadioBackward() {
 		if (jRadioBackward == null) {
-			jRadioBackward = new JRadioButton();
-			jRadioBackward.setText(labels.getString("lbl_backward"));
+			jRadioBackward = new JRadioButton(labels.getString("lbl_backward"));
 			jRadioBackward.setMnemonic(KeyEvent.VK_B);
 			jRadioBackward.addItemListener(event -> {
 				if(event.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
@@ -260,8 +244,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JRadioButton getJRadioForward() {
 		if (jRadioForward == null) {
-			jRadioForward = new JRadioButton();
-			jRadioForward.setText(labels.getString("lbl_forward"));
+			jRadioForward = new JRadioButton(labels.getString("lbl_forward"));
 			jRadioForward.setMnemonic(KeyEvent.VK_F);
 			jRadioForward.setSelected(true);
 			jRadioForward.addItemListener(event -> {
@@ -276,8 +259,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JRadioButton getJRadioFromStart() {
 		if (jRadioFromStart == null) {
-			jRadioFromStart = new JRadioButton();
-			jRadioFromStart.setText(labels.getString("lbl_fromStart"));
+			jRadioFromStart = new JRadioButton(labels.getString("lbl_fromStart"));
 			jRadioFromStart.setMnemonic(KeyEvent.VK_S);
 			jRadioFromStart.addItemListener(event -> {
 				if(event.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
@@ -290,8 +272,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JRadioButton getJRadioFromEnd() {
 		if (jRadioFromEnd == null) {
-			jRadioFromEnd = new JRadioButton();
-			jRadioFromEnd.setText(labels.getString("lbl_fromEnd"));
+			jRadioFromEnd = new JRadioButton(labels.getString("lbl_fromEnd"));
 			jRadioFromEnd.setMnemonic(KeyEvent.VK_E);
 			jRadioFromEnd.addItemListener(event -> {
 				if(event.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
@@ -300,14 +281,6 @@ public class FindReplaceDialog extends JDialog {
 			});
 		}
 		return jRadioFromEnd;
-	}
-
-	private JButton getJButtonClose() {
-		if (jButtonClose == null) {
-			jButtonClose = new JButton(labels.getString("dlgClose"));
-			jButtonClose.addActionListener(event -> dispose());
-		}
-		return jButtonClose;
 	}
 
 	private JTextField getJTextReplace() {
@@ -320,8 +293,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JButton getJButtonReplace() {
 		if (jButtonReplace == null) {
-			jButtonReplace = new JButton();
-			jButtonReplace.setText(labels.getString("lbl_replace"));
+			jButtonReplace = new JButton(labels.getString("lbl_replace"));
 			jButtonReplace.addActionListener(event -> doReplace());
 		}
 		return jButtonReplace;
@@ -329,8 +301,7 @@ public class FindReplaceDialog extends JDialog {
 
 	private JButton getJButtonReplaceAll() {
 		if (jButtonReplaceAll == null) {
-			jButtonReplaceAll = new JButton();
-			jButtonReplaceAll.setText(labels.getString("lbl_replaceAll"));
+			jButtonReplaceAll = new JButton(labels.getString("lbl_replaceAll"));
 			jButtonReplaceAll.addActionListener(event -> doReplaceAll());
 		}
 		return jButtonReplaceAll;
@@ -388,11 +359,14 @@ public class FindReplaceDialog extends JDialog {
 			} else  {
 				ind = text.lastIndexOf(toFind, startPos);
 			}
-			if(ind > 0) {
+			if(ind >= 0) {
 				textComponent.setCaretPosition(ind);
 				textComponent.moveCaretPosition(ind + toFind.length());
-				textComponent.requestFocus();
+				textComponent.requestFocus(); // to show selection
 				jButtonReplace.setEnabled(true);
+//				if(keepFocus) {
+//					this.requestFocus();
+//				}
 			}
 			return ind;
 		} catch (BadLocationException e) {
