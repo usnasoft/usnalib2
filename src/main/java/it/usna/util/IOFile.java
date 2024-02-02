@@ -2,6 +2,7 @@ package it.usna.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,12 +26,22 @@ public class IOFile {
 	private final static String lineSeparator = System.getProperty("line.separator");
 	private final static int MAX_EXTENSION_LEN = 6;
 	
+	/**
+	 * @Deprecated 
+	 * use java.nio.file.Files(...) instead
+	 */
+	@Deprecated
 	public static void fileCopy(final String srFile, final String dtFile) throws IOException {
 		final File f1 = new File(srFile);
 		final File f2 = new File(dtFile);
 		fileCopy(f1, f2);
 	}
 	
+	/**
+	 * @Deprecated 
+	 * use java.nio.file.Files(...) instead
+	 */
+	@Deprecated
 	public static void fileCopy(final File srFile, final File dtFile) throws IOException {
 		try (
 				InputStream in = new BufferedInputStream(new FileInputStream(srFile));
@@ -51,27 +62,20 @@ public class IOFile {
 	 * @throws IOException
 	 */
 	public static String readFile(final File srFile) throws IOException {
-//		String ret = "";
-//		try (BufferedReader r = new BufferedReader(new FileReader(srFile))) {
-//			String line;
-//			while((line = r.readLine()) != null) {
-//				ret += line + '\n';
-//			}
-//		}
-//		return ret;
 		return readFile(srFile.toPath());
 	}
 	
+	/**
+	 * Read a text file and return its content in a string.
+	 * Use carefully; a file usually should not be read in a single big string.
+	 * @param source
+	 * @return the file content
+	 * @throws IOException
+	 */
 	public static String readFile(final Path srFile) throws IOException {
-		return Files.newBufferedReader(srFile).lines().collect(Collectors.joining("\n"));
-//		String ret = "";
-//		try(BufferedReader r = Files.newBufferedReader(srFile)) {
-//			String line;
-//			while((line = r.readLine()) != null) {
-//				ret += line + '\n';
-//			}
-//		}
-//		return ret;
+		try (BufferedReader r = Files.newBufferedReader(srFile)) {
+			return r.lines().collect(Collectors.joining("\n"));
+		}
 	}
 	
 	public static void writeFile(final File dtFile, final String txt) throws IOException {
