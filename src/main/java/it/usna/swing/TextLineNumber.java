@@ -17,7 +17,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
@@ -46,7 +45,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	public final static float CENTER = 0.5f;
 	public final static float RIGHT = 1.0f;
 
-	private final static Border OUTER = new MatteBorder(0, 0, 0, 2, Color.GRAY);
+	private final static Border OUTER = BorderFactory.createMatteBorder(0, 0, 0, 2, Color.GRAY);
 
 	private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
@@ -244,13 +243,11 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 		super.paintComponent(g);
 
 		// Determine the width of the space available to draw the line number
-
 		FontMetrics fontMetrics = textComponent.getFontMetrics(textComponent.getFont());
 		Insets insets = getInsets();
 		int availableWidth = getSize().width - insets.left - insets.right;
 
 		// Determine the rows to draw within the clipped bounds.
-
 		Rectangle clip = g.getClipBounds();
 		int rowStartOffset = textComponent.viewToModel2D(new Point(0, clip.y));
 		int endOffset = textComponent.viewToModel2D(new Point(0, clip.y + clip.height));
@@ -272,7 +269,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 				g.drawString(lineNumber, x, y);
 
 				// Move to the next row
-
 				rowStartOffset = Utilities.getRowEnd(textComponent, rowStartOffset) + 1;
 			} catch (Exception e) {
 				break;
@@ -428,10 +424,10 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 				setFont(newFont);
 				lastDigits = 0;
 				setPreferredWidth();
-			} else {
+			} /*else {
 //				repaint();
 				getParent().repaint();
-			}
+			}*/
 		}
 	}
 }
