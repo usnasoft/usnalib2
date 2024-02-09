@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.undo.UndoManager;
 
 import it.usna.swing.SyntaxEditor;
+import it.usna.swing.TextLineNumber;
 import it.usna.swing.UsnaSwingUtils;
 
 public class SyntacticTextEditor extends JFrame {
@@ -44,8 +46,11 @@ public class SyntacticTextEditor extends JFrame {
 		
 		JPanel jContentPane = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jContentPane.setLayout(new BorderLayout());
+		TextLineNumber lineNum = new TextLineNumber(editor);
+		lineNum.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 2));
+		scrollPane.setRowHeaderView(lineNum);
 		
+		jContentPane.setLayout(new BorderLayout());
 		jContentPane.add(scrollPane, BorderLayout.CENTER);
 		
 		AbstractAction undoAction = new AbstractAction() {
