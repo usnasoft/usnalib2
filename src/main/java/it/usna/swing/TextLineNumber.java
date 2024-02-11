@@ -13,7 +13,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -45,8 +44,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	public final static float CENTER = 0.5f;
 	public final static float RIGHT = 1.0f;
 
-	private final static Border OUTER = BorderFactory.createMatteBorder(0, 0, 0, 2, Color.GRAY);
-
 	private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
 	// Text component this TextTextLineNumber component is in sync with
@@ -54,7 +51,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 
 	// Properties that can be changed
 	private boolean updateFont;
-//	private int borderGap;
 	private Color currentLineForeground;
 	private float digitAlignment;
 	private int minimumDisplayDigits;
@@ -86,7 +82,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	public TextLineNumber(JTextComponent component, int minimumDisplayDigits) {
 		this.textComponent = component;
 		setFont(component.getFont());
-		setBorderGap(5);
+//		setBorderGap(5);
 		setCurrentLineForeground(Color.RED);
 		setDigitAlignment(RIGHT);
 		setMinimumDisplayDigits(minimumDisplayDigits);
@@ -117,27 +113,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 		this.updateFont = updateFont;
 	}
 
-	/**
-	 * Gets the border gap
-	 *
-	 * @return the border gap in pixels
-	 */
-//	public int getBorderGap() {
-//		return borderGap;
-//	}
-
-	/**
-	 * The border gap is used in calculating the left and right insets of the
-	 * border. Default value is 5.
-	 *
-	 * @param borderGap the gap in pixels
-	 */
-	public void setBorderGap(int borderGap) {
-//		this.borderGap = borderGap;
-		Border inner = BorderFactory.createEmptyBorder(0, borderGap, 0, borderGap);
-		setBorder(BorderFactory.createCompoundBorder(OUTER, inner));
-	}
-	
 	/**
 	 * Set a user defined border
 	 */
@@ -249,19 +224,23 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 
 		// Determine the rows to draw within the clipped bounds.
 		Rectangle clip = g.getClipBounds();
-		int rowStartOffset = textComponent.viewToModel2D(new Point(0, clip.y));
-		int endOffset = textComponent.viewToModel2D(new Point(0, clip.y + clip.height));
+//		int rowStartOffset = textComponent.viewToModel2D(new Point(0, clip.y));
+//		int endOffset = textComponent.viewToModel2D(new Point(0, clip.y + clip.height));
+		int rowStartOffset = textComponent.viewToModel(new Point(0, clip.y));
+		int endOffset = textComponent.viewToModel(new Point(0, clip.y + clip.height));
+		
+		final Element root = textComponent.getDocument().getDefaultRootElement();
+		final int caretElIndex = root.getElementIndex(textComponent.getCaretPosition());
 
 		while (rowStartOffset <= endOffset) {
 			try {
-				if (isCurrentLine(rowStartOffset))
+				if (root.getElementIndex(rowStartOffset) == caretElIndex)
 					g.setColor(getCurrentLineForeground());
 				else
 					g.setColor(getForeground());
 
 				// Get the line number as a string and then determine the
 				// "X" and "Y" offsets for drawing the string.
-
 				String lineNumber = getTextLineNumber(rowStartOffset);
 				int stringWidth = fontMetrics.stringWidth(lineNumber);
 				int x = getOffsetX(availableWidth, stringWidth) + insets.left;
@@ -274,16 +253,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 				break;
 			}
 		}
-	}
-
-	/*
-	 * We need to know if the caret is currently positioned on the line we are
-	 * about to paint so the line number can be highlighted.
-	 */
-	private boolean isCurrentLine(int rowStartOffset) {
-		int caretPosition = textComponent.getCaretPosition();
-		Element root = textComponent.getDocument().getDefaultRootElement();
-		return root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition);
 	}
 
 	/*
@@ -314,7 +283,8 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	private int getOffsetY(int rowStartOffset, FontMetrics fontMetrics) throws BadLocationException {
 		// Get the bounding rectangle of the row
 
-		Rectangle2D r = textComponent.modelToView2D(rowStartOffset);
+//		Rectangle2D r = textComponent.modelToView2D(rowStartOffset);
+		Rectangle2D r = textComponent.modelToView(rowStartOffset);
 		int lineHeight = fontMetrics.getHeight();
 		int y = (int)r.getY() + (int)r.getHeight();
 		int descent = 0;
@@ -400,7 +370,8 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 			public void run() {
 				try {
 					int endPos = textComponent.getDocument().getLength();
-					Rectangle2D rect = textComponent.modelToView2D(endPos);
+//					Rectangle2D rect = textComponent.modelToView2D(endPos);
+					Rectangle2D rect = textComponent.modelToView(endPos);
 
 					if (rect != null && rect.getY() != lastHeight) {
 						setPreferredWidth();
@@ -424,10 +395,10 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 				setFont(newFont);
 				lastDigits = 0;
 				setPreferredWidth();
-			} /*else {
+			} else {
 //				repaint();
 				getParent().repaint();
-			}*/
+			}
 		}
 	}
 }

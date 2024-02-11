@@ -47,7 +47,9 @@ public class SyntacticTextEditor extends JFrame {
 		JPanel jContentPane = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		TextLineNumber lineNum = new TextLineNumber(editor);
-		lineNum.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 2));
+		lineNum.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY),
+				BorderFactory.createEmptyBorder(0, 2, 0, 2)));
 		scrollPane.setRowHeaderView(lineNum);
 		
 		jContentPane.setLayout(new BorderLayout());
