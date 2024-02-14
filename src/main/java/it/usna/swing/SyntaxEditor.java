@@ -8,10 +8,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+
+//https://github.com/tips4java/tips4java/blob/main/source/CompoundUndoManager.java
 
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
@@ -51,6 +55,7 @@ public class SyntaxEditor extends JTextPane {
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
+				e.getType();
 //				System.out.print(e);
 			}
 		});
@@ -78,17 +83,50 @@ public class SyntaxEditor extends JTextPane {
 //					//					ed.die();
 //				}
 //			}
+			int c = 0;
 			
-//			@Override
-//			public boolean addEdit(UndoableEdit anEdit) {
-//				super.addEdit(anEdit);
+			@Override
+			public boolean addEdit(UndoableEdit anedit) {
+//				anedit.
+				if(c++ > 3)
+				anedit.die();
+				
+				 return super.addEdit(anedit);
 //				return false;
-//			}
+			}
 			
 //			@Override
 //			public void getEdit()  {
 //				
 //			}
+			
+//			@Override
+//			public boolean isSignificant() {
+//				return false;
+//			}
+			
+//			@Override
+//			public void	redo() {
+//				
+//				String txt = getText();
+//				doc.removeUndoableEditListener(undoManager);
+//				setText(txt);
+//				doc.addUndoableEditListener(undoManager);
+//				super.redo();
+//				
+//			}
+//			
+//			@Override
+//			public void	undo() {
+//				
+//				String txt = getText();
+//				doc.removeUndoableEditListener(undoManager);
+//				setText(txt);
+//				doc.addUndoableEditListener(undoManager);
+//				super.undo();
+//				
+//			}
+			
 		};
 		doc.addUndoableEditListener(undoManager);
 		return undoManager;
@@ -131,7 +169,7 @@ public class SyntaxEditor extends JTextPane {
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
-//			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
+			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
 			
 //			doc.getDefaultRootElement().
 //			System.out.println(doc.getCharacterElement(0).);
@@ -139,6 +177,11 @@ public class SyntaxEditor extends JTextPane {
 			int adv;
 			nextChar:
 				for(int i = 0; i < length; i += adv) {
+//					Element el = doc.getParagraphElement(i);
+//					if(el.getStartOffset() == i) {
+//						doc.setParagraphAttributes(i, el.getEndOffset() - el.getStartOffset(), DEF_STYLE, true);
+//					}
+					
 //					doc.getParagraphElement(i);
 					
 					if(blocks.isEmpty() == false && blocks.peek().inner()) {
@@ -168,7 +211,8 @@ public class SyntaxEditor extends JTextPane {
 						}
 					}
 //					if(Character.isWhitespace(doc.getText(i, 1).codePointAt(0)) == false && Character.isISOControl(doc.getText(i, 1).codePointAt(0))) {
-						doc.setCharacterAttributes(i, 1, DEF_STYLE, false);
+//					if(doc.getCharacterElement(i).getAttributes().equals(DEF_STYLE) == false) {
+//						doc.setCharacterAttributes(i, 1, DEF_STYLE, true);
 //					}
 				}
 		} catch (BadLocationException e) {
