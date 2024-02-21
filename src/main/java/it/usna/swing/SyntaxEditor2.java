@@ -1,64 +1,95 @@
 package it.usna.swing;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 
-//https://github.com/tips4java/tips4java/blob/main/source/CompoundUndoManager.java
-
-public class SyntaxEditor extends JTextPane {
+/**
+ * @author a.flaccomio
+ * @see it.usna.examples.SyntacticTextEditor
+ */
+public class SyntaxEditor2 extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	//	private final static Style DEF_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 	private SimpleAttributeSet DEF_STYLE = new SimpleAttributeSet();
 	private final StyledDocument doc;
+	private final PlainDocument undoDoc;
+	private DocumentListener docListener;
+	private DocumentListener caretDocListener;
+	private int caretOnUndoRedo;
+	
 	private UndoManager undoManager = null;
 	private ArrayDeque<BlockSyntax> blocks = new ArrayDeque<>();
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
 
-	//https://github.com/yannrichet/jxtextpane/blob/master/src/main/java/org/irsn/javax/swing/DefaultSyntaxColorizer.java#L284
-	public SyntaxEditor() {
+	public SyntaxEditor2() {
 		this.doc = getStyledDocument();
+		this.undoDoc = new PlainDocument();
 		
-
-		
-//		Element rootElement = doc.getDefaultRootElement();
-//        doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
-		
-		doc.addDocumentListener(new DocumentListener() {
+		// align doc & undoDoc - call analizeDocument()
+		docListener = new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
+				try {
+					undoDoc.remove(e.getOffset(), e.getLength());
+				} catch (BadLocationException e1) {}
 				SwingUtilities.invokeLater(() -> {
 					analizeDocument();
-//					StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 				});
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
+				try {
+					undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
+				} catch (BadLocationException e1) {}
 				SwingUtilities.invokeLater(() -> {
 					analizeDocument();
-//					StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 				});
 			}
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-				e.getType();
-//				System.out.print(e);
+			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
+		};
+
+		doc.addDocumentListener(docListener);
+		
+		// used for caret position after undo/redo
+		caretDocListener = new DocumentListener() {
+			@Override
+			public void insertUpdate(final DocumentEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						int offset = e.getOffset() + e.getLength();
+						offset = Math.min(offset, undoDoc.getLength());
+//						setCaretPosition( offset );
+						caretOnUndoRedo = offset;
+					}
+				});
 			}
-		});
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				setCaretPosition(e.getOffset());
+				caretOnUndoRedo = e.getOffset();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
+		};
 	}
 	
 	@Override
@@ -66,68 +97,63 @@ public class SyntaxEditor extends JTextPane {
         return getUI().getPreferredSize(this).width <= getParent().getSize().width;
     }
 
-	public UndoManager activateUndo() {
-		undoManager = new UndoManager() {
-			private static final long serialVersionUID = 1L;
+	public void activateUndo() {
+		undoManager = new UndoManager();
+		undoDoc.addUndoableEditListener(undoManager);
+	}
+	
+	private AbstractAction undoAction = new AbstractAction() {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(undoManager.canUndo()) {
+				undoDoc.addDocumentListener(caretDocListener);
+				undoManager.undo();
+				undoDoc.removeDocumentListener(caretDocListener);
 
-//			@Override
-////						https://stackoverflow.com/questions/34644306/undo-and-redo-in-jtextpane-ignoring-style-changes
-//			public synchronized void undoableEditHappened(UndoableEditEvent e) {
-//				//  Check for an attribute change
-//				javax.swing.event.DocumentEvent event = (javax.swing.event.DocumentEvent)e.getEdit();
-//				if(event.getType().equals(DocumentEvent.EventType.CHANGE) == false) {
-////					super.undoableEditHappened(e);
-//					addEdit(e.getEdit());
-//				} else {
-//					//					UndoableEdit ed = e.getEdit();
-//					//					ed.die();
-//				}
-//			}
-//			int c = 0;
-//			
-			@Override
-			public boolean addEdit(UndoableEdit anedit) {
-				if(((AbstractDocument.DefaultDocumentEvent)anedit).getType() == DocumentEvent.EventType.CHANGE) return false;
+				doc.removeDocumentListener(docListener);
+				try {
+					int l = undoDoc.getLength();
+					setText(undoDoc.getText(0, l));
+//					doc.setCharacterAttributes(0, l, DEF_STYLE, true);
+					analizeDocument();
+				} catch (BadLocationException e1) {}
+				doc.addDocumentListener(docListener);
 				
-				 return super.addEdit(anedit);
-//				return false;
+				setCaretPosition(caretOnUndoRedo);
 			}
-			
-//			@Override
-//			public void getEdit()  {
-//				
-//			}
-			
-//			@Override
-//			public boolean isSignificant() {
-//				return false;
-//			}
-			
-//			@Override
-//			public void	redo() {
-//				
-//				String txt = getText();
-//				doc.removeUndoableEditListener(undoManager);
-//				setText(txt);
-//				doc.addUndoableEditListener(undoManager);
-//				super.redo();
-//				
-//			}
-//			
-//			@Override
-//			public void	undo() {
-//				
-//				String txt = getText();
-//				doc.removeUndoableEditListener(undoManager);
-//				setText(txt);
-//				doc.addUndoableEditListener(undoManager);
-//				super.undo();
-//				
-//			}
-			
-		};
-		doc.addUndoableEditListener(undoManager);
-		return undoManager;
+		}
+	};
+	
+	private AbstractAction redoAction = new AbstractAction() {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(undoManager.canRedo()) {
+				undoDoc.addDocumentListener(caretDocListener);
+				undoManager.redo();
+				undoDoc.removeDocumentListener(caretDocListener);
+
+				doc.removeDocumentListener(docListener);
+				try {
+					int l = undoDoc.getLength();
+					setText(undoDoc.getText(0, l));
+//					doc.setCharacterAttributes(0, l, DEF_STYLE, true);
+					analizeDocument();
+				} catch (BadLocationException e1) {}
+				doc.addDocumentListener(docListener);
+				
+				setCaretPosition(caretOnUndoRedo);
+			}
+		}
+	};
+	
+	public AbstractAction getUndoAction() {
+		return undoAction;
+	}
+	
+	public AbstractAction getRedoAction() {
+		return redoAction;
 	}
 
 	public void append(String str) {
@@ -159,29 +185,17 @@ public class SyntaxEditor extends JTextPane {
 		keywords.add(words);
 	}
 
-	// todo perdiamo i cambi di struttura ???
 	private synchronized void analizeDocument() {
 		try {
-//						doc.removeUndoableEditListener(undoManager);
 			blocks.clear();
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
 			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
-			
-//			doc.getDefaultRootElement().
-//			System.out.println(doc.getCharacterElement(0).);
 
 			int adv;
 			nextChar:
 				for(int i = 0; i < length; i += adv) {
-//					Element el = doc.getParagraphElement(i);
-//					if(el.getStartOffset() == i) {
-//						doc.setParagraphAttributes(i, el.getEndOffset() - el.getStartOffset(), DEF_STYLE, true);
-//					}
-					
-//					doc.getParagraphElement(i);
-					
 					if(blocks.isEmpty() == false && blocks.peek().inner()) {
 						adv = analyzeSyntax(blocks.peek(), txt, i, true);
 						if(adv > 0) {
@@ -208,17 +222,11 @@ public class SyntaxEditor extends JTextPane {
 							continue;
 						}
 					}
-//					if(Character.isWhitespace(doc.getText(i, 1).codePointAt(0)) == false && Character.isISOControl(doc.getText(i, 1).codePointAt(0))) {
-//					if(doc.getCharacterElement(i).getAttributes().equals(DEF_STYLE) == false) {
-//						doc.setCharacterAttributes(i, 1, DEF_STYLE, true);
-//					}
 				}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch(RuntimeException e) {
 			e.printStackTrace();
-		} finally {
-//						doc.addUndoableEditListener(undoManager);
 		}
 	}
 
