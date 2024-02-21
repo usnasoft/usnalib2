@@ -3,14 +3,17 @@ package it.usna.examples;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
@@ -58,6 +61,15 @@ public class SyntacticTextEditor extends JFrame {
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, SHORTCUT_KEY), "redo_usna");
 		editor.getActionMap().put("redo_usna", editor.getRedoAction());
 		
+		AbstractAction font_plus = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				UsnaSwingUtils.initializeFontSize(2.2f);
+				SwingUtilities.updateComponentTreeUI(getContentPane());
+			}
+		};
+		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, SHORTCUT_KEY), "font_plus");
+		editor.getActionMap().put("font_plus", font_plus);
+		
 		setContentPane(jContentPane);
 		setSize(600, 400);
 //		center();
@@ -67,6 +79,7 @@ public class SyntacticTextEditor extends JFrame {
 	
 	public static void main(String[] arg) throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
+		
 		new SyntacticTextEditor();
 	}
 }
