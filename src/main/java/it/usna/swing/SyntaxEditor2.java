@@ -1,5 +1,6 @@
 package it.usna.swing;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -27,15 +28,17 @@ public class SyntaxEditor2 extends JTextPane {
 	private final StyledDocument doc;
 	private PlainDocument undoDoc;
 	private DocumentListener docListener;
+	
 	private DocumentListener caretDocListener;
 	private AbstractAction undoAction;
 	private AbstractAction redoAction;
 	private int caretOnUndoRedo;
+	private UndoManager undoManager;
 	
-	private UndoManager undoManager = null;
-	private ArrayDeque<BlockSyntax> blocks = new ArrayDeque<>();
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
+	
+	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
 
 	public SyntaxEditor2() {
 		this.doc = getStyledDocument();
@@ -63,6 +66,7 @@ public class SyntaxEditor2 extends JTextPane {
 		};
 
 		doc.addDocumentListener(docListener);
+		setCaretColor(Color.black);
 	}
 	
 	@Override
@@ -106,6 +110,7 @@ public class SyntaxEditor2 extends JTextPane {
 
 					doc.removeDocumentListener(docListener);
 					try {
+						
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
 //						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
@@ -131,13 +136,11 @@ public class SyntaxEditor2 extends JTextPane {
 					try {
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
-//						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
 						analizeDocument();
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
 					
 					setCaretPosition(caretOnUndoRedo);
-//					System.out.println(caretOnUndoRedo);
 				}
 			}
 		};
@@ -172,7 +175,7 @@ public class SyntaxEditor2 extends JTextPane {
 		doc.setCharacterAttributes(0, doc.getLength(), style, true);
 	}
 
-	public void addSyntax(BlockSyntax s) {
+	public void addBlockSyntax(BlockSyntax s) {
 		syntax.add(s);
 	}
 
@@ -191,8 +194,8 @@ public class SyntaxEditor2 extends JTextPane {
 			int adv;
 			nextChar:
 				for(int i = 0; i < length; i += adv) {
-					if(blocks.isEmpty() == false && blocks.peek().inner()) {
-						adv = analyzeSyntax(blocks.peek(), txt, i, true);
+					if(blocks.isEmpty() == false && blocks.peek().blockDef.inner()) {
+						adv = analyzeSyntax(blocks.peek().blockDef, txt, i, true);
 						if(adv > 0) {
 							continue;
 						}
@@ -205,19 +208,17 @@ public class SyntaxEditor2 extends JTextPane {
 						}
 					}
 
-					adv = 1;
-					if(blocks.isEmpty() == false) {
-						Style docStyle = blocks.peek().style;
-						doc.setCharacterAttributes(i, 1, docStyle, false);
-						continue;
-					}
-					if(blocks.isEmpty() || blocks.peek().inner() == false) {
+					if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
 						for(Keywords k: keywords) {
 							adv = analyzeKeys(k, txt, i);
 							continue;
 						}
 					}
+					adv = 1;
 				}
+			if(blocks.isEmpty() == false) { // unterminated block left
+				doc.setCharacterAttributes(blocks.peek().startPoint, length - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
+			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch(RuntimeException e) {
@@ -225,24 +226,20 @@ public class SyntaxEditor2 extends JTextPane {
 		}
 	}
 
-	private int analyzeSyntax(BlockSyntax syn, String txt, int index, boolean close) {
-		int adv = 1;
-		String start = syn.init;
-		String end = syn.end;
-		String escape = syn.escape;
-		if(close == false && txt.startsWith(start, index)) {
-			blocks.push(syn);
-			adv = start.length();
-			doc.setCharacterAttributes(index, adv, syn.style, false); // style on block start
-			return adv;
-		} else if(blocks.isEmpty() == false && blocks.peek() == syn) {
+	private int analyzeSyntax(BlockSyntax blockDef, String txt, int index, boolean findClose) {
+		String start = blockDef.init;
+		String end = blockDef.end;
+		String escape = blockDef.escape;
+		if(findClose == false && txt.startsWith(start, index)) {
+			blocks.push(new BlockAnalize(blockDef, index));
+			return start.length();
+		} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
 			if(escape != null && txt.startsWith(escape, index)) {
-				adv = escape.length() + end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block escape
-				return adv;
+				return escape.length() + end.length();
 			} else if(txt.startsWith(end, index)) {
-				adv = end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block end
+				int adv = end.length();
+				int blStart = blocks.peek().startPoint;
+				doc.setCharacterAttributes(blStart, index + adv - blStart, blockDef.style, false); // style on block end
 				blocks.pop();
 				return adv;
 			}
@@ -251,9 +248,9 @@ public class SyntaxEditor2 extends JTextPane {
 	}
 
 	private int analyzeKeys(Keywords k, String txt, int index) {
-		for(String key: k.keys) {
-			if(txt.startsWith(key, index)) {
-				int adv = key.length();
+		for(String keyword: k.keywords) {
+			if(txt.startsWith(keyword, index)) {
+				int adv = keyword.length();
 				doc.setCharacterAttributes(index, adv, k.style, false);
 				return adv;
 			}
@@ -300,12 +297,22 @@ public class SyntaxEditor2 extends JTextPane {
 	}
 
 	public static class Keywords {
-		private String[] keys;
+		private String[] keywords;
 		private Style style;
 
 		public Keywords(String[] keys, Style style) {
-			this.keys = keys;
+			this.keywords = keys;
 			this.style = style;
+		}
+	}
+
+	private static class BlockAnalize {
+		private final BlockSyntax blockDef;
+		private final int startPoint;
+		
+		BlockAnalize(BlockSyntax block, int startPoint) {
+			this.blockDef = block;
+			this.startPoint = startPoint;
 		}
 	}
 }
