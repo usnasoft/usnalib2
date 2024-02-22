@@ -28,21 +28,39 @@ public class SyntacticTextEditor extends JFrame {
 		setTitle("USNA syntactic editor");
 		
 		SyntaxEditor2 editor = new SyntaxEditor2();
+		
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
 		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("//", "\n", styleComment));
 		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("/*", "*/", styleComment));
+		
 		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, new Color(0, 120, 0));
 		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("\"", "\"", "\\", styleStr));
 		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("'", "'", "\\", styleStr));
+		
 		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
 		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
+		
 		Style styleOperators = editor.addStyle("usna_brachets", null);
 //		StyleConstants.setBold(styleOperators, true);
 		StyleConstants.setForeground(styleOperators, new Color(150, 0, 0));
-		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {"=", "+", "-", "*", "/", "<", ">"}, styleOperators));
+		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {"=", "+", "-", "*", "/", "<", ">", "&", "|", "!"}, styleOperators));
+		
+		Style styleReserved = editor.addStyle("usna_styleReserved", null);
+		StyleConstants.setBold(styleReserved, true);
+		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {
+				"abstract",	"continue",	"for", "new", "switch",
+				"assert",	"default",	"goto",	"package", "synchronized",
+				"boolean", "do", "if", "private", "this",
+				"break", "double", "implements", "protected", "throw",
+				"byte", "else", "import", "public", "throws",
+				"case", "enum", "instanceof", "return", "transient",
+				"catch", "extends", "int", "short", "try",
+				"char", "final", "interface", "static", "void",
+				"class", "finally", "long", "strictfp", "volatile",
+				"const", "float", "native", "super", "while"}, styleReserved));
 
 		editor.activateUndo();
 		

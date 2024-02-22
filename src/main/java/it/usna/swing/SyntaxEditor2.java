@@ -28,21 +28,21 @@ public class SyntaxEditor2 extends JTextPane {
 	private final StyledDocument doc;
 	private PlainDocument undoDoc;
 	private DocumentListener docListener;
-	
+
 	private DocumentListener caretDocListener;
 	private AbstractAction undoAction;
 	private AbstractAction redoAction;
 	private int caretOnUndoRedo;
 	private UndoManager undoManager;
-	
+
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
-	
+
 	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
 
 	public SyntaxEditor2() {
 		this.doc = getStyledDocument();
-		
+
 		// align doc & undoDoc - call analizeDocument()
 		docListener = new DocumentListener() {
 			@Override
@@ -68,18 +68,18 @@ public class SyntaxEditor2 extends JTextPane {
 		doc.addDocumentListener(docListener);
 		setCaretColor(Color.black);
 	}
-	
+
 	@Override
-    public boolean getScrollableTracksViewportWidth() {
-        return getUI().getPreferredSize(this).width <= getParent().getSize().width;
-    }
+	public boolean getScrollableTracksViewportWidth() {
+		return getUI().getPreferredSize(this).width <= getParent().getSize().width;
+	}
 
 	public void activateUndo() {
 		this.undoDoc = new PlainDocument();
-		
+
 		undoManager = new UndoManager();
 		undoDoc.addUndoableEditListener(undoManager);
-		
+
 		// used for caret position after undo/redo
 		caretDocListener = new DocumentListener() {
 			@Override
@@ -94,11 +94,11 @@ public class SyntaxEditor2 extends JTextPane {
 				setCaretPosition(e.getOffset());
 				caretOnUndoRedo = e.getOffset();
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
 		};
-		
+
 		undoAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -110,19 +110,19 @@ public class SyntaxEditor2 extends JTextPane {
 
 					doc.removeDocumentListener(docListener);
 					try {
-						
+
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
-//						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
+						//						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
 						analizeDocument();
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
-					
+
 					setCaretPosition(caretOnUndoRedo);
 				}
 			}
 		};
-		
+
 		redoAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -139,17 +139,17 @@ public class SyntaxEditor2 extends JTextPane {
 						analizeDocument();
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
-					
+
 					setCaretPosition(caretOnUndoRedo);
 				}
 			}
 		};
 	}
-	
+
 	public AbstractAction getUndoAction() {
 		return undoAction;
 	}
-	
+
 	public AbstractAction getRedoAction() {
 		return redoAction;
 	}
@@ -259,10 +259,10 @@ public class SyntaxEditor2 extends JTextPane {
 	}
 
 	public static class BlockSyntax {
-		private String init;
-		private String end;
+		private final String init;
+		private final String end;
 		private String escape;
-		private Style style;
+		private final Style style;
 
 		public BlockSyntax(String init, String end, String escape, Style style) {
 			this(init, end, style);
@@ -275,21 +275,21 @@ public class SyntaxEditor2 extends JTextPane {
 			this.style = style;
 		}
 
-		public String init() {
-			return init;
-		}
-
-		public String end() {
-			return end;
-		}
-
-		public String escape() {
-			return escape;
-		}
-
-		public Style style() {
-			return style;
-		}
+//		public String init() {
+//			return init;
+//		}
+//
+//		public String end() {
+//			return end;
+//		}
+//
+//		public String escape() {
+//			return escape;
+//		}
+//
+//		public Style style() {
+//			return style;
+//		}
 
 		public boolean inner() {
 			return true;
@@ -297,19 +297,33 @@ public class SyntaxEditor2 extends JTextPane {
 	}
 
 	public static class Keywords {
-		private String[] keywords;
-		private Style style;
+		private final String[] keywords;
+		private final Style style;
 
 		public Keywords(String[] keys, Style style) {
 			this.keywords = keys;
 			this.style = style;
 		}
 	}
+	
+	public static class DelimitedKeywords {
+		private final String[] keywords;
+		private final Style style;
+		private final String lLimit;
+		private final String rLimit;
+
+		public DelimitedKeywords(String[] keys, Style style, String lLimit, String rLimit) {
+			this.keywords = keys;
+			this.style = style;
+			this.lLimit = lLimit;
+			this.rLimit = rLimit;
+		}
+	}
 
 	private static class BlockAnalize {
 		private final BlockSyntax blockDef;
 		private final int startPoint;
-		
+
 		BlockAnalize(BlockSyntax block, int startPoint) {
 			this.blockDef = block;
 			this.startPoint = startPoint;
