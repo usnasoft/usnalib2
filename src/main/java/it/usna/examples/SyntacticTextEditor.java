@@ -14,7 +14,7 @@ import javax.swing.KeyStroke;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-import it.usna.swing.SyntaxEditor2;
+import it.usna.swing.SyntaxEditor;
 import it.usna.swing.TextLineNumber;
 import it.usna.swing.UsnaSwingUtils;
 
@@ -27,30 +27,30 @@ public class SyntacticTextEditor extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("USNA syntactic editor");
 		
-		SyntaxEditor2 editor = new SyntaxEditor2();
+		SyntaxEditor editor = new SyntaxEditor();
 		
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
-		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("//", "\n", styleComment));
-		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("/*", "*/", styleComment));
+		editor.addBlockSyntax(new SyntaxEditor.BlockSyntax("//", "\n", styleComment));
+		editor.addBlockSyntax(new SyntaxEditor.BlockSyntax("/*", "*/", styleComment));
 		
 		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, new Color(0, 120, 0));
-		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("\"", "\"", "\\", styleStr));
-		editor.addBlockSyntax(new SyntaxEditor2.BlockSyntax("'", "'", "\\", styleStr));
+		editor.addBlockSyntax(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
+		editor.addBlockSyntax(new SyntaxEditor.BlockSyntax("'", "'", "\\", styleStr));
 		
 		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
-		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
+		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
 		
 		Style styleOperators = editor.addStyle("usna_brachets", null);
 //		StyleConstants.setBold(styleOperators, true);
 		StyleConstants.setForeground(styleOperators, new Color(150, 0, 0));
-		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {"=", "+", "-", "*", "/", "<", ">", "&", "|", "!"}, styleOperators));
+		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"=", "+", "-", "*", "/", "<", ">", "&", "|", "!"}, styleOperators));
 		
 		Style styleReserved = editor.addStyle("usna_styleReserved", null);
 		StyleConstants.setBold(styleReserved, true);
-		editor.addKeywords(new SyntaxEditor2.Keywords(new String[] {
+		editor.addDelimitedKeywords(new SyntaxEditor.DelimitedKeywords(new String[] {
 				"abstract",	"continue",	"for", "new", "switch",
 				"assert",	"default",	"goto",	"package", "synchronized",
 				"boolean", "do", "if", "private", "this",
@@ -60,9 +60,10 @@ public class SyntacticTextEditor extends JFrame {
 				"catch", "extends", "int", "short", "try",
 				"char", "final", "interface", "static", "void",
 				"class", "finally", "long", "strictfp", "volatile",
-				"const", "float", "native", "super", "while"}, styleReserved));
+				"const", "float", "native", "super", "while"}, styleReserved, null, null));
 
 		editor.activateUndo();
+		editor.setTabs(4);
 		
 		JPanel jContentPane = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

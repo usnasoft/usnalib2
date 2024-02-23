@@ -1,133 +1,167 @@
 package it.usna.swing;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
 import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 
-//https://github.com/tips4java/tips4java/blob/main/source/CompoundUndoManager.java
-
+/**
+ * @author a.flaccomio
+ * @see it.usna.examples.SyntacticTextEditor
+ */
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	//	private final static Style DEF_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-	private SimpleAttributeSet DEF_STYLE = new SimpleAttributeSet();
+	private final static SimpleAttributeSet DEF_STYLE = new SimpleAttributeSet();
 	private final StyledDocument doc;
-	private UndoManager undoManager = null;
-	private ArrayDeque<BlockSyntax> blocks = new ArrayDeque<>();
+	private PlainDocument undoDoc;
+	private DocumentListener docListener;
+
+	private DocumentListener caretDocListener;
+	private AbstractAction undoAction;
+	private AbstractAction redoAction;
+	private int caretOnUndoRedo;
+	private UndoManager undoManager;
+
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
+	private ArrayList<DelimitedKeywords> delimited = new ArrayList<>();
 
-	//https://github.com/yannrichet/jxtextpane/blob/master/src/main/java/org/irsn/javax/swing/DefaultSyntaxColorizer.java#L284
+	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
+
 	public SyntaxEditor() {
 		this.doc = getStyledDocument();
-		
 
-		
-//		Element rootElement = doc.getDefaultRootElement();
-//        doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
-		
-		doc.addDocumentListener(new DocumentListener() {
+		// align doc & undoDoc - call analizeDocument()
+		docListener = new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				SwingUtilities.invokeLater(() -> {
-					analizeDocument();
-//					StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-				});
+				try {
+					undoDoc.remove(e.getOffset(), e.getLength());
+				} catch (BadLocationException e1) {}
+				SwingUtilities.invokeLater(() -> analizeDocument());
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				SwingUtilities.invokeLater(() -> {
-					analizeDocument();
-//					StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-				});
+				try {
+					undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
+				} catch (BadLocationException e1) {}
+				SwingUtilities.invokeLater(() -> analizeDocument());
 			}
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-				e.getType();
-//				System.out.print(e);
+			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
+		};
+
+		doc.addDocumentListener(docListener);
+		setCaretColor(Color.black);
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportWidth() {
+		return getUI().getPreferredSize(this).width <= getParent().getSize().width;
+	}
+
+	public void activateUndo() {
+		this.undoDoc = new PlainDocument();
+
+		undoManager = new UndoManager();
+		undoDoc.addUndoableEditListener(undoManager);
+
+		// used for caret position after undo/redo
+		caretDocListener = new DocumentListener() {
+			@Override
+			public void insertUpdate(final DocumentEvent e) {
+				int offset = e.getOffset() + e.getLength();
+				offset = Math.min(offset, undoDoc.getLength());
+				caretOnUndoRedo = offset;
 			}
-		});
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				setCaretPosition(e.getOffset());
+				caretOnUndoRedo = e.getOffset();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
+		};
+
+		undoAction = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(undoManager.canUndo()) {
+					undoDoc.addDocumentListener(caretDocListener);
+					undoManager.undo();
+					undoDoc.removeDocumentListener(caretDocListener);
+
+					doc.removeDocumentListener(docListener);
+					try {
+
+						int l = undoDoc.getLength();
+						setText(undoDoc.getText(0, l));
+						//						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
+						analizeDocument();
+					} catch (BadLocationException e1) {}
+					doc.addDocumentListener(docListener);
+
+					setCaretPosition(caretOnUndoRedo);
+				}
+			}
+		};
+
+		redoAction = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(undoManager.canRedo()) {
+					undoDoc.addDocumentListener(caretDocListener);
+					undoManager.redo();
+					undoDoc.removeDocumentListener(caretDocListener);
+
+					doc.removeDocumentListener(docListener);
+					try {
+						int l = undoDoc.getLength();
+						setText(undoDoc.getText(0, l));
+						analizeDocument();
+					} catch (BadLocationException e1) {}
+					doc.addDocumentListener(docListener);
+
+					setCaretPosition(caretOnUndoRedo);
+				}
+			}
+		};
+	}
+
+	public AbstractAction getUndoAction() {
+		return undoAction;
+	}
+
+	public AbstractAction getRedoAction() {
+		return redoAction;
 	}
 	
-	@Override
-    public boolean getScrollableTracksViewportWidth() {
-        return getUI().getPreferredSize(this).width <= getParent().getSize().width;
-    }
-
-	public UndoManager activateUndo() {
-		undoManager = new UndoManager() {
-			private static final long serialVersionUID = 1L;
-
-//			@Override
-////						https://stackoverflow.com/questions/34644306/undo-and-redo-in-jtextpane-ignoring-style-changes
-//			public synchronized void undoableEditHappened(UndoableEditEvent e) {
-//				//  Check for an attribute change
-//				javax.swing.event.DocumentEvent event = (javax.swing.event.DocumentEvent)e.getEdit();
-//				if(event.getType().equals(DocumentEvent.EventType.CHANGE) == false) {
-////					super.undoableEditHappened(e);
-//					addEdit(e.getEdit());
-//				} else {
-//					//					UndoableEdit ed = e.getEdit();
-//					//					ed.die();
-//				}
-//			}
-//			int c = 0;
-//			
-			@Override
-			public boolean addEdit(UndoableEdit anedit) {
-				if(((AbstractDocument.DefaultDocumentEvent)anedit).getType() == DocumentEvent.EventType.CHANGE) return false;
-				
-				 return super.addEdit(anedit);
-//				return false;
-			}
-			
-//			@Override
-//			public void getEdit()  {
-//				
-//			}
-			
-//			@Override
-//			public boolean isSignificant() {
-//				return false;
-//			}
-			
-//			@Override
-//			public void	redo() {
-//				
-//				String txt = getText();
-//				doc.removeUndoableEditListener(undoManager);
-//				setText(txt);
-//				doc.addUndoableEditListener(undoManager);
-//				super.redo();
-//				
-//			}
-//			
-//			@Override
-//			public void	undo() {
-//				
-//				String txt = getText();
-//				doc.removeUndoableEditListener(undoManager);
-//				setText(txt);
-//				doc.addUndoableEditListener(undoManager);
-//				super.undo();
-//				
-//			}
-			
-		};
-		doc.addUndoableEditListener(undoManager);
-		return undoManager;
+	public void setTabs(int size) {
+		TabStop[] tabs = new TabStop[] {new TabStop(2)};
+		TabSet tabSet = new TabSet(tabs);
+		StyleConstants.setTabSet(DEF_STYLE, tabSet);
 	}
 
 	public void append(String str) {
@@ -151,39 +185,31 @@ public class SyntaxEditor extends JTextPane {
 		doc.setCharacterAttributes(0, doc.getLength(), style, true);
 	}
 
-	public void addSyntax(BlockSyntax s) {
+	public void addBlockSyntax(BlockSyntax s) {
 		syntax.add(s);
 	}
 
 	public void addKeywords(Keywords words) {
 		keywords.add(words);
 	}
+	
+	public void addDelimitedKeywords(DelimitedKeywords words) {
+		delimited.add(words);
+	}
 
-	// todo perdiamo i cambi di struttura ???
 	private synchronized void analizeDocument() {
 		try {
-//						doc.removeUndoableEditListener(undoManager);
 			blocks.clear();
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
 			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
-			
-//			doc.getDefaultRootElement().
-//			System.out.println(doc.getCharacterElement(0).);
 
 			int adv;
 			nextChar:
 				for(int i = 0; i < length; i += adv) {
-//					Element el = doc.getParagraphElement(i);
-//					if(el.getStartOffset() == i) {
-//						doc.setParagraphAttributes(i, el.getEndOffset() - el.getStartOffset(), DEF_STYLE, true);
-//					}
-					
-//					doc.getParagraphElement(i);
-					
-					if(blocks.isEmpty() == false && blocks.peek().inner()) {
-						adv = analyzeSyntax(blocks.peek(), txt, i, true);
+					if(blocks.isEmpty() == false && blocks.peek().blockDef.inner()) {
+						adv = analyzeSyntax(blocks.peek().blockDef, txt, i, true);
 						if(adv > 0) {
 							continue;
 						}
@@ -196,50 +222,42 @@ public class SyntaxEditor extends JTextPane {
 						}
 					}
 
-					adv = 1;
-					if(blocks.isEmpty() == false) {
-						Style docStyle = blocks.peek().style;
-						doc.setCharacterAttributes(i, 1, docStyle, false);
-						continue;
-					}
-					if(blocks.isEmpty() || blocks.peek().inner() == false) {
+					if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
 						for(Keywords k: keywords) {
 							adv = analyzeKeys(k, txt, i);
 							continue;
 						}
+						for(DelimitedKeywords k: delimited) {
+							adv = analyzeDelimitedKeys(k, txt, i);
+							continue;
+						}
 					}
-//					if(Character.isWhitespace(doc.getText(i, 1).codePointAt(0)) == false && Character.isISOControl(doc.getText(i, 1).codePointAt(0))) {
-//					if(doc.getCharacterElement(i).getAttributes().equals(DEF_STYLE) == false) {
-//						doc.setCharacterAttributes(i, 1, DEF_STYLE, true);
-//					}
+					adv = 1;
 				}
+			if(blocks.isEmpty() == false) { // unterminated block left
+				doc.setCharacterAttributes(blocks.peek().startPoint, length - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
+			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch(RuntimeException e) {
 			e.printStackTrace();
-		} finally {
-//						doc.addUndoableEditListener(undoManager);
 		}
 	}
 
-	private int analyzeSyntax(BlockSyntax syn, String txt, int index, boolean close) {
-		int adv = 1;
-		String start = syn.init;
-		String end = syn.end;
-		String escape = syn.escape;
-		if(close == false && txt.startsWith(start, index)) {
-			blocks.push(syn);
-			adv = start.length();
-			doc.setCharacterAttributes(index, adv, syn.style, false); // style on block start
-			return adv;
-		} else if(blocks.isEmpty() == false && blocks.peek() == syn) {
+	private int analyzeSyntax(BlockSyntax blockDef, String txt, int index, boolean findClose) {
+		String start = blockDef.init;
+		String end = blockDef.end;
+		String escape = blockDef.escape;
+		if(findClose == false && txt.startsWith(start, index)) {
+			blocks.push(new BlockAnalize(blockDef, index));
+			return start.length();
+		} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
 			if(escape != null && txt.startsWith(escape, index)) {
-				adv = escape.length() + end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block escape
-				return adv;
+				return escape.length() + end.length();
 			} else if(txt.startsWith(end, index)) {
-				adv = end.length();
-				doc.setCharacterAttributes(index, adv, syn.style, false); // style on block end
+				int adv = end.length();
+				int blStart = blocks.peek().startPoint;
+				doc.setCharacterAttributes(blStart, index + adv - blStart, blockDef.style, false); // style on block end
 				blocks.pop();
 				return adv;
 			}
@@ -248,9 +266,20 @@ public class SyntaxEditor extends JTextPane {
 	}
 
 	private int analyzeKeys(Keywords k, String txt, int index) {
-		for(String key: k.keys) {
-			if(txt.startsWith(key, index)) {
-				int adv = key.length();
+		for(String keyword: k.keywords) {
+			if(txt.startsWith(keyword, index)) {
+				int adv = keyword.length();
+				doc.setCharacterAttributes(index, adv, k.style, false);
+				return adv;
+			}
+		}
+		return 1;
+	}
+	
+	private int analyzeDelimitedKeys(DelimitedKeywords k, String txt, int index) {
+		for(String keyword: k.keywords) {
+			if(txt.startsWith(keyword, index)) {
+				int adv = keyword.length();
 				doc.setCharacterAttributes(index, adv, k.style, false);
 				return adv;
 			}
@@ -259,10 +288,10 @@ public class SyntaxEditor extends JTextPane {
 	}
 
 	public static class BlockSyntax {
-		private String init;
-		private String end;
+		private final String init;
+		private final String end;
 		private String escape;
-		private Style style;
+		private final Style style;
 
 		public BlockSyntax(String init, String end, String escape, Style style) {
 			this(init, end, style);
@@ -275,21 +304,21 @@ public class SyntaxEditor extends JTextPane {
 			this.style = style;
 		}
 
-		public String init() {
-			return init;
-		}
-
-		public String end() {
-			return end;
-		}
-
-		public String escape() {
-			return escape;
-		}
-
-		public Style style() {
-			return style;
-		}
+//		public String init() {
+//			return init;
+//		}
+//
+//		public String end() {
+//			return end;
+//		}
+//
+//		public String escape() {
+//			return escape;
+//		}
+//
+//		public Style style() {
+//			return style;
+//		}
 
 		public boolean inner() {
 			return true;
@@ -297,12 +326,36 @@ public class SyntaxEditor extends JTextPane {
 	}
 
 	public static class Keywords {
-		private String[] keys;
-		private Style style;
+		private final String[] keywords;
+		private final Style style;
 
 		public Keywords(String[] keys, Style style) {
-			this.keys = keys;
+			this.keywords = keys;
 			this.style = style;
+		}
+	}
+	
+	public static class DelimitedKeywords {
+		private final String[] keywords;
+		private final Style style;
+		private final String lLimit;
+		private final String rLimit;
+
+		public DelimitedKeywords(String[] keys, Style style, String lLimit, String rLimit) {
+			this.keywords = keys;
+			this.style = style;
+			this.lLimit = lLimit;
+			this.rLimit = rLimit;
+		}
+	}
+
+	private static class BlockAnalize {
+		private final BlockSyntax blockDef;
+		private final int startPoint;
+
+		BlockAnalize(BlockSyntax block, int startPoint) {
+			this.blockDef = block;
+			this.startPoint = startPoint;
 		}
 	}
 }
