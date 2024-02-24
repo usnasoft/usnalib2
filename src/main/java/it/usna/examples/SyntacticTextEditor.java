@@ -50,10 +50,11 @@ public class SyntacticTextEditor extends JFrame {
 		Style styleOperators = editor.addStyle("usna_brachets", null);
 //		StyleConstants.setBold(styleOperators, true);
 		StyleConstants.setForeground(styleOperators, new Color(150, 0, 0));
-		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"=", "+", "-", "*", "/", "<", ">", "&", "|", "!"}, styleOperators));
+		editor.addKeywords(new SyntaxEditor.Keywords(new String[] {"=", "+", "-", "*", "/", "%", "<", ">", "&", "|", "!"}, styleOperators));
 		
 		Style styleReserved = editor.addStyle("usna_styleReserved", null);
 		StyleConstants.setBold(styleReserved, true);
+		StyleConstants.setForeground(styleReserved, Color.blue);
 		editor.addDelimitedKeywords(new SyntaxEditor.DelimitedKeywords(new String[] {
 				"abstract",	"continue",	"for", "new", "switch",
 				"assert",	"default",	"goto",	"package", "synchronized",
@@ -64,11 +65,11 @@ public class SyntacticTextEditor extends JFrame {
 				"catch", "extends", "int", "short", "try",
 				"char", "final", "interface", "static", "void",
 				"class", "finally", "long", "strictfp", "volatile",
-				"const", "float", "native", "super", "while"}, styleReserved, null, null));
+				"const", "float", "native", "super", "while"}, styleReserved/*, null, null*/));
 
 		editor.activateUndo();
-		editor.setTabs(4);
-		
+		editor.setTabSize(4);
+				
 		JPanel jContentPane = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		TextLineNumber lineNum = new TextLineNumber(editor);

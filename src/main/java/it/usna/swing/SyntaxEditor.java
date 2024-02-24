@@ -27,6 +27,8 @@ import javax.swing.undo.UndoManager;
  * @see it.usna.examples.SyntacticTextEditor
  */
 public class SyntaxEditor extends JTextPane {
+	// TODO regexp delimiters
+	// TODO nested blocks (partially implemented)
 	private static final long serialVersionUID = 1L;
 	private final SimpleAttributeSet baseStyle;
 	private final StyledDocument doc;
@@ -49,25 +51,29 @@ public class SyntaxEditor extends JTextPane {
 		this(new SimpleAttributeSet());
 	}
 	
-	public SyntaxEditor(SimpleAttributeSet baeStyle) {
-		baseStyle = baeStyle;
+	public SyntaxEditor(SimpleAttributeSet baseStyle) {
+		this.baseStyle = baseStyle;
 		this.doc = getStyledDocument();
 
 		// align doc & undoDoc - call analizeDocument()
 		docListener = new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				try {
-					undoDoc.remove(e.getOffset(), e.getLength());
-				} catch (BadLocationException e1) {}
+				if(undoDoc != null) {
+					try {
+						undoDoc.remove(e.getOffset(), e.getLength());
+					} catch (BadLocationException e1) {}
+				}
 				SwingUtilities.invokeLater(() -> analizeDocument());
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				try {
-					undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
-				} catch (BadLocationException e1) {}
+				if(undoDoc != null) {
+					try {
+						undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
+					} catch (BadLocationException e1) {}
+				}
 				SwingUtilities.invokeLater(() -> analizeDocument());
 			}
 
@@ -130,7 +136,6 @@ public class SyntaxEditor extends JTextPane {
 
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
-						//						doc.setCharacterAttributes(0, l, DEF_STYLE, true);
 						analizeDocument();
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
@@ -171,7 +176,7 @@ public class SyntaxEditor extends JTextPane {
 		return redoAction;
 	}
 	
-	public void setTabs(final int size) {
+	public void setTabSize(final int size) {
 		final int width = getFontMetrics(doc.getFont(baseStyle)).charWidth('w') * size;
 		final TabStop[] tabs = IntStream.rangeClosed(1, 99).mapToObj(i -> new TabStop(width * i)).toArray(TabStop[]::new);
 		final TabSet tabSet = new TabSet(tabs);
@@ -183,7 +188,7 @@ public class SyntaxEditor extends JTextPane {
 		try {
 			doc.insertString(doc.getLength(), str, null);
 		} catch (BadLocationException e) {
-			//			LOG.error("", e);
+			// LOG.error("", e);
 		}
 	}
 
@@ -191,13 +196,8 @@ public class SyntaxEditor extends JTextPane {
 		try {
 			doc.insertString(pos, str, null);
 		} catch (BadLocationException e) {
-			//			LOG.error("", e);
+			// LOG.error("", e);
 		}
-	}
-
-	public void setText(String str, Style style) {
-		setText(str);
-		doc.setCharacterAttributes(0, doc.getLength(), style, true);
 	}
 
 	public void addBlockSyntax(BlockSyntax s) {
@@ -253,9 +253,7 @@ public class SyntaxEditor extends JTextPane {
 			if(blocks.isEmpty() == false) { // unterminated block left
 				doc.setCharacterAttributes(blocks.peek().startPoint, length - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
 			}
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		} catch(RuntimeException e) {
+		} catch (BadLocationException | RuntimeException e) {
 			e.printStackTrace();
 		}
 	}
@@ -293,11 +291,15 @@ public class SyntaxEditor extends JTextPane {
 	}
 	
 	private int analyzeDelimitedKeys(DelimitedKeywords k, String txt, int index) {
-		for(String keyword: k.keywords) {
-			if(txt.startsWith(keyword, index)) {
-				int adv = keyword.length();
-				doc.setCharacterAttributes(index, adv, k.style, false);
-				return adv;
+		if(index == 0 || Character.isLetterOrDigit(txt.charAt(index - 1)) == false) {
+			for(String keyword: k.keywords) {
+				if(txt.startsWith(keyword, index)) {
+					int adv = keyword.length();
+					if(txt.length() <= index + adv || Character.isLetterOrDigit(txt.charAt(index + adv)) == false) {
+						doc.setCharacterAttributes(index, adv, k.style, false);
+						return adv;
+					}
+				}
 			}
 		}
 		return 1;
@@ -320,7 +322,7 @@ public class SyntaxEditor extends JTextPane {
 			this.style = style;
 		}
 
-		public boolean inner() {
+		boolean inner() {
 			return true;
 		}
 	}
@@ -338,14 +340,14 @@ public class SyntaxEditor extends JTextPane {
 	public static class DelimitedKeywords {
 		private final String[] keywords;
 		private final Style style;
-		private final String lLimit;
-		private final String rLimit;
+//		private final String lLimit;
+//		private final String rLimit;
 
-		public DelimitedKeywords(String[] keys, Style style, String lLimit, String rLimit) {
+		public DelimitedKeywords(String[] keys, Style style/*, String lLimit, String rLimit*/) {
 			this.keywords = keys;
 			this.style = style;
-			this.lLimit = lLimit;
-			this.rLimit = rLimit;
+//			this.lLimit = lLimit;
+//			this.rLimit = rLimit;
 		}
 	}
 
