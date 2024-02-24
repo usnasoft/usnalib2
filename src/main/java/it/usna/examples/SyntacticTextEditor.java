@@ -2,6 +2,7 @@ package it.usna.examples;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
@@ -27,7 +29,9 @@ public class SyntacticTextEditor extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("USNA syntactic editor");
 		
-		SyntaxEditor editor = new SyntaxEditor();
+		SimpleAttributeSet style = new SimpleAttributeSet();
+		StyleConstants.setFontFamily(style, Font.MONOSPACED);
+		SyntaxEditor editor = new SyntaxEditor(style);
 		
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);

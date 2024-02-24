@@ -1,9 +1,11 @@
 package it.usna.swing;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
@@ -26,8 +28,7 @@ import javax.swing.undo.UndoManager;
  */
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
-	//	private final static Style DEF_STYLE = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-	private final static SimpleAttributeSet DEF_STYLE = new SimpleAttributeSet();
+	private final SimpleAttributeSet baseStyle;
 	private final StyledDocument doc;
 	private PlainDocument undoDoc;
 	private DocumentListener docListener;
@@ -45,6 +46,11 @@ public class SyntaxEditor extends JTextPane {
 	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
 
 	public SyntaxEditor() {
+		this(new SimpleAttributeSet());
+	}
+	
+	public SyntaxEditor(SimpleAttributeSet baeStyle) {
+		baseStyle = baeStyle;
 		this.doc = getStyledDocument();
 
 		// align doc & undoDoc - call analizeDocument()
@@ -75,8 +81,15 @@ public class SyntaxEditor extends JTextPane {
 
 	@Override
 	public boolean getScrollableTracksViewportWidth() {
+		 // Only track viewport width when the viewport is wider than the preferred width
 		return getUI().getPreferredSize(this).width <= getParent().getSize().width;
 	}
+
+    @Override
+    public Dimension getPreferredSize() {
+        // Avoid substituting the minimum width for the preferred width when the viewport is too narrow
+        return getUI().getPreferredSize(this);
+    };
 
 	public void activateUndo() {
 		this.undoDoc = new PlainDocument();
@@ -158,10 +171,12 @@ public class SyntaxEditor extends JTextPane {
 		return redoAction;
 	}
 	
-	public void setTabs(int size) {
-		TabStop[] tabs = new TabStop[] {new TabStop(2)};
-		TabSet tabSet = new TabSet(tabs);
-		StyleConstants.setTabSet(DEF_STYLE, tabSet);
+	public void setTabs(final int size) {
+		final int width = getFontMetrics(doc.getFont(baseStyle)).charWidth('w') * size;
+		final TabStop[] tabs = IntStream.rangeClosed(1, 99).mapToObj(i -> new TabStop(width * i)).toArray(TabStop[]::new);
+		final TabSet tabSet = new TabSet(tabs);
+		StyleConstants.setTabSet(baseStyle, tabSet);
+		setParagraphAttributes(baseStyle, false);
 	}
 
 	public void append(String str) {
@@ -203,7 +218,8 @@ public class SyntaxEditor extends JTextPane {
 			final int length = doc.getLength();
 			String txt = doc.getText(0, length);
 
-			doc.setCharacterAttributes(0, length, DEF_STYLE, true);
+			doc.setCharacterAttributes(0, length, baseStyle, true);
+//			doc.setParagraphAttributes(0, length, DEF_STYLE, true); // tabs
 
 			int adv;
 			nextChar:
@@ -303,22 +319,6 @@ public class SyntaxEditor extends JTextPane {
 			this.end = end;
 			this.style = style;
 		}
-
-//		public String init() {
-//			return init;
-//		}
-//
-//		public String end() {
-//			return end;
-//		}
-//
-//		public String escape() {
-//			return escape;
-//		}
-//
-//		public Style style() {
-//			return style;
-//		}
 
 		public boolean inner() {
 			return true;
