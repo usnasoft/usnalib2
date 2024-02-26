@@ -201,6 +201,10 @@ public class SyntaxEditor extends JTextPane {
 		}
 	}
 	
+	public void resetUndo() {
+		undoManager.die();
+	}
+	
 	public int getCaretRow() {
 		final Element root = doc.getDefaultRootElement();
 		return root.getElementIndex(getCaretPosition()) + 1;
