@@ -22,7 +22,7 @@ import it.usna.swing.UsnaSwingUtils;
 
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
-	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // getMenuShortcutKeyMaskEx() from java 10
 
 	public SyntacticTextEditor() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(SyntacticTextEditor.class.getResource("/img/usna16.gif")));
@@ -96,7 +96,7 @@ public class SyntacticTextEditor extends JFrame {
 	
 	public static void main(String[] arg) throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
-//		UsnaSwingUtils.initializeFontSize(20.2f);
+//		UsnaSwingUtils.initializeFontSize(2f);
 		new SyntacticTextEditor();
 	}
 }

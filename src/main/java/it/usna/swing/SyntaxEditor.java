@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
@@ -199,7 +200,20 @@ public class SyntaxEditor extends JTextPane {
 			// LOG.error("", e);
 		}
 	}
+	
+	public int getCaretRow() {
+		final Element root = doc.getDefaultRootElement();
+		return root.getElementIndex(getCaretPosition()) + 1;
+	}
+	
+	public int getCaretColumn() {
+		int pos = getCaretPosition();
+		final Element rowEl = doc.getParagraphElement(pos);
+		return pos - rowEl.getStartOffset() + 1;
+	}
 
+	// start of "syntax" section
+	
 	public void addBlockSyntax(BlockSyntax s) {
 		syntax.add(s);
 	}
@@ -291,11 +305,11 @@ public class SyntaxEditor extends JTextPane {
 	}
 	
 	private int analyzeDelimitedKeys(DelimitedKeywords k, String txt, int index) {
-		if(index == 0 || Character.isLetterOrDigit(txt.charAt(index - 1)) == false) {
+		if(index == 0 || (Character.isLetterOrDigit(txt.charAt(index - 1)) == false && txt.charAt(index - 1) != '_')) {
 			for(String keyword: k.keywords) {
 				if(txt.startsWith(keyword, index)) {
 					int adv = keyword.length();
-					if(txt.length() <= index + adv || Character.isLetterOrDigit(txt.charAt(index + adv)) == false) {
+					if(txt.length() <= index + adv || (Character.isLetterOrDigit(txt.charAt(index + adv)) == false && txt.charAt(index + adv) != '_')) {
 						doc.setCharacterAttributes(index, adv, k.style, false);
 						return adv;
 					}
