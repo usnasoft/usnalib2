@@ -31,7 +31,6 @@ import javax.swing.undo.UndoManager;
  * @see it.usna.examples.SyntacticTextEditor
  */
 public class SyntaxEditor extends JTextPane {
-	// TODO regexp delimiters
 	// TODO nested blocks (partially implemented)
 	private static final long serialVersionUID = 1L;
 	private final SimpleAttributeSet baseStyle;
@@ -50,12 +49,12 @@ public class SyntaxEditor extends JTextPane {
 	private ArrayList<DelimitedKeywords> delimited = new ArrayList<>();
 	private ArrayList<DelimiteRegExpdKeywords> delimitedRegExp = new ArrayList<>();
 
-	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
+	private ArrayDeque<FoundBlock> blocks = new ArrayDeque<>();
 
 	public SyntaxEditor() {
 		this(new SimpleAttributeSet());
 	}
-	
+
 	public SyntaxEditor(SimpleAttributeSet baseStyle) {
 		this.baseStyle = baseStyle;
 		this.doc = getStyledDocument();
@@ -92,15 +91,15 @@ public class SyntaxEditor extends JTextPane {
 
 	@Override
 	public boolean getScrollableTracksViewportWidth() {
-		 // Only track viewport width when the viewport is wider than the preferred width
+		// Only track viewport width when the viewport is wider than the preferred width
 		return getUI().getPreferredSize(this).width <= getParent().getSize().width;
 	}
 
-    @Override
-    public Dimension getPreferredSize() {
-        // Avoid substituting the minimum width for the preferred width when the viewport is too narrow
-        return getUI().getPreferredSize(this);
-    };
+	@Override
+	public Dimension getPreferredSize() {
+		// Avoid substituting the minimum width for the preferred width when the viewport is too narrow
+		return getUI().getPreferredSize(this);
+	};
 
 	public void activateUndo() {
 		this.undoDoc = new PlainDocument();
@@ -180,7 +179,7 @@ public class SyntaxEditor extends JTextPane {
 	public AbstractAction getRedoAction() {
 		return redoAction;
 	}
-	
+
 	public void setTabSize(final int size) {
 		final int width = getFontMetrics(doc.getFont(baseStyle)).charWidth('w') * size;
 		final TabStop[] tabs = IntStream.range(1, 100).mapToObj(i -> new TabStop(width * i)).toArray(TabStop[]::new);
@@ -204,16 +203,16 @@ public class SyntaxEditor extends JTextPane {
 			// LOG.error("", e);
 		}
 	}
-	
+
 	public void resetUndo() {
 		undoManager.die();
 	}
-	
+
 	public int getCaretRow() {
 		final Element root = doc.getDefaultRootElement();
 		return root.getElementIndex(getCaretPosition()) + 1;
 	}
-	
+
 	public int getCaretColumn() {
 		int pos = getCaretPosition();
 		final Element rowEl = doc.getParagraphElement(pos);
@@ -221,67 +220,61 @@ public class SyntaxEditor extends JTextPane {
 	}
 
 	// start of "syntax" section
-	
-	public void addBlockSyntax(BlockSyntax s) {
-		syntax.add(s);
+
+	public void addSyntaxRule(BlockSyntax bl) {
+		syntax.add(bl);
 	}
 
-	public void addKeywords(Keywords words) {
+	public void addSyntaxRule(Keywords words) {
 		keywords.add(words);
 	}
-	
-	public void addDelimitedKeywords(DelimitedKeywords words) {
+
+	public void addSyntaxRule(DelimitedKeywords words) {
 		delimited.add(words);
+	}
+
+	public void addSyntaxRule(DelimiteRegExpdKeywords words) {
+		delimitedRegExp.add(words);
 	}
 
 	private synchronized void analizeDocument() {
 		try {
 			blocks.clear();
 			final int length = doc.getLength();
-			String txt = doc.getText(0, length);
+			final String txt = doc.getText(0, length);
 
 			doc.setCharacterAttributes(0, length, baseStyle, true);
-//			doc.setParagraphAttributes(0, length, DEF_STYLE, true); // tabs
 
 			int adv;
-			nextChar:
-				for(int i = 0; i < length; i += adv) {
-					if(blocks.isEmpty() == false && blocks.peek().blockDef.inner()) {
-						adv = analyzeSyntax(blocks.peek().blockDef, txt, i, true);
-						if(adv > 0) {
-							continue;
-						}
-					} else {
-						for(BlockSyntax syn: syntax) {
-							adv = analyzeSyntax(syn, txt, i, false);
-							if(adv > 0) {
-								continue nextChar;
-							}
-						}
+			for(int i = 0; i < length; i += adv) {
+				if(blocks.isEmpty() == false && blocks.peek().blockDef.inner()) {
+					adv = analyzeSingleBlock(blocks.peek().blockDef, txt, i, true);
+					if(adv > 0) {
+						continue;
 					}
-
-					if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
-						for(DelimiteRegExpdKeywords k: delimitedRegExp) {
-							adv = analyzeDelimitedRegExpKeys(k, txt, i);
-							if(adv > 0) {
-								continue;
-							}
-						}
-						for(DelimitedKeywords k: delimited) {
-							adv = analyzeDelimitedKeys(k, txt, i);
-							if(adv > 0) {
-								continue;
-							}
-						}
-						for(Keywords k: keywords) {
-							adv = analyzeKeys(k, txt, i);
-							if(adv > 0) {
-								continue;
-							}
-						}
+				} else {
+					adv = analyzeBlocks(txt, i);
+					if(adv > 0) {
+						continue;
 					}
-					adv = 1;
 				}
+
+				if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
+					adv = analyzeDelimitedRegExpKeys(txt, i);
+					if(adv > 0) {
+						continue;
+					}
+					adv = analyzeDelimitedKeys(txt, i);
+					if(adv > 0) {
+						continue;
+					}
+					adv = analyzeKeys(txt, i);
+					if(adv > 0) {
+						continue;
+					}
+				}
+				adv = 1;
+			}
 			if(blocks.isEmpty() == false) { // unterminated block left
 				doc.setCharacterAttributes(blocks.peek().startPoint, length - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
 			}
@@ -290,12 +283,22 @@ public class SyntaxEditor extends JTextPane {
 		}
 	}
 
-	private int analyzeSyntax(BlockSyntax blockDef, String txt, int index, boolean findClose) {
+	private int analyzeBlocks(String txt, int index) {
+		for(BlockSyntax syn: syntax) {
+			int adv = analyzeSingleBlock(syn, txt, index, false);
+			if(adv > 0) {
+				return adv;
+			}
+		}
+		return -1;
+	}
+
+	private int analyzeSingleBlock(BlockSyntax blockDef, String txt, int index, boolean findClose) {
 		String start = blockDef.init;
 		String end = blockDef.end;
 		String escape = blockDef.escape;
 		if(findClose == false && txt.startsWith(start, index)) {
-			blocks.push(new BlockAnalize(blockDef, index));
+			blocks.push(new FoundBlock(blockDef, index));
 			return start.length();
 		} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
 			if(escape != null && txt.startsWith(escape, index)) {
@@ -311,36 +314,45 @@ public class SyntaxEditor extends JTextPane {
 		return -1;
 	}
 
-	private int analyzeKeys(Keywords k, String txt, int index) {
-		for(String keyword: k.keywords) {
-			if(txt.startsWith(keyword, index)) {
-				int adv = keyword.length();
-				doc.setCharacterAttributes(index, adv, k.style, false);
-				return adv;
-			}
-		}
-		return -1;
-	}
-	
-	private int analyzeDelimitedRegExpKeys(DelimiteRegExpdKeywords k, String txt, int index) {
-		for(Pattern patt: k.keyPattern) {
-			Matcher m = patt.matcher(txt).region(index, txt.length());
-			if(m.lookingAt())  {
-				doc.setCharacterAttributes(index + m.group(1).length(),  m.group(2).length(), k.style, false);
-				return m.group(1).length() + m.group(2).length() + m.group(2).length();
-			}
-		}
-		return -1;
-	}
-	
-	private int analyzeDelimitedKeys(DelimitedKeywords k, String txt, int index) {
-		if(index == 0 || (Character.isLetterOrDigit(txt.charAt(index - 1)) == false && txt.charAt(index - 1) != '_')) {
+	private int analyzeKeys(String txt, int index) {
+		for(Keywords k: keywords) {
 			for(String keyword: k.keywords) {
 				if(txt.startsWith(keyword, index)) {
 					int adv = keyword.length();
-					if(txt.length() <= index + adv || (Character.isLetterOrDigit(txt.charAt(index + adv)) == false && txt.charAt(index + adv) != '_')) {
-						doc.setCharacterAttributes(index, adv, k.style, false);
-						return adv;
+					doc.setCharacterAttributes(index, adv, k.style, false);
+					return adv;
+				}
+			}
+		}
+		return -1;
+	}
+
+	private int analyzeDelimitedRegExpKeys(String txt, int index) {
+		for(DelimiteRegExpdKeywords k: delimitedRegExp) {
+			for(Pattern patt: k.keyPattern) {
+				Matcher m = patt.matcher(txt).region(index, txt.length());
+				if(m.lookingAt())  {
+					int lLimitLegth = m.group(1).length();
+					int workLength = m.group(2).length();
+					doc.setCharacterAttributes(index + lLimitLegth, workLength, k.style, false);
+					analyzeKeys(txt, index); // left margin not included -> analyzed
+					return lLimitLegth + workLength; // right margin (+ m.group(3).length()) excluded
+				}
+			}
+		}
+		return -1;
+	}
+
+	private int analyzeDelimitedKeys(String txt, int index) {
+		for(DelimitedKeywords k: delimited) {
+			if(index == 0 || (Character.isLetterOrDigit(txt.charAt(index - 1)) == false && txt.charAt(index - 1) != '_')) {
+				for(String keyword: k.keywords) {
+					if(txt.startsWith(keyword, index)) {
+						int adv = keyword.length();
+						if(txt.length() <= index + adv || (Character.isLetterOrDigit(txt.charAt(index + adv)) == false && txt.charAt(index + adv) != '_')) {
+							doc.setCharacterAttributes(index, adv, k.style, false);
+							return adv;
+						}
 					}
 				}
 			}
@@ -379,7 +391,7 @@ public class SyntaxEditor extends JTextPane {
 			this.style = style;
 		}
 	}
-	
+
 	public static class DelimitedKeywords {
 		private final String[] keywords;
 		private final Style style;
@@ -389,43 +401,36 @@ public class SyntaxEditor extends JTextPane {
 			this.style = style;
 		}
 	}
-	
+
+	// e.g. new SyntaxEditor.DelimiteRegExpdKeywords(new String[] {"xx"}, "[\\W]|^", "\\.", style)
 	public static class DelimiteRegExpdKeywords {
 		private final Pattern[] keyPattern;
-//		private final String[] keywords;
 		private final Style style;
-//		private final String lLimit;
-//		private final String rLimit;
 
-		public DelimiteRegExpdKeywords(String[] keys, Style style, String lLimit, String rLimit) {
-//			this.keyPattern = new Pattern[keys.length];
-//			this.keywords = keys;
-			this.style = style;
-//			this.lLimit = lLimit;
-//			this.rLimit = rLimit;
+		public DelimiteRegExpdKeywords(String[] keys, String lLimit, String rLimit, Style style) {
 			this.keyPattern = Stream.of(keys).map(k -> Pattern.compile("(" + lLimit + ")(" + Pattern.quote(k) + ")(" + rLimit + ")")).toArray(Pattern[]::new);
+			this.style = style;
 		}
 	}
 
-	private static class BlockAnalize {
+	private static class FoundBlock {
 		private final BlockSyntax blockDef;
 		private final int startPoint;
 
-		BlockAnalize(BlockSyntax block, int startPoint) {
+		private FoundBlock(BlockSyntax block, int startPoint) {
 			this.blockDef = block;
 			this.startPoint = startPoint;
 		}
 	}
-	
-	public static void main(String ...strings) {
-		String txt = "uno due tre quattro cinque";
-		Pattern p = Pattern.compile("(.)(no)( )");
-		Matcher m = p.matcher(txt);
-		m = m.region(0, 8);
-//		m.find(1);
-		m.lookingAt();
-		m.groupCount();
-		m.group(2);
-		m.start();
-	}
+
+	//	public static void main(String ...strings) {
+	//		String txt = "uno due tre quattro cinque";
+	//		Pattern p = Pattern.compile("(.)(no)( )");
+	//		Matcher m = p.matcher(txt);
+	//		m = m.region(0, 8);
+	//		m.lookingAt();
+	//		m.groupCount();
+	//		m.group(2);
+	//		m.start();
+	//	}
 }
