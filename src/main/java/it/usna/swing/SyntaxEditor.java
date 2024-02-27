@@ -5,7 +5,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
@@ -45,6 +48,7 @@ public class SyntaxEditor extends JTextPane {
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
 	private ArrayList<DelimitedKeywords> delimited = new ArrayList<>();
+	private ArrayList<DelimiteRegExpdKeywords> delimitedRegExp = new ArrayList<>();
 
 	private ArrayDeque<BlockAnalize> blocks = new ArrayDeque<>();
 
@@ -179,7 +183,7 @@ public class SyntaxEditor extends JTextPane {
 	
 	public void setTabSize(final int size) {
 		final int width = getFontMetrics(doc.getFont(baseStyle)).charWidth('w') * size;
-		final TabStop[] tabs = IntStream.rangeClosed(1, 99).mapToObj(i -> new TabStop(width * i)).toArray(TabStop[]::new);
+		final TabStop[] tabs = IntStream.range(1, 100).mapToObj(i -> new TabStop(width * i)).toArray(TabStop[]::new);
 		final TabSet tabSet = new TabSet(tabs);
 		StyleConstants.setTabSet(baseStyle, tabSet);
 		setParagraphAttributes(baseStyle, false);
@@ -257,13 +261,23 @@ public class SyntaxEditor extends JTextPane {
 					}
 
 					if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
-						for(Keywords k: keywords) {
-							adv = analyzeKeys(k, txt, i);
-							continue;
+						for(DelimiteRegExpdKeywords k: delimitedRegExp) {
+							adv = analyzeDelimitedRegExpKeys(k, txt, i);
+							if(adv > 0) {
+								continue;
+							}
 						}
 						for(DelimitedKeywords k: delimited) {
 							adv = analyzeDelimitedKeys(k, txt, i);
-							continue;
+							if(adv > 0) {
+								continue;
+							}
+						}
+						for(Keywords k: keywords) {
+							adv = analyzeKeys(k, txt, i);
+							if(adv > 0) {
+								continue;
+							}
 						}
 					}
 					adv = 1;
@@ -305,7 +319,18 @@ public class SyntaxEditor extends JTextPane {
 				return adv;
 			}
 		}
-		return 1;
+		return -1;
+	}
+	
+	private int analyzeDelimitedRegExpKeys(DelimiteRegExpdKeywords k, String txt, int index) {
+		for(Pattern patt: k.keyPattern) {
+			Matcher m = patt.matcher(txt).region(index, txt.length());
+			if(m.lookingAt())  {
+				doc.setCharacterAttributes(index + m.group(1).length(),  m.group(2).length(), k.style, false);
+				return m.group(1).length() + m.group(2).length() + m.group(2).length();
+			}
+		}
+		return -1;
 	}
 	
 	private int analyzeDelimitedKeys(DelimitedKeywords k, String txt, int index) {
@@ -320,7 +345,7 @@ public class SyntaxEditor extends JTextPane {
 				}
 			}
 		}
-		return 1;
+		return -1;
 	}
 
 	public static class BlockSyntax {
@@ -358,14 +383,27 @@ public class SyntaxEditor extends JTextPane {
 	public static class DelimitedKeywords {
 		private final String[] keywords;
 		private final Style style;
+
+		public DelimitedKeywords(String[] keys, Style style) {
+			this.keywords = keys;
+			this.style = style;
+		}
+	}
+	
+	public static class DelimiteRegExpdKeywords {
+		private final Pattern[] keyPattern;
+//		private final String[] keywords;
+		private final Style style;
 //		private final String lLimit;
 //		private final String rLimit;
 
-		public DelimitedKeywords(String[] keys, Style style/*, String lLimit, String rLimit*/) {
-			this.keywords = keys;
+		public DelimiteRegExpdKeywords(String[] keys, Style style, String lLimit, String rLimit) {
+//			this.keyPattern = new Pattern[keys.length];
+//			this.keywords = keys;
 			this.style = style;
 //			this.lLimit = lLimit;
 //			this.rLimit = rLimit;
+			this.keyPattern = Stream.of(keys).map(k -> Pattern.compile("(" + lLimit + ")(" + Pattern.quote(k) + ")(" + rLimit + ")")).toArray(Pattern[]::new);
 		}
 	}
 
@@ -377,5 +415,17 @@ public class SyntaxEditor extends JTextPane {
 			this.blockDef = block;
 			this.startPoint = startPoint;
 		}
+	}
+	
+	public static void main(String ...strings) {
+		String txt = "uno due tre quattro cinque";
+		Pattern p = Pattern.compile("(.)(no)( )");
+		Matcher m = p.matcher(txt);
+		m = m.region(0, 8);
+//		m.find(1);
+		m.lookingAt();
+		m.groupCount();
+		m.group(2);
+		m.start();
 	}
 }
