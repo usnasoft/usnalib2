@@ -22,6 +22,7 @@ import it.usna.swing.UsnaSwingUtils;
 
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("deprecation")
 	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // getMenuShortcutKeyMaskEx() from java 10
 
 	public SyntacticTextEditor() {
@@ -33,15 +34,16 @@ public class SyntacticTextEditor extends JFrame {
 		StyleConstants.setFontFamily(style, Font.MONOSPACED);
 		SyntaxEditor editor = new SyntaxEditor(style);
 		
+		//Java
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
-		editor.addSyntaxRule(new SyntaxEditor.BlockSyntax("//", "\n", styleComment));
-		editor.addSyntaxRule(new SyntaxEditor.BlockSyntax("/*", "*/", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("//", "\n", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("/*", "*/", styleComment));
 		
 		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, new Color(0, 120, 0));
-		editor.addSyntaxRule(new SyntaxEditor.BlockSyntax("\"", "\"", "\\", styleStr));
-		editor.addSyntaxRule(new SyntaxEditor.BlockSyntax("'", "'", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("\"", "\"", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("'", "'", "\\", styleStr));
 		
 		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
@@ -65,6 +67,23 @@ public class SyntacticTextEditor extends JFrame {
 				"char", "final", "interface", "static", "void",
 				"class", "finally", "long", "strictfp", "volatile",
 				"const", "float", "native", "super", "while"}, styleReserved));
+		
+		// Json
+//		Style styleBrachets = editor.addStyle("usna_brachets", null);
+//		StyleConstants.setBold(styleBrachets, true);
+//		editor.addSyntaxRule(new SyntaxEditor.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
+//
+//		Style styleStr = editor.addStyle("usna_red", null);
+//		StyleConstants.setForeground(styleStr, Color.red);
+//		editor.addSyntaxRule(new SyntaxEditor.BlockRegExpSyntax(":\\s*(\")", "(\")", "\\", styleStr));
+//		
+//		Style styleAll = editor.addStyle("usna_green", null);
+//		StyleConstants.setForeground(styleAll, /*new Color(0, 120, 0)*/Color.green);
+//		editor.addSyntaxRule(new SyntaxEditor.BlockRegExpSyntax(":\\s*([\\w-])", "[,\\n]", null, styleAll));
+//		
+//		Style styleBlue = editor.addStyle("usna_blue", null);
+//		StyleConstants.setForeground(styleBlue, Color.blue);
+//		editor.addSyntaxRule(new SyntaxEditor.BlockRegExpSyntax("(\")", "(\")", "\\", styleBlue));
 
 		editor.activateUndo();
 		editor.setTabSize(4);

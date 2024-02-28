@@ -244,7 +244,7 @@ public class SyntaxEditor extends JTextPane {
 
 			int adv;
 			for(int i = start; i < end; i += adv) {
-				if(blocks.isEmpty() == false && blocks.peek().blockDef.inner) {
+				if(blocks.isEmpty() == false /*&& blocks.peek().blockDef.inner*/) {
 					adv = analyzeSingleBlock(blocks.peek().blockDef, txt, i, true);
 					if(adv > 0) {
 						continue;
@@ -256,7 +256,7 @@ public class SyntaxEditor extends JTextPane {
 					}
 				}
 
-				if(blocks.isEmpty() || blocks.peek().blockDef.inner == false) {
+				if(blocks.isEmpty() /*|| blocks.peek().blockDef.inner == false*/) {
 					adv = analyzeDelimitedRegExpKeys(txt, i);
 					if(adv > 0) {
 						continue;
@@ -290,22 +290,46 @@ public class SyntaxEditor extends JTextPane {
 		return -1;
 	}
 
-	private int analyzeSingleBlock(BlockSyntax blockDef, String txt, int index, boolean findClose) {
-		String start = blockDef.init;
-		String end = blockDef.end;
-		String escape = blockDef.escape;
-		if(findClose == false && txt.startsWith(start, index)) {
-			blocks.push(new FoundBlock(blockDef, index));
-			return start.length();
-		} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
-			if(escape != null && txt.startsWith(escape, index)) {
-				return escape.length() + end.length();
-			} else if(txt.startsWith(end, index)) {
-				int adv = end.length();
-				int blStart = blocks.peek().startPoint;
-				doc.setCharacterAttributes(blStart, index + adv - blStart, blockDef.style, false); // style on block end
-				blocks.pop();
-				return adv;
+	private int analyzeSingleBlock(BlockSyntax block, String txt, int index, boolean findClose) {
+		if(block instanceof BlockSimpleSyntax) {
+			BlockSimpleSyntax blockDef = (BlockSimpleSyntax)block;
+			String start = blockDef.init;
+			String end = blockDef.end;
+			String escape = blockDef.escape;
+			if(findClose == false && txt.startsWith(start, index)) {
+				blocks.push(new FoundBlock(blockDef, index));
+				return start.length();
+			} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
+				if(escape != null && txt.startsWith(escape, index)) {
+					return escape.length() + end.length();
+				} else if(txt.startsWith(end, index)) {
+					int adv = end.length();
+					int blStart = blocks.peek().startPoint;
+					doc.setCharacterAttributes(blStart, index + adv - blStart, blockDef.style, false); // style on block end
+					blocks.pop();
+					return adv;
+				}
+			}
+		} else {
+			BlockRegExpSyntax blockDef = (BlockRegExpSyntax)block;
+			Matcher startM = blockDef.initPattern.matcher(txt).region(index, txt.length());
+			String escape = blockDef.escape;
+			if(findClose == false && startM.lookingAt()) {
+				int startLength = startM.group(0).length();
+				int startPos = startM.groupCount() > 0 ? startLength - startM.group(1).length() : startLength;
+				blocks.push(new FoundBlock(blockDef, index + startPos));
+				return startLength;
+			} else if(blocks.isEmpty() == false && blocks.peek().blockDef == blockDef) {
+				Matcher endM = blockDef.endPattern.matcher(txt).region(index, txt.length());
+				if(escape != null && txt.startsWith(escape, index)) {
+					return escape.length() + /*end.length()*/1; // todo
+				} else if(endM.lookingAt()) {
+					int adv = endM.groupCount() > 0 ? endM.group(1).length() : 0;
+					int blStart = blocks.peek().startPoint;
+					doc.setCharacterAttributes(blStart, index + adv - blStart, blockDef.style, false); // style on block end
+					blocks.pop();
+					return adv;
+				}
 			}
 		}
 		return -1;
@@ -356,23 +380,40 @@ public class SyntaxEditor extends JTextPane {
 		}
 		return -1;
 	}
+	
+	private abstract static class BlockSyntax {
+		protected Style style;
+//		boolean inner = true;
+	}
 
-	public static class BlockSyntax {
+	public static class BlockSimpleSyntax extends BlockSyntax {
 		private final String init;
 		private final String end;
 		private String escape;
-		private final Style style;
-		private final boolean inner = true;
 
-		public BlockSyntax(String init, String end, String escape, Style style) {
+		public BlockSimpleSyntax(String init, String end, String escape, Style style) {
 			this(init, end, style);
 			this.escape = escape;
 		}
 
-		public BlockSyntax(String init, String end, Style style) {
+		public BlockSimpleSyntax(String init, String end, Style style) {
 			this.init = init;
 			this.end = end;
 			this.style = style;
+		}
+	}
+	
+	//e.g. new SyntaxEditor.BlockRegExpSyntax(":\\s*(\")", "(\")", "\\", style)); - blocks on limits to include style
+	public static class BlockRegExpSyntax extends BlockSyntax {
+		private final Pattern initPattern;
+		private final Pattern endPattern;
+		private String escape;
+		
+		public BlockRegExpSyntax(String init, String end, String escape, Style style) {
+			this.initPattern =  Pattern.compile(init);
+			this.endPattern =  Pattern.compile(end);
+			this.style = style;
+			this.escape = escape;
 		}
 	}
 
@@ -417,14 +458,14 @@ public class SyntaxEditor extends JTextPane {
 		}
 	}
 
-	//	public static void main(String ...strings) {
-	//		String txt = "uno due tre quattro cinque";
-	//		Pattern p = Pattern.compile("(.)(no)( )");
-	//		Matcher m = p.matcher(txt);
-	//		m = m.region(0, 8);
-	//		m.lookingAt();
-	//		m.groupCount();
-	//		m.group(2);
-	//		m.start();
-	//	}
+//	public static void main(String ...strings) {
+//		String txt = " : \"test\"";
+//		Pattern p = Pattern.compile("(:\\s)\"");
+//		Matcher m = p.matcher(txt);
+//		m = m.region(0, txt.length());
+//		m.lookingAt();
+//		m.groupCount();
+//		m.group(2);
+//		m.start();
+//	}
 }
