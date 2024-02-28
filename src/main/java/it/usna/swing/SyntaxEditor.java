@@ -26,12 +26,13 @@ import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 import javax.swing.undo.UndoManager;
 
+//TODO nested blocks (partially implemented)
+
 /**
  * @author a.flaccomio
  * @see it.usna.examples.SyntacticTextEditor
  */
 public class SyntaxEditor extends JTextPane {
-	// TODO nested blocks (partially implemented)
 	private static final long serialVersionUID = 1L;
 	private final SimpleAttributeSet baseStyle;
 	private final StyledDocument doc;
@@ -68,7 +69,7 @@ public class SyntaxEditor extends JTextPane {
 						undoDoc.remove(e.getOffset(), e.getLength());
 					} catch (BadLocationException e1) {}
 				}
-				SwingUtilities.invokeLater(() -> analizeDocument());
+				SwingUtilities.invokeLater(() -> analizeDocument(0, doc.getLength()));
 			}
 
 			@Override
@@ -78,7 +79,7 @@ public class SyntaxEditor extends JTextPane {
 						undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
 					} catch (BadLocationException e1) {}
 				}
-				SwingUtilities.invokeLater(() -> analizeDocument());
+				SwingUtilities.invokeLater(() -> analizeDocument(0, doc.getLength()));
 			}
 
 			@Override
@@ -140,7 +141,7 @@ public class SyntaxEditor extends JTextPane {
 
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
-						analizeDocument();
+						analizeDocument(0, doc.getLength());
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
 
@@ -162,7 +163,7 @@ public class SyntaxEditor extends JTextPane {
 					try {
 						int l = undoDoc.getLength();
 						setText(undoDoc.getText(0, l));
-						analizeDocument();
+						analizeDocument(0, doc.getLength());
 					} catch (BadLocationException e1) {}
 					doc.addDocumentListener(docListener);
 
@@ -191,17 +192,13 @@ public class SyntaxEditor extends JTextPane {
 	public void append(String str) {
 		try {
 			doc.insertString(doc.getLength(), str, null);
-		} catch (BadLocationException e) {
-			// LOG.error("", e);
-		}
+		} catch (BadLocationException e) {/* LOG.error("", e);*/}
 	}
 
 	public void insert(String str, int pos) {
 		try {
 			doc.insertString(pos, str, null);
-		} catch (BadLocationException e) {
-			// LOG.error("", e);
-		}
+		} catch (BadLocationException e) {/*LOG.error("", e);*/}
 	}
 
 	public void resetUndo() {
@@ -219,8 +216,9 @@ public class SyntaxEditor extends JTextPane {
 		return pos - rowEl.getStartOffset() + 1;
 	}
 
-	// start of "syntax" section
-
+	/*****************************/
+	/* start of "syntax" section */
+	/*****************************/
 	public void addSyntaxRule(BlockSyntax bl) {
 		syntax.add(bl);
 	}
@@ -237,17 +235,16 @@ public class SyntaxEditor extends JTextPane {
 		delimitedRegExp.add(words);
 	}
 
-	private synchronized void analizeDocument() {
+	private synchronized void analizeDocument(int start, int end) {
 		try {
 			blocks.clear();
-			final int length = doc.getLength();
-			final String txt = doc.getText(0, length);
+			final String txt = doc.getText(0, end);
 
-			doc.setCharacterAttributes(0, length, baseStyle, true);
+			doc.setCharacterAttributes(0, end, baseStyle, true);
 
 			int adv;
-			for(int i = 0; i < length; i += adv) {
-				if(blocks.isEmpty() == false && blocks.peek().blockDef.inner()) {
+			for(int i = start; i < end; i += adv) {
+				if(blocks.isEmpty() == false && blocks.peek().blockDef.inner) {
 					adv = analyzeSingleBlock(blocks.peek().blockDef, txt, i, true);
 					if(adv > 0) {
 						continue;
@@ -259,7 +256,7 @@ public class SyntaxEditor extends JTextPane {
 					}
 				}
 
-				if(blocks.isEmpty() || blocks.peek().blockDef.inner() == false) {
+				if(blocks.isEmpty() || blocks.peek().blockDef.inner == false) {
 					adv = analyzeDelimitedRegExpKeys(txt, i);
 					if(adv > 0) {
 						continue;
@@ -276,7 +273,7 @@ public class SyntaxEditor extends JTextPane {
 				adv = 1;
 			}
 			if(blocks.isEmpty() == false) { // unterminated block left
-				doc.setCharacterAttributes(blocks.peek().startPoint, length - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
+				doc.setCharacterAttributes(blocks.peek().startPoint, end - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
 			}
 		} catch (BadLocationException | RuntimeException e) {
 			e.printStackTrace();
@@ -365,6 +362,7 @@ public class SyntaxEditor extends JTextPane {
 		private final String end;
 		private String escape;
 		private final Style style;
+		private final boolean inner = true;
 
 		public BlockSyntax(String init, String end, String escape, Style style) {
 			this(init, end, style);
@@ -375,10 +373,6 @@ public class SyntaxEditor extends JTextPane {
 			this.init = init;
 			this.end = end;
 			this.style = style;
-		}
-
-		boolean inner() {
-			return true;
 		}
 	}
 
