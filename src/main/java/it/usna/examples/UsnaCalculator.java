@@ -69,7 +69,7 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 	private CalculatorPanel getUsnaCalcPanel() {
 		if (usnaCalcPanel == null) {
 			usnaCalcPanel = new CalculatorPanel();
-			usnaCalcPanel.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+			usnaCalcPanel.setBorder(BorderFactory.createSoftBevelBorder(SoftBevelBorder.RAISED));
 		}
 		return usnaCalcPanel;
 	}

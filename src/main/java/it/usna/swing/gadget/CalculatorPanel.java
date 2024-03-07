@@ -25,18 +25,9 @@ import javax.swing.KeyStroke;
 import javax.swing.border.BevelBorder;
 
 /**
- * <p>
- * Title: Simple Calculator Panel
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * <p>Copyright (c) 2007
- * </p>
- * <p>
- * Company: usna
- * </p>
+ * <p>Title: Simple Calculator Panel</p>
+ * <p>Copyright (c) 2007</p>
+ * <p>Company: usna</p>
  * 
  * @author Antonio Flaccomio
  * @version 1.1
@@ -47,6 +38,7 @@ public class CalculatorPanel extends JPanel {
 	private final static Color NUMKEY_COLOR = Color.white;
 	private final static Color UTILKEY_COLOR = Color.lightGray;
 	private final static Color OPKEY_COLOR = Color.lightGray;
+	private final static Color OPKEY_SEL_COLOR = Color.darkGray;
 	private final static Color DISP_COLOR = new Color(245, 255, 234);
 
 	private JTextField calcDisplay = null;
@@ -100,10 +92,6 @@ public class CalculatorPanel extends JPanel {
 		this.add(getUtilityButtons(), BorderLayout.SOUTH);
 	}
 
-	/**
-	 * This method initializes calcDisplay
-	 * @return javax.swing.JTextField
-	 */
 	private JTextField getCalcDisplay() {
 		if (calcDisplay == null) {
 			calcDisplay = new JTextField();
@@ -116,10 +104,6 @@ public class CalculatorPanel extends JPanel {
 		return calcDisplay;
 	}
 
-	/**
-	 * This method initializes calcKeyboard
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getCalcKeyboard() {
 		if (calcKeyboard == null) {
 			GridLayout gridLayout = new GridLayout();
@@ -167,19 +151,12 @@ public class CalculatorPanel extends JPanel {
 		};
 		b.addActionListener(bAction);
 		final InputMap imap = b.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-		final ActionMap amap = b.getActionMap();
-		final KeyStroke ks1 = KeyStroke.getKeyStroke(keyCode, 0);
-		final KeyStroke ks2 = KeyStroke.getKeyStroke(numb, 0);
-		imap.put(ks1, bAction.getValue(Action.NAME));
-		imap.put(ks2, bAction.getValue(Action.NAME));
-		amap.put(bAction.getValue(Action.NAME), bAction);
+		imap.put(KeyStroke.getKeyStroke(keyCode, 0), bAction.getValue(Action.NAME));
+		imap.put(KeyStroke.getKeyStroke(numb, 0), bAction.getValue(Action.NAME));
+		b.getActionMap().put(bAction.getValue(Action.NAME), bAction);
 		return b;
 	}
 
-	/**
-	 * This method initializes operators
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getOperators() {
 		if (operators == null) {
 			GridLayout gridLayout1 = new GridLayout();
@@ -202,10 +179,6 @@ public class CalculatorPanel extends JPanel {
 		return operators;
 	}
 
-	/**
-	 * This method initializes opPlus
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpPlus() {
 		if (opPlus == null) {
 			opPlus = new JButton();
@@ -220,24 +193,18 @@ public class CalculatorPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					executeOp();
 					prevOp = Oper.ADD;
+					selectOpButton(opPlus);
 				}
 			};
 			opPlus.addActionListener(bAction);
 			final InputMap imap = opPlus.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opPlus.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0);
-			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0);
-			imap.put(ks1, "usnacalc_plus");
-			imap.put(ks2, "usnacalc_plus");
-			amap.put("usnacalc_plus", bAction);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "usnacalc_plus");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0), "usnacalc_plus");
+			opPlus.getActionMap().put("usnacalc_plus", bAction);
 		}
 		return opPlus;
 	}
 
-	/**
-	 * This method initializes opMinus
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpMinus() {
 		if (opMinus == null) {
 			opMinus = new JButton();
@@ -252,24 +219,20 @@ public class CalculatorPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					executeOp();
 					prevOp = Oper.SUBTRACT;
+					selectOpButton(opMinus);
 				}
 			};
 			opMinus.addActionListener(bAction);
 			final InputMap imap = opMinus.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opMinus.getActionMap();
 			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0);
 			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0);
 			imap.put(ks1, "usnacalc_minus");
 			imap.put(ks2, "usnacalc_minus");
-			amap.put("usnacalc_minus", bAction);
+			opMinus.getActionMap().put("usnacalc_minus", bAction);
 		}
 		return opMinus;
 	}
 
-	/**
-	 * This method initializes bPlusMinus
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBPlusMinus() {
 		if (bPlusMinus == null) {
 			bPlusMinus = new JButton();
@@ -292,20 +255,13 @@ public class CalculatorPanel extends JPanel {
 			};
 			bPlusMinus.addActionListener(bAction);
 			final InputMap imap = bPlusMinus.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = bPlusMinus.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, SHORTCUT_KEY);
-			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, SHORTCUT_KEY);
-			imap.put(ks1, "usnacalc_opp");
-			imap.put(ks2, "usnacalc_opp");
-			amap.put("usnacalc_opp", bAction);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, SHORTCUT_KEY), "usnacalc_opp");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, SHORTCUT_KEY), "usnacalc_opp");
+			bPlusMinus.getActionMap().put("usnacalc_opp", bAction);
 		}
 		return bPlusMinus;
 	}
 
-	/**
-	 * This method initializes opMul
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpMul() {
 		if (opMul == null) {
 			opMul = new JButton();
@@ -320,24 +276,18 @@ public class CalculatorPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					executeOp();
 					prevOp = Oper.MUL;
+					selectOpButton(opMul);
 				}
 			};
 			opMul.addActionListener(bAction);
 			final InputMap imap = opMul.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opMul.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_MULTIPLY, 0);
-			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_ASTERISK, 0);
-			imap.put(ks1, "usnacalc_mul");
-			imap.put(ks2, "usnacalc_mul");
-			amap.put("usnacalc_mul", bAction);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_MULTIPLY, 0), "usnacalc_mul");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ASTERISK, 0), "usnacalc_mul");
+			opMul.getActionMap().put("usnacalc_mul", bAction);
 		}
 		return opMul;
 	}
 
-	/**
-	 * This method initializes opDiv
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpDiv() {
 		if (opDiv == null) {
 			opDiv = new JButton();
@@ -352,16 +302,14 @@ public class CalculatorPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					executeOp();
 					prevOp = Oper.DIV;
+					selectOpButton(opDiv);
 				}
 			};
 			opDiv.addActionListener(bAction);
 			final InputMap imap = opDiv.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opDiv.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE, 0);
-			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, 0);
-			imap.put(ks1, "usnacalc_div");
-			imap.put(ks2, "usnacalc_div");
-			amap.put("usnacalc_div", bAction);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE, 0), "usnacalc_div");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, 0), "usnacalc_div");
+			opDiv.getActionMap().put("usnacalc_div", bAction);
 		}
 		return opDiv;
 	}
@@ -373,15 +321,19 @@ public class CalculatorPanel extends JPanel {
 				switch (prevOp) {
 				case ADD:
 					acc = acc.add(disp, MATH_CONT);
+					opPlus.setBackground(OPKEY_COLOR);
 					break;
 				case SUBTRACT:
 					acc = acc.subtract(disp, MATH_CONT);
+					opMinus.setBackground(OPKEY_COLOR);
 					break;
 				case MUL:
 					acc = acc.multiply(disp, MATH_CONT);
+					opMul.setBackground(OPKEY_COLOR);
 					break;
 				case DIV:
 					acc = acc.divide(disp, MATH_CONT);
+					opDiv.setBackground(OPKEY_COLOR);
 					break;
 				default:
 					acc = disp;
@@ -394,11 +346,15 @@ public class CalculatorPanel extends JPanel {
 			}
 		}
 	}
+	
+	private void selectOpButton(JButton b) {
+		opPlus.setBackground(OPKEY_COLOR);
+		opMinus.setBackground(OPKEY_COLOR);
+		opMul.setBackground(OPKEY_COLOR);
+		opDiv.setBackground(OPKEY_COLOR);
+		b.setBackground(OPKEY_SEL_COLOR);
+	}
 
-	/**
-	 * This method initializes utilityButtons
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getUtilityButtons() {
 		if (utilityButtons == null) {
 			GridLayout gridLayout3 = new GridLayout();
@@ -415,10 +371,6 @@ public class CalculatorPanel extends JPanel {
 		return utilityButtons;
 	}
 
-	/**
-	 * This method initializes bBackSpace
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBBackSpace() {
 		if (bBackSpace == null) {
 			bBackSpace = new JButton();
@@ -454,10 +406,6 @@ public class CalculatorPanel extends JPanel {
 		return bBackSpace;
 	}
 
-	/**
-	 * This method initializes bClear
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBClear() {
 		if (bClear == null) {
 			bClear = new JButton();
@@ -477,19 +425,12 @@ public class CalculatorPanel extends JPanel {
 				}
 			};
 			bClear.addActionListener(bAction);
-			final InputMap imap = bClear.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = bClear.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-			imap.put(ks1, "usnacalc_clr");
-			amap.put("usnacalc_clr", bAction);
+			bClear.getInputMap(WHEN_IN_FOCUSED_WINDOW).put( KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "usnacalc_clr");
+			bClear.getActionMap().put("usnacalc_clr", bAction);
 		}
 		return bClear;
 	}
 
-	/**
-	 * This method initializes opCalc
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpCalc() {
 		if (opCalc == null) {
 			opCalc = new JButton();
@@ -507,19 +448,12 @@ public class CalculatorPanel extends JPanel {
 				}
 			};
 			opCalc.addActionListener(bAction);
-			final InputMap imap = opCalc.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opCalc.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-			imap.put(ks1, "usnacalc_calc");
-			amap.put("usnacalc_calc", bAction);
+			opCalc.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "usnacalc_calc");
+			opCalc.getActionMap().put("usnacalc_calc", bAction);
 		}
 		return opCalc;
 	}
 
-	/**
-	 * This method initializes opInv
-	 * @return javax.swing.JButton
-	 */
 	private JButton getOpInv() {
 		if (opInv == null) {
 			opInv = new JButton();
@@ -547,20 +481,13 @@ public class CalculatorPanel extends JPanel {
 			};
 			opInv.addActionListener(bAction);
 			final InputMap imap = opInv.getInputMap(WHEN_IN_FOCUSED_WINDOW);
-			final ActionMap amap = opInv.getActionMap();
-			final KeyStroke ks1 = KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE, SHORTCUT_KEY);
-			final KeyStroke ks2 = KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, SHORTCUT_KEY);
-			imap.put(ks1, "usnacalc_inv");
-			imap.put(ks2, "usnacalc_inv");
-			amap.put("usnacalc_inv", bAction);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE, SHORTCUT_KEY), "usnacalc_inv");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, SHORTCUT_KEY), "usnacalc_inv");
+			opInv.getActionMap().put("usnacalc_inv", bAction);
 		}
 		return opInv;
 	}
 
-	/**
-	 * This method initializes bMemStore
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBMemStore() {
 		if (bMemStore == null) {
 			bMemStore = new JButton();
@@ -575,10 +502,6 @@ public class CalculatorPanel extends JPanel {
 		return bMemStore;
 	}
 
-	/**
-	 * This method initializes bMemRecall
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBMemRecall() {
 		if (bMemRecall == null) {
 			bMemRecall = new JButton();
@@ -594,10 +517,6 @@ public class CalculatorPanel extends JPanel {
 		return bMemRecall;
 	}
 
-	/**
-	 * This method initializes bMemAdd
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBMemAdd() {
 		if (bMemAdd == null) {
 			bMemAdd = new JButton();
@@ -612,10 +531,6 @@ public class CalculatorPanel extends JPanel {
 		return bMemAdd;
 	}
 
-	/**
-	 * This method initializes bMemSubtract
-	 * @return javax.swing.JButton
-	 */
 	private JButton getBMemSubtract() {
 		if (bMemSubtract == null) {
 			bMemSubtract = new JButton();

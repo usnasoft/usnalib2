@@ -10,13 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 
 import it.usna.swing.NumericTextField;
 
@@ -87,10 +87,6 @@ public class CalendarPanel extends JPanel {
 		return today;
 	}
 
-	/**
-	 * This method initializes this
-	 * @return void
-	 */
 	private void initialize() {
 		BorderLayout borderLayout = new BorderLayout();
 		borderLayout.setVgap(1);
@@ -127,7 +123,7 @@ public class CalendarPanel extends JPanel {
 				for (int i = 1; i <= today.getActualMaximum(GregorianCalendar.DAY_OF_MONTH); i++) {
 					final JButton dayBut = new JButton(i + "");
 					dayBut.setMargin(new java.awt.Insets(0, 0, 0, 0));
-					dayBut.setBorder(new EmptyBorder(0, 0, 0, 0));
+					dayBut.setBorder(BorderFactory.createEmptyBorder());
 					//dayBut.setBorderPainted(false);
 					dayBut.setContentAreaFilled(false);
 					final int dayNum = i;
@@ -147,10 +143,6 @@ public class CalendarPanel extends JPanel {
 		});
 	}
 
-	/**
-	 * This method initializes DaysPanel
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getDaysPanel() {
 		if (daysPanel == null) {
 			GridLayout gridLayout = new GridLayout(0, 7);
@@ -186,10 +178,6 @@ public class CalendarPanel extends JPanel {
 		return ret;
 	}
 
-	/**
-	 * This method initializes comboMonths
-	 * @return javax.swing.JComboBox
-	 */
 	private JComboBox<String> getComboMonths() {
 		if (comboMonths == null) {
 			comboMonths = new JComboBox<String>(monthNames());
@@ -211,10 +199,6 @@ public class CalendarPanel extends JPanel {
 		return comboMonths;
 	}
 
-	/**
-	 * This method initializes meseAnno
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getMeseAnno() {
 		if (meseAnno == null) {
 			BorderLayout layout = new BorderLayout();
@@ -227,10 +211,6 @@ public class CalendarPanel extends JPanel {
 		return meseAnno;
 	}
 
-	/**
-	 * This method initializes spazio
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getAnnoPanel() {
 		if (annoPanel == null) {
 			FlowLayout flowLayout = new FlowLayout();
@@ -244,10 +224,6 @@ public class CalendarPanel extends JPanel {
 		return annoPanel;
 	}
 
-	/**
-	 * This method initializes anno
-	 * @return javax.swing.JTextField
-	 */
 	private NumericTextField<Integer> getAnno() {
 		if (anno == null) {
 			anno = new NumericTextField<Integer>(1, 1, 9999);
@@ -269,10 +245,6 @@ public class CalendarPanel extends JPanel {
 		return anno;
 	}
 
-	/**
-	 * This method initializes annoMeno
-	 * @return javax.swing.JButton
-	 */
 	private JButton getAnnoMeno() {
 		if (annoMeno == null) {
 			annoMeno = new JButton(getAnno().downAction());
@@ -280,15 +252,11 @@ public class CalendarPanel extends JPanel {
 			annoMeno.setBorderPainted(false);
 			annoMeno.setContentAreaFilled(false);
 //			annoMeno.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			annoMeno.setBorder(new EmptyBorder(0, 0, 0, 0));
+			annoMeno.setBorder(BorderFactory.createEmptyBorder());
 		}
 		return annoMeno;
 	}
 
-	/**
-	 * This method initializes jButton
-	 * @return javax.swing.JButton
-	 */
 	private JButton getAnnoPiu() {
 		if (annoPiu == null) {
 			annoPiu = new JButton(getAnno().upAction());
@@ -296,7 +264,7 @@ public class CalendarPanel extends JPanel {
 			annoPiu.setBorderPainted(false);
 			annoPiu.setContentAreaFilled(false);
 //			annoPiu.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			annoPiu.setBorder(new EmptyBorder(0, 0, 0, 0));
+			annoPiu.setBorder(BorderFactory.createEmptyBorder());
 		}
 		return annoPiu;
 	}

@@ -1,8 +1,6 @@
 package it.usna.examples;
 
 import java.awt.Toolkit;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -33,10 +31,6 @@ public class UsnaCalendar extends JFrame {
         setLocationRelativeTo(null);
 	}
 
-	/**
-	 * This method initializes jPanel	
-	 * @return javax.swing.JPanel	
-	 */
 	private CalendarPanel getCalPanel() {
 		if (calPanel == null) {
 			calPanel = new CalendarPanel(Locale.getDefault());
@@ -47,12 +41,9 @@ public class UsnaCalendar extends JFrame {
 	
 	public static void main(String[] arg) throws Exception {
 		UsnaCalendar cp = new UsnaCalendar();
-		cp.calPanel.addPropertyChangeListener(CalendarPanel.EVT_DAY_SELECTED,
-				new PropertyChangeListener() {
-					public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-						System.out.println(((GregorianCalendar)propertyChangeEvent.getNewValue()).getTime());
-					}
-				});
+		cp.calPanel.addPropertyChangeListener(CalendarPanel.EVT_DAY_SELECTED, propertyChangeEvent -> {
+			System.out.println(((GregorianCalendar)propertyChangeEvent.getNewValue()).getTime());
+		});
 		cp.setVisible(true);
 	}
 }
