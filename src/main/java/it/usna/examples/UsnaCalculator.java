@@ -47,10 +47,6 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		setLocationRelativeTo(null);
 	}
 
-	/**
-	 * This method initializes jContentPane
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
@@ -62,10 +58,6 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		return jContentPane;
 	}
 
-	/**
-	 * This method initializes usnaCalcPanel	
-	 * @return javax.swing.JPanel	
-	 */
 	private CalculatorPanel getUsnaCalcPanel() {
 		if (usnaCalcPanel == null) {
 			usnaCalcPanel = new CalculatorPanel();
@@ -74,10 +66,6 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		return usnaCalcPanel;
 	}
 
-	/**
-	 * This method initializes buttons	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getButtons() {
 		if (buttons == null) {
 			buttons = new JPanel();
@@ -88,14 +76,9 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		return buttons;
 	}
 
-	/**
-	 * This method initializes bCopy	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getBCopy() {
 		if (bCopy == null) {
-			bCopy = new JButton();
-			bCopy.setText("Copy");
+			bCopy = new JButton("Copy");
 			bCopy.setToolTipText("Copy display content into clipboard");
 			bCopy.addActionListener(event -> {
 				final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -106,14 +89,9 @@ public class UsnaCalculator extends JFrame implements ClipboardOwner {
 		return bCopy;
 	}
 
-	/**
-	 * This method initializes bClose	
-	 * @return javax.swing.JButton	
-	 */
 	private JButton getBClose() {
 		if (bClose == null) {
-			bClose = new JButton();
-			bClose.setText("Close");
+			bClose = new JButton("Close");
 			bClose.addActionListener(event -> System.exit(0));
 		}
 		return bClose;

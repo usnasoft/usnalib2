@@ -17,6 +17,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 import it.usna.swing.NumericTextField;
 
@@ -43,10 +44,10 @@ public class CalendarPanel extends JPanel {
 	private JComboBox<String> comboMonths = null;
 	private final GregorianCalendar today;
 	private JPanel meseAnno = null;
-	private JPanel annoPanel = null;
-	private NumericTextField<Integer> anno = null;
-	private JButton annoMeno = null;
-	private JButton annoPiu = null;
+	private JPanel yearPanel = null;
+	private NumericTextField<Integer> year = null;
+	private JButton yearLess1Btn = null;
+	private JButton yearPlus1Btn = null;
 	private final String[] dayNames;
 	private final Locale loc;
 
@@ -73,14 +74,14 @@ public class CalendarPanel extends JPanel {
 		//dateFormatter = DateFormat.getDateInstance(DateFormat.LONG, loc);
 		fillDays();
 		comboMonths.setSelectedIndex(today.get(GregorianCalendar.MONTH) - GregorianCalendar.JANUARY);
-		anno.setValue(today.get(GregorianCalendar.YEAR));
+		year.setValue(today.get(GregorianCalendar.YEAR));
 	}
 	
 	public void setCalendar(final GregorianCalendar day) {
 		today.setTime(day.getTime());
 		fillDays();
 		comboMonths.setSelectedIndex(today.get(GregorianCalendar.MONTH) - GregorianCalendar.JANUARY);
-		anno.setValue(today.get(GregorianCalendar.YEAR));
+		year.setValue(today.get(GregorianCalendar.YEAR));
 	}
 
 	public GregorianCalendar getCalendar() {
@@ -88,58 +89,50 @@ public class CalendarPanel extends JPanel {
 	}
 
 	private void initialize() {
-		BorderLayout borderLayout = new BorderLayout();
-		borderLayout.setVgap(1);
-		//dataOggi = new JLabel();
-		this.setLayout(borderLayout);
-		//this.setSize(250, 180);
+		this.setLayout(new BorderLayout(0, 1));
 		this.add(getDaysPanel(), java.awt.BorderLayout.CENTER);
-		//this.add(dataOggi, java.awt.BorderLayout.SOUTH);
-		this.add(getMeseAnno(), java.awt.BorderLayout.NORTH);
+		this.add(getMonthYear(), java.awt.BorderLayout.NORTH);
 	}
 
 	private void fillDays() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				daysPanel.removeAll();
-				// write days names
-				for (int i = 0; i < 7; i++) {
-					final JLabel dayName = new JLabel(dayNames[i]);
-					dayName.setForeground(java.awt.Color.BLUE);
-					daysPanel.add(dayName);
-				}
-				//daysPanel.validate(); // ?
-				// Write today date
-				//dataOggi.setText(dateFormatter.format(today.getTime()));
-				// Shift first days
-				final GregorianCalendar gc1 = (GregorianCalendar) today.clone();
-				gc1.set(GregorianCalendar.DAY_OF_MONTH, 1);
-				final int shift = (7 + gc1.get(GregorianCalendar.DAY_OF_WEEK) - gc1.getFirstDayOfWeek()) % 7;
-				for (int i = 0; i < shift; i++) {
-					daysPanel.add(new JLabel());
-				}
-				// Write month
-				final int currentDayNum = today.get(GregorianCalendar.DAY_OF_MONTH);
-				for (int i = 1; i <= today.getActualMaximum(GregorianCalendar.DAY_OF_MONTH); i++) {
-					final JButton dayBut = new JButton(i + "");
-					dayBut.setMargin(new java.awt.Insets(0, 0, 0, 0));
-					dayBut.setBorder(BorderFactory.createEmptyBorder());
-					//dayBut.setBorderPainted(false);
-					dayBut.setContentAreaFilled(false);
-					final int dayNum = i;
-					if (currentDayNum == dayNum) {
-						dayBut.setForeground(SEL_DAY_COLOR);
-					}
-					dayBut.addActionListener(e -> {
-						today.set(GregorianCalendar.DAY_OF_MONTH, dayNum);
-						fillDays();
-						firePropertyChange(EVT_DAY_SELECTED, null, today);
-					});
-					daysPanel.add(dayBut);
-				}
-				daysPanel.revalidate();
-				daysPanel.repaint();
+		EventQueue.invokeLater(() -> {
+			daysPanel.removeAll();
+			// write days names
+			for (int i = 0; i < 7; i++) {
+				final JLabel dayName = new JLabel(dayNames[i]);
+				dayName.setForeground(java.awt.Color.BLUE);
+				daysPanel.add(dayName);
 			}
+			//daysPanel.validate(); // ?
+			// Write today date
+			// Shift first days
+			final GregorianCalendar gc1 = (GregorianCalendar) today.clone();
+			gc1.set(GregorianCalendar.DAY_OF_MONTH, 1);
+			final int shift = (7 + gc1.get(GregorianCalendar.DAY_OF_WEEK) - gc1.getFirstDayOfWeek()) % 7;
+			for (int i = 0; i < shift; i++) {
+				daysPanel.add(new JLabel());
+			}
+			// Write month
+			final int currentDayNum = today.get(GregorianCalendar.DAY_OF_MONTH);
+			for (int i = 1; i <= today.getActualMaximum(GregorianCalendar.DAY_OF_MONTH); i++) {
+				final JButton dayBut = new JButton(i + "");
+				dayBut.setMargin(new java.awt.Insets(0, 0, 0, 0));
+				dayBut.setBorder(BorderFactory.createEmptyBorder());
+				//dayBut.setBorderPainted(false);
+				dayBut.setContentAreaFilled(false);
+				final int dayNum = i;
+				if (currentDayNum == dayNum) {
+					dayBut.setForeground(SEL_DAY_COLOR);
+				}
+				dayBut.addActionListener(e -> {
+					today.set(GregorianCalendar.DAY_OF_MONTH, dayNum);
+					fillDays();
+					firePropertyChange(EVT_DAY_SELECTED, null, today);
+				});
+				daysPanel.add(dayBut);
+			}
+			daysPanel.revalidate();
+			daysPanel.repaint();
 		});
 	}
 
@@ -147,7 +140,7 @@ public class CalendarPanel extends JPanel {
 		if (daysPanel == null) {
 			GridLayout gridLayout = new GridLayout(0, 7);
 			daysPanel = new JPanel();
-			daysPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.LOWERED));
+			daysPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 			daysPanel.setBackground(java.awt.Color.white);
 			daysPanel.setLayout(gridLayout);
 		}
@@ -199,86 +192,83 @@ public class CalendarPanel extends JPanel {
 		return comboMonths;
 	}
 
-	private JPanel getMeseAnno() {
+	private JPanel getMonthYear() {
 		if (meseAnno == null) {
-			BorderLayout layout = new BorderLayout();
-			meseAnno = new JPanel();
+			meseAnno = new JPanel(new BorderLayout());
 			meseAnno.setPreferredSize(new java.awt.Dimension(130, 25));
-			meseAnno.setLayout(layout);
 			meseAnno.add(getComboMonths(), BorderLayout.WEST);
-			meseAnno.add(getAnnoPanel(), BorderLayout.EAST);
+			meseAnno.add(getYearPanel(), BorderLayout.EAST);
 		}
 		return meseAnno;
 	}
 
-	private JPanel getAnnoPanel() {
-		if (annoPanel == null) {
+	private JPanel getYearPanel() {
+		if (yearPanel == null) {
 			FlowLayout flowLayout = new FlowLayout();
 			flowLayout.setVgap(1);
-			annoPanel = new JPanel();
-			annoPanel.setLayout(flowLayout);
-			annoPanel.add(getAnnoMeno(), null);
-			annoPanel.add(getAnno(), null);
-			annoPanel.add(getAnnoPiu(), null);
+			yearPanel = new JPanel(flowLayout);
+			yearPanel.add(getAnnoMeno(), null);
+			yearPanel.add(getYear(), null);
+			yearPanel.add(getAnnoPiu(), null);
 		}
-		return annoPanel;
+		return yearPanel;
 	}
 
-	private NumericTextField<Integer> getAnno() {
-		if (anno == null) {
-			anno = new NumericTextField<Integer>(1, 1, 9999);
-			anno.setColumns(4);
-			anno.setHorizontalAlignment(JTextField.CENTER);
-			anno.setGroupingUsed(false);
-			anno.addActionListener(e -> cambioAnno(anno.getIntValue()));
-			anno.addFocusListener(new java.awt.event.FocusAdapter() {
+	private NumericTextField<Integer> getYear() {
+		if (year == null) {
+			year = new NumericTextField<Integer>(1, 1, 9999);
+			year.setColumns(4);
+			year.setHorizontalAlignment(JTextField.CENTER);
+			year.setGroupingUsed(false);
+			year.addActionListener(e -> cambioAnno(year.getIntValue()));
+			year.addFocusListener(new java.awt.event.FocusAdapter() {
 				public void focusLost(java.awt.event.FocusEvent e) {
 					try {
-						anno.commitEdit();
-						cambioAnno(anno.getIntValue());
+						year.commitEdit();
+						cambioAnno(year.getIntValue());
 					} catch (ParseException e1) {
 						//e1.printStackTrace();
 					}
 				}
 			});
 		}
-		return anno;
+		return year;
 	}
 
 	private JButton getAnnoMeno() {
-		if (annoMeno == null) {
-			annoMeno = new JButton(getAnno().downAction());
-			annoMeno.setIcon(new ImageIcon(CalendarPanel.class.getResource("left.gif")));
-			annoMeno.setBorderPainted(false);
-			annoMeno.setContentAreaFilled(false);
+		if (yearLess1Btn == null) {
+			yearLess1Btn = new JButton(getYear().downAction());
+			yearLess1Btn.setIcon(new ImageIcon(CalendarPanel.class.getResource("left.gif")));
+			yearLess1Btn.setBorderPainted(false);
+			yearLess1Btn.setContentAreaFilled(false);
 //			annoMeno.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			annoMeno.setBorder(BorderFactory.createEmptyBorder());
+			yearLess1Btn.setBorder(BorderFactory.createEmptyBorder());
 		}
-		return annoMeno;
+		return yearLess1Btn;
 	}
 
 	private JButton getAnnoPiu() {
-		if (annoPiu == null) {
-			annoPiu = new JButton(getAnno().upAction());
-			annoPiu.setIcon(new ImageIcon(CalendarPanel.class.getResource("right.gif")));
-			annoPiu.setBorderPainted(false);
-			annoPiu.setContentAreaFilled(false);
+		if (yearPlus1Btn == null) {
+			yearPlus1Btn = new JButton(getYear().upAction());
+			yearPlus1Btn.setIcon(new ImageIcon(CalendarPanel.class.getResource("right.gif")));
+			yearPlus1Btn.setBorderPainted(false);
+			yearPlus1Btn.setContentAreaFilled(false);
 //			annoPiu.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			annoPiu.setBorder(BorderFactory.createEmptyBorder());
+			yearPlus1Btn.setBorder(BorderFactory.createEmptyBorder());
 		}
-		return annoPiu;
+		return yearPlus1Btn;
 	}
 	
-	private void cambioAnno(final int nuovoAnno) {
+	private void cambioAnno(final int newYear) {
 		// Gestione del 29 febbraio
 		//System.out.println(nuovoAnno);
 		final GregorianCalendar gc = new GregorianCalendar(loc);
-		gc.set(nuovoAnno, today.get(GregorianCalendar.MONTH), 1);
+		gc.set(newYear, today.get(GregorianCalendar.MONTH), 1);
 		final int maxDay = gc.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 		if (maxDay < today.get(GregorianCalendar.DAY_OF_MONTH)) {
 			today.set(GregorianCalendar.DAY_OF_MONTH, maxDay);
 		}
-		today.set(GregorianCalendar.YEAR, nuovoAnno);
+		today.set(GregorianCalendar.YEAR, newYear);
 		fillDays();
 		firePropertyChange(EVT_YEAR_SELECTED, null, today);
 	}
