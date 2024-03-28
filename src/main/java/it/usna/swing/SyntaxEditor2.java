@@ -18,14 +18,16 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
-import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
 //TODO nested blocks (partially implemented)
 
@@ -33,14 +35,14 @@ import javax.swing.undo.UndoManager;
  * @author a.flaccomio
  * @see it.usna.examples.SyntacticTextEditor
  */
-public class SyntaxEditor extends JTextPane {
+public class SyntaxEditor2 extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	private final SimpleAttributeSet baseStyle;
-	protected final StyledDocument doc;
-	private PlainDocument undoDoc;
-	private DocumentListener docListener;
+	private final StyledDocument doc;
+//	private PlainDocument undoDoc;
+//	private DocumentListener docListener;
 
-	private DocumentListener caretDocListener;
+//	private DocumentListener caretDocListener;
 	private AbstractAction undoAction;
 	private AbstractAction redoAction;
 	private int caretOnUndoRedo;
@@ -53,33 +55,33 @@ public class SyntaxEditor extends JTextPane {
 
 	private ArrayDeque<FoundBlock> blocks = new ArrayDeque<>();
 
-	public SyntaxEditor() {
+	public SyntaxEditor2() {
 		this(new SimpleAttributeSet());
 	}
 
-	public SyntaxEditor(SimpleAttributeSet baseStyle) {
+	public SyntaxEditor2(SimpleAttributeSet baseStyle) {
 		this.baseStyle = baseStyle;
 		this.doc = getStyledDocument();
 
 		// align doc & undoDoc - call analizeDocument()
-		docListener = new DocumentListener() {
+		DocumentListener docListener = new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				if(undoDoc != null) {
-					try {
-						undoDoc.remove(e.getOffset(), e.getLength());
-					} catch (BadLocationException e1) {}
-				}
+//				if(undoDoc != null) {
+//					try {
+//						undoDoc.remove(e.getOffset(), e.getLength());
+//					} catch (BadLocationException e1) {}
+//				}
 				SwingUtilities.invokeLater(() -> analizeDocument(0, doc.getLength()));
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				if(undoDoc != null) {
-					try {
-						undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
-					} catch (BadLocationException e1) {}
-				}
+//				if(undoDoc != null) {
+//					try {
+//						undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
+//					} catch (BadLocationException e1) {}
+//				}
 				SwingUtilities.invokeLater(() -> analizeDocument(0, doc.getLength()));
 			}
 
@@ -104,50 +106,76 @@ public class SyntaxEditor extends JTextPane {
 	};
 
 	public void activateUndo() {
-		this.undoDoc = new PlainDocument();
+//		this.doc = new PlainDocument();
 
-		undoManager = new UndoManager();
-		undoDoc.addUndoableEditListener(undoManager);
+		undoManager = new UndoManager() {
+//			public boolean addEdit(UndoableEdit anEdit) {
+//				super.addEdit(new MyUE(anEdit));
+//				return true;
+//			}
+//			
+			@Override
+			public void undo() {
+				AbstractDocument.DefaultDocumentEvent ue;
+				while((ue = (AbstractDocument.DefaultDocumentEvent)this.editToBeUndone()).getType() == DocumentEvent.EventType.CHANGE) {
+					super.undo();
+				}
+				super.undo();
+			}
+			
+			@Override
+			public void redo() {
+				this.canRedo();
+				AbstractDocument.DefaultDocumentEvent ue = (AbstractDocument.DefaultDocumentEvent)this.editToBeRedone();
+				while(ue != null && ue.getType() == DocumentEvent.EventType.CHANGE) {
+					super.redo();
+				}
+				super.redo();
+			}
+		};
+		doc.addUndoableEditListener(undoManager);
+		
+//		undoManager.addEdit(undoManager)
 
 		// used for caret position after undo/redo
-		caretDocListener = new DocumentListener() {
-			@Override
-			public void insertUpdate(final DocumentEvent e) {
-				int offset = e.getOffset() + e.getLength();
-				offset = Math.min(offset, undoDoc.getLength());
-				caretOnUndoRedo = offset;
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				setCaretPosition(e.getOffset());
-				caretOnUndoRedo = e.getOffset();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
-		};
+//		caretDocListener = new DocumentListener() {
+//			@Override
+//			public void insertUpdate(final DocumentEvent e) {
+//				int offset = e.getOffset() + e.getLength();
+//				offset = Math.min(offset, undoDoc.getLength());
+//				caretOnUndoRedo = offset;
+//			}
+//
+//			@Override
+//			public void removeUpdate(DocumentEvent e) {
+//				setCaretPosition(e.getOffset());
+//				caretOnUndoRedo = e.getOffset();
+//			}
+//
+//			@Override
+//			public void changedUpdate(DocumentEvent e) { /*System.out.print(e);*/ }
+//		};
 
 		undoAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(undoManager.canUndo()) {
-					undoDoc.addDocumentListener(caretDocListener);
+//				if(undoManager.canUndo()) {
+//					doc.addDocumentListener(caretDocListener);
 					undoManager.undo();
-					undoDoc.removeDocumentListener(caretDocListener);
+//					doc.removeDocumentListener(caretDocListener);
 
-					doc.removeDocumentListener(docListener);
-					try {
+//					doc.removeDocumentListener(docListener);
+//					try {
+//
+//						int l = doc.getLength();
+//						setText(undoDoc.getText(0, l));
+//						analizeDocument(0, doc.getLength());
+//					} catch (BadLocationException e1) {}
+//					doc.addDocumentListener(docListener);
 
-						int l = undoDoc.getLength();
-						setText(undoDoc.getText(0, l));
-						analizeDocument(0, doc.getLength());
-					} catch (BadLocationException e1) {}
-					doc.addDocumentListener(docListener);
-
-					setCaretPosition(caretOnUndoRedo);
-				}
+//					setCaretPosition(caretOnUndoRedo);
+//				}
 			}
 		};
 
@@ -155,21 +183,21 @@ public class SyntaxEditor extends JTextPane {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(undoManager.canRedo()) {
-					undoDoc.addDocumentListener(caretDocListener);
+//				if(undoManager.canRedo()) {
+//					doc.addDocumentListener(caretDocListener);
 					undoManager.redo();
-					undoDoc.removeDocumentListener(caretDocListener);
+//					doc.removeDocumentListener(caretDocListener);
 
-					doc.removeDocumentListener(docListener);
-					try {
-						int l = undoDoc.getLength();
-						setText(undoDoc.getText(0, l));
-						analizeDocument(0, doc.getLength());
-					} catch (BadLocationException e1) {}
-					doc.addDocumentListener(docListener);
+//					doc.removeDocumentListener(docListener);
+//					try {
+//						int l = undoDoc.getLength();
+//						setText(undoDoc.getText(0, l));
+//						analizeDocument(0, doc.getLength());
+//					} catch (BadLocationException e1) {}
+//					doc.addDocumentListener(docListener);
 
-					setCaretPosition(caretOnUndoRedo);
-				}
+//					setCaretPosition(caretOnUndoRedo);
+//				}
 			}
 		};
 	}
@@ -196,28 +224,10 @@ public class SyntaxEditor extends JTextPane {
 		} catch (BadLocationException e) {/* LOG.error("", e);*/}
 	}
 
-	public void insert(String str, int pos) throws BadLocationException {
+	public void insert(String str, int pos) {
+		try {
 			doc.insertString(pos, str, null);
-	}
-	
-	public void replace(int offset, int length, String text) throws BadLocationException {
-		if(undoDoc != null) {
-//			doc.removeDocumentListener(docListener);
-////			undoDoc.replace(offset, length , text, null);
-//			((AbstractDocument)doc).replace(offset, length , text, null);
-//			undoDoc.setText("")
-//			doc.addDocumentListener(docListener);
-			
-			doc.removeDocumentListener(docListener);
-			doc.remove(offset, length);
-			doc.insertString(offset, text, null);
-			doc.addDocumentListener(docListener);
-			
-			undoDoc.remove(offset, length);
-			undoDoc.insertString(offset, text, null);
-		} else {
-			((AbstractDocument)doc).replace(offset, length , text, null);
-		}
+		} catch (BadLocationException e) {/*LOG.error("", e);*/}
 	}
 
 	public void resetUndo() {
@@ -259,7 +269,7 @@ public class SyntaxEditor extends JTextPane {
 			blocks.clear();
 			final String txt = doc.getText(0, end);
 
-			doc.setCharacterAttributes(0, end, baseStyle, true);
+//			doc.setCharacterAttributes(0, end, baseStyle, true);
 
 			int adv;
 			for(int i = start; i < end; i += adv) {
@@ -488,3 +498,69 @@ public class SyntaxEditor extends JTextPane {
 //		m.start();
 //	}
 }
+
+//class MyUE implements UndoableEdit {
+//	
+//	UndoableEdit origin;
+//	
+//	MyUE(UndoableEdit origin) {
+//		this.origin = origin;
+//	}
+//
+//	@Override
+//	public void undo() throws CannotUndoException {
+//		origin.undo();
+//	}
+//
+//	@Override
+//	public boolean canUndo() {
+//		return origin.canUndo();
+//	}
+//
+//	@Override
+//	public void redo() throws CannotRedoException {
+//		origin.redo();
+//	}
+//
+//	@Override
+//	public boolean canRedo() {
+//		return origin.canRedo();
+//	}
+//
+//	@Override
+//	public void die() {
+//		origin.die();
+//	}
+//
+//	@Override
+//	public boolean addEdit(UndoableEdit anEdit) {
+//		return origin.addEdit(anEdit);
+//	}
+//
+//	@Override
+//	public boolean replaceEdit(UndoableEdit anEdit) {
+//		return origin.replaceEdit(anEdit);
+//	}
+//
+//	@Override
+//	public boolean isSignificant() {
+//		return ((AbstractDocument.DefaultDocumentEvent)origin).getType() != DocumentEvent.EventType.CHANGE;
+////		return true; //xxxxxxxxxx
+//	}
+//
+//	@Override
+//	public String getPresentationName() {
+//		return origin.getPresentationName();
+//	}
+//
+//	@Override
+//	public String getUndoPresentationName() {
+//		return origin.getUndoPresentationName();
+//	}
+//
+//	@Override
+//	public String getRedoPresentationName() {
+//		return origin.getRedoPresentationName();
+//	}
+//	
+//}
