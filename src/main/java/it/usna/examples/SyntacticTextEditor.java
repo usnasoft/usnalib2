@@ -16,8 +16,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-//import it.usna.swing.SyntaxEditor;
-import it.usna.swing.SyntaxEditor2;
+import it.usna.swing.SyntaxEditor;
 import it.usna.swing.TextLineNumber;
 import it.usna.swing.UsnaSwingUtils;
 
@@ -33,31 +32,31 @@ public class SyntacticTextEditor extends JFrame {
 		
 		SimpleAttributeSet style = new SimpleAttributeSet();
 		StyleConstants.setFontFamily(style, Font.MONOSPACED);
-		SyntaxEditor2 editor = new SyntaxEditor2(style);
+		SyntaxEditor editor = new SyntaxEditor(style);
 		
 		//Java
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("//", "\n", styleComment));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("/*", "*/", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("//", "\n", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("/*", "*/", styleComment));
 		
 		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, new Color(0, 120, 0));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("\"", "\"", "\\", styleStr));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("'", "'", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("\"", "\"", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor.BlockSimpleSyntax("'", "'", "\\", styleStr));
 		
 		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
-		editor.addSyntaxRule(new SyntaxEditor2.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
+		editor.addSyntaxRule(new SyntaxEditor.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
 		
 		Style styleOperators = editor.addStyle("usna_brachets", null);
 		StyleConstants.setForeground(styleOperators, new Color(150, 0, 0));
-		editor.addSyntaxRule(new SyntaxEditor2.Keywords(new String[] {"=", "+", "-", "*", "/", "%", "<", ">", "&", "|", "!"}, styleOperators));
+		editor.addSyntaxRule(new SyntaxEditor.Keywords(new String[] {"=", "+", "-", "*", "/", "%", "<", ">", "&", "|", "!"}, styleOperators));
 		
 		Style styleReserved = editor.addStyle("usna_styleReserved", null);
 		StyleConstants.setBold(styleReserved, true);
 		StyleConstants.setForeground(styleReserved, Color.blue);
-		editor.addSyntaxRule(new SyntaxEditor2.DelimitedKeywords(new String[] {
+		editor.addSyntaxRule(new SyntaxEditor.DelimitedKeywords(new String[] {
 				"abstract",	"continue",	"for", "new", "switch",
 				"assert",	"default",	"goto",	"package", "synchronized",
 				"boolean", "do", "if", "private", "this",
