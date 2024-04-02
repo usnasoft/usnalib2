@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -16,10 +18,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-//import it.usna.swing.SyntaxEditor;
-import it.usna.swing.SyntaxEditor2;
+import it.usna.swing.SyntaxEditor3;
 import it.usna.swing.TextLineNumber;
 import it.usna.swing.UsnaSwingUtils;
+import it.usna.swing.dialog.FindReplaceDialog;
 
 public class SyntacticTextEditor3 extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -27,37 +29,37 @@ public class SyntacticTextEditor3 extends JFrame {
 	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // getMenuShortcutKeyMaskEx() from java 10
 
 	public SyntacticTextEditor3() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(SyntacticTextEditor.class.getResource("/img/usna16.gif")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(SyntacticTextEditor3.class.getResource("/img/usna16.gif")));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("USNA syntactic editor");
+		setTitle("USNA syntactic editor 3");
 		
 		SimpleAttributeSet style = new SimpleAttributeSet();
 		StyleConstants.setFontFamily(style, Font.MONOSPACED);
-		SyntaxEditor2 editor = new SyntaxEditor2(style);
+		SyntaxEditor3 editor = new SyntaxEditor3(style);
 		
 		//Java
 		Style styleComment = editor.addStyle("usna_red", null);
 		StyleConstants.setForeground(styleComment, Color.RED);
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("//", "\n", styleComment));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("/*", "*/", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor3.BlockSimpleSyntax("//", "\n", styleComment));
+		editor.addSyntaxRule(new SyntaxEditor3.BlockSimpleSyntax("/*", "*/", styleComment));
 		
 		Style styleStr = editor.addStyle("usna_green", null);
 		StyleConstants.setForeground(styleStr, new Color(0, 120, 0));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("\"", "\"", "\\", styleStr));
-		editor.addSyntaxRule(new SyntaxEditor2.BlockSimpleSyntax("'", "'", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor3.BlockSimpleSyntax("\"", "\"", "\\", styleStr));
+		editor.addSyntaxRule(new SyntaxEditor3.BlockSimpleSyntax("'", "'", "\\", styleStr));
 		
 		Style styleBrachets = editor.addStyle("usna_brachets", null);
 		StyleConstants.setBold(styleBrachets, true);
-		editor.addSyntaxRule(new SyntaxEditor2.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
+		editor.addSyntaxRule(new SyntaxEditor3.Keywords(new String[] {"{", "}", "[", "]"}, styleBrachets));
 		
 		Style styleOperators = editor.addStyle("usna_brachets", null);
 		StyleConstants.setForeground(styleOperators, new Color(150, 0, 0));
-		editor.addSyntaxRule(new SyntaxEditor2.Keywords(new String[] {"=", "+", "-", "*", "/", "%", "<", ">", "&", "|", "!"}, styleOperators));
+		editor.addSyntaxRule(new SyntaxEditor3.Keywords(new String[] {"=", "+", "-", "*", "/", "%", "<", ">", "&", "|", "!"}, styleOperators));
 		
 		Style styleReserved = editor.addStyle("usna_styleReserved", null);
 		StyleConstants.setBold(styleReserved, true);
 		StyleConstants.setForeground(styleReserved, Color.blue);
-		editor.addSyntaxRule(new SyntaxEditor2.DelimitedKeywords(new String[] {
+		editor.addSyntaxRule(new SyntaxEditor3.DelimitedKeywords(new String[] {
 				"abstract",	"continue",	"for", "new", "switch",
 				"assert",	"default",	"goto",	"package", "synchronized",
 				"boolean", "do", "if", "private", "this",
@@ -106,6 +108,19 @@ public class SyntacticTextEditor3 extends JFrame {
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, SHORTCUT_KEY), "redo_usna");
 		editor.getActionMap().put("redo_usna", editor.getRedoAction());
 		
+		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, SHORTCUT_KEY), "find_usna");
+		editor.getActionMap().put("find_usna", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+//				FindReplaceDialog f = new FindReplaceDialog(SyntacticTextEditor3.this, editor, true);
+//				f.setLocationRelativeTo(SyntacticTextEditor3.this);
+//				f.setVisible(true);
+				editor.test();
+			}
+		});
+		
 		setContentPane(jContentPane);
 		setSize(600, 400);
 
@@ -116,7 +131,7 @@ public class SyntacticTextEditor3 extends JFrame {
 	public static void main(String[] arg) throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
 //		UsnaSwingUtils.initializeFontSize(2f);
-		new SyntacticTextEditor();
+		new SyntacticTextEditor3();
 	}
 }
 

@@ -219,6 +219,11 @@ public class SyntaxEditor extends JTextPane {
 			((AbstractDocument)doc).replace(offset, length , text, null);
 		}
 	}
+	
+	@Override
+	public void replaceSelection(String content) {
+		
+	}
 
 	public void resetUndo() {
 		undoManager.die();
