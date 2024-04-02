@@ -170,6 +170,7 @@ public class ShadowUndoManager extends UndoManager {
 		compound = nextCompound = false;
 		if(compoundEdit != null) {
 			compoundEdit.end();
+			
 		}
 	}
 
