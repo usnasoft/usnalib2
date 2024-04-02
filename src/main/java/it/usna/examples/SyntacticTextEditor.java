@@ -119,3 +119,5 @@ public class SyntacticTextEditor extends JFrame {
 		new SyntacticTextEditor();
 	}
 }
+
+// https://docs.oracle.com/javase/8/docs/api/javax/swing/undo/CompoundEdit.html
