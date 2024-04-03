@@ -23,6 +23,15 @@ import it.usna.swing.dialog.FindReplaceDialog;
 import it.usna.swing.texteditor.SyntaxEditor;
 import it.usna.swing.texteditor.TextLineNumber;
 
+/**
+ * Usage example for: <br>
+ * <code>
+ * it.usna.swing.texteditor.SyntaxEditor
+ * it.usna.swing.texteditor.TextLineNumber
+ * it.usna.swing.dialog.FindReplaceDialog
+ * </code>
+ * @author usna
+ */
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("deprecation")
@@ -129,9 +138,6 @@ public class SyntacticTextEditor extends JFrame {
 	
 	public static void main(String[] arg) throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
-//		UsnaSwingUtils.initializeFontSize(2f);
 		new SyntacticTextEditor();
 	}
 }
-
-// https://docs.oracle.com/javase/8/docs/api/javax/swing/undo/CompoundEdit.html
