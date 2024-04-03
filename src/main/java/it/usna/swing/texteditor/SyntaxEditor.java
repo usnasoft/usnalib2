@@ -125,7 +125,16 @@ public class SyntaxEditor extends JTextPane {
 			undoManager.startCompound();
 			((AbstractDocument)doc).replace(offset, length, text, attrs);
 			undoManager.endCompound();
-		}		
+		} else {
+			((AbstractDocument)doc).replace(offset, length, text, attrs);
+		}
+	}
+	
+	@Override
+	public void setText(String text) {
+		 try {
+			((AbstractDocument)doc).replace(0, doc.getLength(), text, baseStyle); // baseStyle avoid momentary syntax colors
+		} catch (BadLocationException e) { }
 	}
 
 	@Override

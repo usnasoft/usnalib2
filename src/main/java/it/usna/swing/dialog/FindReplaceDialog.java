@@ -375,14 +375,20 @@ public class FindReplaceDialog extends JDialog {
 	}
 
 	protected void doReplace() {
-		textComp.get().replaceSelection(jTextReplace.getText());
+		JTextComponent textComponent = textComp.get();
+		String selected = textComponent.getSelectedText();
+		if(selected != null && selected.equalsIgnoreCase(jTextFind.getText())) { // do not replace if selection has changed
+			textComponent.replaceSelection(jTextReplace.getText());
+		}
 		jButtonReplace.setEnabled(false);
 	}
 
 	protected void doReplaceAll() {
 		final String findText = jTextFind.getText();
 		if(findText.length() > 0) {
-			textComp.get().setText(textComp.get().getText().replace(findText, jTextReplace.getText()));
+			JTextComponent textComponent = textComp.get();
+			textComponent.selectAll();
+			textComponent.replaceSelection(textComponent.getText().replace(findText, jTextReplace.getText()));
 			jButtonReplace.setEnabled(false);
 		}
 	}
