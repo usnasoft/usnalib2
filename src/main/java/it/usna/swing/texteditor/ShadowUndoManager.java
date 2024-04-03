@@ -1,4 +1,4 @@
-package it.usna.swing;
+package it.usna.swing.texteditor;
 
 import java.awt.event.ActionEvent;
 
@@ -9,12 +9,16 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * This class extends UndoManager and create an internal document so that styles are ignored. The text content of the tracked document is mirrored on the internal document.
+ * On undo/redo the internal document content is copied on the tracked document.
+ * Also startCompound() and endCompound() are implemented to let the application group editing events on a unique undo/redo action.
+ * @author a.flaccomio
+ */
 public class ShadowUndoManager extends UndoManager {
 	private static final long serialVersionUID = 1L;
 	private final PlainDocument undoDoc = new PlainDocument();
@@ -24,8 +28,9 @@ public class ShadowUndoManager extends UndoManager {
 	private final AbstractAction redoAction;
 	private final Document doc;
 	private int caretOnUndoRedo;
-	private boolean compound = false;
-	private boolean nextCompound = false;
+//	private boolean compound = false;
+//	private boolean nextCompound = false;
+	private CompoundEdit compoundEdit;
 
 	public ShadowUndoManager(JTextComponent textComponent) {
 		doc = textComponent.getDocument();
@@ -55,16 +60,14 @@ public class ShadowUndoManager extends UndoManager {
 			public void removeUpdate(DocumentEvent e) {
 				try {
 					undoDoc.remove(e.getOffset(), e.getLength());
-				} catch (BadLocationException e1) {
-				}
+				} catch (BadLocationException e1) { }
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				try {
 					undoDoc.insertString(e.getOffset(), doc.getText(e.getOffset(), e.getLength()), null);
-				} catch (BadLocationException e1) {
-				}
+				} catch (BadLocationException e1) { }
 			}
 
 			@Override
@@ -72,7 +75,6 @@ public class ShadowUndoManager extends UndoManager {
 		};
 
 		doc.addDocumentListener(docListener);
-
 
 		// used for caret position after undo/redo
 
@@ -120,57 +122,39 @@ public class ShadowUndoManager extends UndoManager {
 			}
 		};
 	}
-
-	//	@Override
-	//	public void undoableEditHappened(UndoableEditEvent e) {
-	//		if(compound) {
-	//			CompoundEdit ce = new CompoundEdit();
-	//			ce.addEdit(e.getEdit());
-	//		} else {
-	//			super.undoableEditHappened(e);	
-	//		}
-	//	}
-	private CompoundEdit compoundEdit;
 	
 	@Override
 	public boolean addEdit(UndoableEdit anEdit) {
-		if(compound) {
-			if(compoundEdit == null) {
-				compoundEdit = new CompoundEdit();
-				compoundEdit.addEdit(anEdit);
-				return super.addEdit(compoundEdit);
-			} else {
-				return compoundEdit.addEdit(anEdit);
-			}
+//		if(compound) {
+//			if(compoundEdit == null) {
+//				compoundEdit = new CompoundEdit();
+//				compoundEdit.addEdit(anEdit);
+//				return super.addEdit(compoundEdit);
+//			} else {
+//				return compoundEdit.addEdit(anEdit);
+//			}
+//		} else {
+//			return super.addEdit(anEdit);
+//		}
+		if(compoundEdit != null) {
+			return compoundEdit.addEdit(anEdit);
 		} else {
 			return super.addEdit(anEdit);
 		}
-//		if(nextCompound) {
-//			return super.addEdit(new MyUE(anEdit));
-//		} else {
-//			if(compound) {
-//				nextCompound = true;
-//			}
-//			return super.addEdit(anEdit);
-//		}
-		
-//		if(compound) {
-//		return super.addEdit(new MyUE(anEdit));
-//	} else {
-//		return super.addEdit(anEdit);
-//	}
 	}
 
 	public void startCompound() {
-		compound = true;
+		endCompound(); // close an eventually open block
+//		compound = true;
+		compoundEdit = new CompoundEdit();
+		super.addEdit(compoundEdit);
 	}
 
 	public void endCompound() {
-		compoundEdit = null;
-		compound = nextCompound = false;
+//		compound = /*nextCompound =*/ false;
 		if(compoundEdit != null) {
 			compoundEdit.end();
-			
+			compoundEdit = null;
 		}
 	}
 
@@ -182,66 +166,66 @@ public class ShadowUndoManager extends UndoManager {
 		return redoAction;
 	}
 
-	private static class MyUE implements UndoableEdit {
-		private final UndoableEdit origin;
-
-		private MyUE(UndoableEdit origin) {
-			this.origin = origin;
-		}
-
-		@Override
-		public void undo() throws CannotUndoException {
-			origin.undo();
-		}
-
-		@Override
-		public boolean canUndo() {
-			return origin.canUndo();
-		}
-
-		@Override
-		public void redo() throws CannotRedoException {
-			origin.redo();
-		}
-
-		@Override
-		public boolean canRedo() {
-			return origin.canRedo();
-		}
-
-		@Override
-		public void die() {
-			origin.die();
-		}
-
-		@Override
-		public boolean addEdit(UndoableEdit anEdit) {
-			return origin.addEdit(anEdit);
-		}
-
-		@Override
-		public boolean replaceEdit(UndoableEdit anEdit) {
-			return origin.replaceEdit(anEdit);
-		}
-
-		@Override
-		public boolean isSignificant() {
-			return false;
-		}
-
-		@Override
-		public String getPresentationName() {
-			return origin.getPresentationName();
-		}
-
-		@Override
-		public String getUndoPresentationName() {
-			return origin.getUndoPresentationName();
-		}
-
-		@Override
-		public String getRedoPresentationName() {
-			return origin.getRedoPresentationName();
-		}
-	}
+//	private static class MyUE implements UndoableEdit {
+//		private final UndoableEdit origin;
+//
+//		private MyUE(UndoableEdit origin) {
+//			this.origin = origin;
+//		}
+//
+//		@Override
+//		public void undo() throws CannotUndoException {
+//			origin.undo();
+//		}
+//
+//		@Override
+//		public boolean canUndo() {
+//			return origin.canUndo();
+//		}
+//
+//		@Override
+//		public void redo() throws CannotRedoException {
+//			origin.redo();
+//		}
+//
+//		@Override
+//		public boolean canRedo() {
+//			return origin.canRedo();
+//		}
+//
+//		@Override
+//		public void die() {
+//			origin.die();
+//		}
+//
+//		@Override
+//		public boolean addEdit(UndoableEdit anEdit) {
+//			return origin.addEdit(anEdit);
+//		}
+//
+//		@Override
+//		public boolean replaceEdit(UndoableEdit anEdit) {
+//			return origin.replaceEdit(anEdit);
+//		}
+//
+//		@Override
+//		public boolean isSignificant() {
+//			return false;
+//		}
+//
+//		@Override
+//		public String getPresentationName() {
+//			return origin.getPresentationName();
+//		}
+//
+//		@Override
+//		public String getUndoPresentationName() {
+//			return origin.getUndoPresentationName();
+//		}
+//
+//		@Override
+//		public String getRedoPresentationName() {
+//			return origin.getRedoPresentationName();
+//		}
+//	}
 }
