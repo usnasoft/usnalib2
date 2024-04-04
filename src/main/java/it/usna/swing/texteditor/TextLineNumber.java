@@ -1,4 +1,4 @@
-package it.usna.swing;
+package it.usna.swing.texteditor;
 
 import java.awt.Color;
 import java.awt.Dimension;

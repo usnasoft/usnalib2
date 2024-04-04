@@ -1,4 +1,4 @@
-package it.usna.swing;
+package it.usna.swing.texteditor;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

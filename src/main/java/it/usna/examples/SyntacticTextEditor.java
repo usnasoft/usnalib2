@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -16,11 +18,20 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-//import it.usna.swing.SyntaxEditor;
-import it.usna.swing.SyntaxEditor;
-import it.usna.swing.TextLineNumber;
 import it.usna.swing.UsnaSwingUtils;
+import it.usna.swing.dialog.FindReplaceDialog;
+import it.usna.swing.texteditor.SyntaxEditor;
+import it.usna.swing.texteditor.TextLineNumber;
 
+/**
+ * Usage example for: <br>
+ * <code>
+ * it.usna.swing.texteditor.SyntaxEditor
+ * it.usna.swing.texteditor.TextLineNumber
+ * it.usna.swing.dialog.FindReplaceDialog
+ * </code>
+ * @author usna
+ */
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("deprecation")
@@ -106,6 +117,18 @@ public class SyntacticTextEditor extends JFrame {
 		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, SHORTCUT_KEY), "redo_usna");
 		editor.getActionMap().put("redo_usna", editor.getRedoAction());
 		
+		editor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, SHORTCUT_KEY), "find_usna");
+		editor.getActionMap().put("find_usna", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FindReplaceDialog f = new FindReplaceDialog(SyntacticTextEditor.this, editor, true);
+				f.setLocationRelativeTo(SyntacticTextEditor.this);
+				f.setVisible(true);
+			}
+		});
+		
 		setContentPane(jContentPane);
 		setSize(600, 400);
 
@@ -115,7 +138,6 @@ public class SyntacticTextEditor extends JFrame {
 	
 	public static void main(String[] arg) throws Exception {
 		UsnaSwingUtils.setLookAndFeel(UsnaSwingUtils.LF_NIMBUS);
-//		UsnaSwingUtils.initializeFontSize(2f);
 		new SyntacticTextEditor();
 	}
 }
