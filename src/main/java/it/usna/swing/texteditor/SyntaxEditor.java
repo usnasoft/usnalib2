@@ -34,9 +34,9 @@ import javax.swing.text.TabStop;
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	private final SimpleAttributeSet baseStyle;
-	protected final StyledDocument doc;
 	private DocumentListener docListener;
-	private ShadowUndoManager undoManager;
+	protected final StyledDocument doc;
+	protected ShadowUndoManager undoManager;
 
 	private ArrayList<BlockSyntax> syntax = new ArrayList<>();
 	private ArrayList<Keywords> keywords = new ArrayList<>();
