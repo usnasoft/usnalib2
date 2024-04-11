@@ -33,8 +33,8 @@ import javax.swing.text.TabStop;
  */
 public class SyntaxEditor extends JTextPane {
 	private static final long serialVersionUID = 1L;
-	private final SimpleAttributeSet baseStyle;
 	private DocumentListener docListener;
+	private final SimpleAttributeSet baseStyle;
 	protected final StyledDocument doc;
 	protected ShadowUndoManager undoManager;
 
@@ -187,7 +187,7 @@ public class SyntaxEditor extends JTextPane {
 			blocks.clear();
 			final String txt = doc.getText(0, end);
 
-			doc.setCharacterAttributes(0, end, baseStyle, true);
+			doc.setCharacterAttributes(0, end + 1, baseStyle, true); // +1 last "vistual" char
 
 			int adv;
 			for (int i = start; i < end; i += adv) {
@@ -220,7 +220,7 @@ public class SyntaxEditor extends JTextPane {
 				adv = 1;
 			}
 			if (blocks.isEmpty() == false) { // unterminated block left
-				doc.setCharacterAttributes(blocks.peek().startPoint, end - blocks.peek().startPoint, blocks.peek().blockDef.style, false);
+				doc.setCharacterAttributes(blocks.peek().startPoint, end - blocks.peek().startPoint + 1, blocks.peek().blockDef.style, false); // +1 last "vistual" char
 			}
 		} catch (BadLocationException | RuntimeException e) {
 			e.printStackTrace();
