@@ -13,6 +13,7 @@ import javax.swing.Icon;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 /**
@@ -101,10 +102,13 @@ public class ExTooltipTable extends TooltipTable {
 		Graphics g = getGraphics();
 		if(g != null) {
 			final FontMetrics fm = g.getFontMetrics();
-			for(int c = 0; c < getColumnCount(); c++) {
-				Object val = columnModel.getColumn(c).getHeaderValue();
+			final int columnCount = getColumnCount();
+			final int rowCount =  getRowCount();
+			for(int c = 0; c < columnCount; c++) {
+				TableColumn tc = columnModel.getColumn(c);
+				Object val = tc.getHeaderValue();
 				int width = val != null ? SwingUtilities.computeStringWidth(fm, val.toString()) : 1;
-				for(int r = 0; r < getRowCount(); r++) {
+				for(int r = 0; r < rowCount; r++) {
 					val = getValueAt(r, c);
 					if(val != null) {
 						if(val instanceof Icon) {
@@ -114,7 +118,7 @@ public class ExTooltipTable extends TooltipTable {
 						}
 					}
 				}
-				columnModel.getColumn(c).setPreferredWidth(width);
+				tc.setPreferredWidth(width);
 			}
 		}
 	}
