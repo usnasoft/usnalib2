@@ -151,6 +151,10 @@ public class SyntaxEditor extends JTextPane {
 	public void resetUndo() {
 		undoManager.die();
 	}
+	
+	public String getCharacterStileName(int pos) {
+		return doc.getCharacterElement(pos).getAttributes().getAttribute(StyleConstants.NameAttribute).toString();
+	}
 
 	public int getCaretRow() {
 		final Element root = doc.getDefaultRootElement();

@@ -36,6 +36,7 @@ public class ShadowUndoManager extends UndoManager {
 		doc = textComponent.getDocument();
 		undoDoc.addUndoableEditListener(this);
 
+		// used for caret position after undo/redo
 		caretDocListener = new DocumentListener() {
 			@Override
 			public void insertUpdate(final DocumentEvent e) {
@@ -46,7 +47,7 @@ public class ShadowUndoManager extends UndoManager {
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				textComponent.setCaretPosition(e.getOffset());
+//				textComponent.setCaretPosition(e.getOffset());
 				caretOnUndoRedo = e.getOffset();
 			}
 
@@ -75,8 +76,6 @@ public class ShadowUndoManager extends UndoManager {
 		};
 
 		doc.addDocumentListener(docListener);
-
-		// used for caret position after undo/redo
 
 		undoAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -165,67 +164,4 @@ public class ShadowUndoManager extends UndoManager {
 	public AbstractAction getRedoAction() {
 		return redoAction;
 	}
-
-//	private static class MyUE implements UndoableEdit {
-//		private final UndoableEdit origin;
-//
-//		private MyUE(UndoableEdit origin) {
-//			this.origin = origin;
-//		}
-//
-//		@Override
-//		public void undo() throws CannotUndoException {
-//			origin.undo();
-//		}
-//
-//		@Override
-//		public boolean canUndo() {
-//			return origin.canUndo();
-//		}
-//
-//		@Override
-//		public void redo() throws CannotRedoException {
-//			origin.redo();
-//		}
-//
-//		@Override
-//		public boolean canRedo() {
-//			return origin.canRedo();
-//		}
-//
-//		@Override
-//		public void die() {
-//			origin.die();
-//		}
-//
-//		@Override
-//		public boolean addEdit(UndoableEdit anEdit) {
-//			return origin.addEdit(anEdit);
-//		}
-//
-//		@Override
-//		public boolean replaceEdit(UndoableEdit anEdit) {
-//			return origin.replaceEdit(anEdit);
-//		}
-//
-//		@Override
-//		public boolean isSignificant() {
-//			return false;
-//		}
-//
-//		@Override
-//		public String getPresentationName() {
-//			return origin.getPresentationName();
-//		}
-//
-//		@Override
-//		public String getUndoPresentationName() {
-//			return origin.getUndoPresentationName();
-//		}
-//
-//		@Override
-//		public String getRedoPresentationName() {
-//			return origin.getRedoPresentationName();
-//		}
-//	}
 }
