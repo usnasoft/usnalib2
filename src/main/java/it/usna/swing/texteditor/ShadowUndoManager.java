@@ -143,10 +143,11 @@ public class ShadowUndoManager extends UndoManager {
 	}
 
 	public void startCompound() {
-		endCompound(); // close an eventually open block
-//		compound = true;
-		compoundEdit = new CompoundEdit();
-		super.addEdit(compoundEdit);
+//		endCompound(); // close an eventually open block
+		if(compoundEdit == null) {
+			compoundEdit = new CompoundEdit();
+			super.addEdit(compoundEdit);
+		}
 	}
 
 	public void endCompound() {
@@ -155,6 +156,10 @@ public class ShadowUndoManager extends UndoManager {
 			compoundEdit.end();
 			compoundEdit = null;
 		}
+	}
+	
+	public boolean isCompoundMode() {
+		return compoundEdit != null;
 	}
 
 	public AbstractAction getUndoAction() {
