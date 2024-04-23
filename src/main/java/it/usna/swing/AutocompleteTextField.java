@@ -17,8 +17,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultFormatterFactory;
+
+import it.usna.swing.texteditor.TextDocumentListener;
 
 /**
  * Text field with autocomplete functionality.
@@ -96,18 +97,10 @@ public class AutocompleteTextField extends JFormattedTextField {
 		};
 		
 		//autocompleteList.setBorder(BorderFactory.createEmptyBorder()) ;
-		//autocompleteList.p
-
-		getDocument().addDocumentListener(new DocumentListener() {
-			public void removeUpdate(DocumentEvent e) {
+		
+		getDocument().addDocumentListener(new TextDocumentListener() {
+			public void textChanged(DocumentEvent e) {
 				SwingUtilities.invokeLater(fillTask);
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				SwingUtilities.invokeLater(fillTask);
-			}
-
-			public void changedUpdate(DocumentEvent e) {
 			}
 		});
 

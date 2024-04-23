@@ -54,7 +54,7 @@ public class UsnaPopupMenu extends JPopupMenu {
 				} else {
 					final int ind = i;
 					final JMenuItem it = add(item.toString());
-					it.addActionListener((e) -> itemSelected(it, ind));
+					it.addActionListener(e -> itemSelected(it, ind));
 				}
 			}
 			i++;
