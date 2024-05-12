@@ -84,7 +84,7 @@ public class IOFile {
 	
 	public static void writeFile(final Path dtFile, final String txt) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(dtFile)) {
-			writer.write(txt.replace("\n", lineSeparator)); // SO specific
+			writer.write(txt.replaceAll("\\r*\\n", lineSeparator)); // SO specific
 		}
 	}
 

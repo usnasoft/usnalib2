@@ -152,7 +152,7 @@ public class SyntaxEditor extends JTextPane {
 		undoManager.die();
 	}
 	
-	public String getCharacterStileName(int pos) {
+	public String getCharacterStyleName(int pos) {
 		return doc.getCharacterElement(pos).getAttributes().getAttribute(StyleConstants.NameAttribute).toString();
 	}
 
