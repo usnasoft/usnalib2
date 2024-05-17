@@ -30,10 +30,6 @@ public class NumericTextField<T extends Number & Comparable<T>>  extends JFormat
 	/**
 	 * Constructors specifying the initial value, the minimum
 	 * allowed value and the maximum allowed value for the field.
-	 * @param init long
-	 * @param min long
-	 * @param max long
-	 * @throws ParseException 
 	 */
 	public NumericTextField(final T init, final T min, final T max) {
 		this.allowNull = false;
@@ -139,16 +135,16 @@ public class NumericTextField<T extends Number & Comparable<T>>  extends JFormat
 				if(isEmpty()) {
 					NumericTextField.this.setValue(((InternationalFormatter)ff.getEditFormatter()).getMinimum());
 					NumericTextField.this.fireActionPerformed();
-				} else if(((Comparable<T>)((InternationalFormatter)ff.getEditFormatter()).getMaximum()).compareTo(getNumber()) >= 0) {
+				} else if(((Comparable<T>)((InternationalFormatter)ff.getEditFormatter()).getMaximum()).compareTo(getNumber()) > 0) {
 					final Number val = getNumber();
 					if(val instanceof Float) {
-						NumericTextField.this.setValue(val.floatValue() + 1);
+						NumericTextField.this.setValue(val.floatValue() + 1f);
 					} else if (val instanceof Double) {
-						NumericTextField.this.setValue(val.doubleValue() + 1);
+						NumericTextField.this.setValue(val.doubleValue() + 1d);
 					} else if (val instanceof Integer){
 						NumericTextField.this.setValue(val.intValue() + 1);
 					} else { // Long
-						NumericTextField.this.setValue(val.longValue() + 1);
+						NumericTextField.this.setValue(val.longValue() + 1L);
 					}
 					NumericTextField.this.fireActionPerformed();
 				}
@@ -182,13 +178,13 @@ public class NumericTextField<T extends Number & Comparable<T>>  extends JFormat
 				if(isEmpty() == false && ((Comparable<T>)((InternationalFormatter)ff.getEditFormatter()).getMinimum()).compareTo(getNumber()) < 0) {
 					final Number val = getNumber();
 					if(val instanceof Float) {
-						NumericTextField.this.setValue(val.floatValue() - 1);
+						NumericTextField.this.setValue(val.floatValue() - 1f);
 					} else if (val instanceof Double) {
-						NumericTextField.this.setValue(val.doubleValue() - 1);
+						NumericTextField.this.setValue(val.doubleValue() - 1d);
 					} else if (val instanceof Integer){
 						NumericTextField.this.setValue(val.intValue() - 1);
 					} else { // Long
-						NumericTextField.this.setValue(val.longValue() - 1);
+						NumericTextField.this.setValue(val.longValue() - 1L);
 					}
 					NumericTextField.this.fireActionPerformed();
 				}
