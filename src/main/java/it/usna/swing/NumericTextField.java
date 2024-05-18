@@ -131,6 +131,9 @@ public class NumericTextField<T extends Number & Comparable<T>>  extends JFormat
 			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				try {
+					commitEdit();
+				} catch (ParseException e1) {}
 				final DefaultFormatterFactory ff = (DefaultFormatterFactory)getFormatterFactory();
 				if(isEmpty()) {
 					NumericTextField.this.setValue(((InternationalFormatter)ff.getEditFormatter()).getMinimum());
@@ -174,6 +177,9 @@ public class NumericTextField<T extends Number & Comparable<T>>  extends JFormat
 			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				try {
+					commitEdit();
+				} catch (ParseException e1) {}
 				final DefaultFormatterFactory ff = (DefaultFormatterFactory)getFormatterFactory();
 				if(isEmpty() == false && ((Comparable<T>)((InternationalFormatter)ff.getEditFormatter()).getMinimum()).compareTo(getNumber()) < 0) {
 					final Number val = getNumber();
