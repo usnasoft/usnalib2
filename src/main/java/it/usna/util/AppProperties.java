@@ -70,7 +70,7 @@ public class AppProperties extends Properties {
 	}
 	
 	public boolean changeProperty(final String key, final String value) {
-		Object oldVal = super.setProperty(key, value);
+		Object oldVal = setProperty(key, value);
 		if(value == oldVal) { // null == null
 			return false;
 		} else {
@@ -100,7 +100,7 @@ public class AppProperties extends Properties {
 	
 	public boolean setIntProperty(final String key, final int value) {
 		String val = value + "";
-		return val.equals(super.setProperty(key, val)) == false;
+		return val.equals(setProperty(key, val)) == false;
 	}
 	
 	public boolean getBoolProperty(final String key, final boolean defaultVal) {
@@ -114,7 +114,7 @@ public class AppProperties extends Properties {
 
 	public boolean setBoolProperty(final String key, final boolean value) {
 		String val = value ? "true" : "false";
-		return val.equals(super.setProperty(key, val)) == false;
+		return val.equals(setProperty(key, val)) == false;
 	}
 
 	/** Legge una proprieta', la interpreta come un set di elementi e inserisce gli elementi in un array di String
@@ -135,15 +135,6 @@ public class AppProperties extends Properties {
 	 */
 	public boolean setMultipleProperty(final String key, final String[] array, final char sep) {
 		String val = Arrays.stream(array).collect(Collectors.joining(sep + ""));
-		return val.equals(super.setProperty(key, val)) == false;
+		return val.equals(setProperty(key, val)) == false;
 	}
-	
-//	@Override
-//	public Object setProperty(final String key, final String val) {
-//		if(val != null) {
-//			return super.setProperty(key, val);
-//		} else {
-//			return null;
-//		}
-//	}
 }
