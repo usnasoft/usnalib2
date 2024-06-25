@@ -45,9 +45,9 @@ public class MainWindow extends JFrame {
 	public void loadProperties(final AppProperties prop, int defWidth, int defHeight) {
 		int width = prop.getIntProperty(PROP_WIDTH, defWidth);
 		int height = prop.getIntProperty(PROP_HEIGHT, defHeight);
-		int xPos = prop.getIntProperty(PROP_XPOS, -1);
+		int xPos = prop.getIntProperty(PROP_XPOS, Integer.MIN_VALUE);
 		int yPos;
-		if(xPos < 0) {
+		if(xPos == Integer.MIN_VALUE) {
 			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			xPos = (screenSize.width - width) / 2;
 			yPos = (screenSize.height - height) / 2;
