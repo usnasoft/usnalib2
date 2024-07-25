@@ -23,13 +23,29 @@ public class AccumulatingMap<K, V> extends HashMap<K, List<V>> {
 		}
 		return val;
 	}
+	
+	public List<V> putNull(K key) {
+		return put(key, (V)null);
+	}
+	
+	public List<V> putKey(K key) {
+		List<V> val = get(key);
+		if(val == null) {
+			return put(key, new ArrayList<V>());
+		} else {
+			return val;
+		}
+	}
+	
+	public V getFirst(K key) {
+		return get(key).get(0);
+	}
 
 //	public static void main(String ...strings ) {
-//		AccumulatingMap<String, Integer> map = new AccumulatingMap<>();
+//		AccumulatingMap<String, Object> map = new AccumulatingMap<>();
 //		map.put("test", 1);
 //		map.put("test", 2);
 //		map.put("test_", 3);
 //		System.out.println(map);
 //	}
-	
 }
