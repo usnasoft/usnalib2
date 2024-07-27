@@ -7,12 +7,12 @@ import java.util.List;
 public class AccumulatingMap<K, V> extends HashMap<K, List<V>> {
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public List<V> put(K key, List<V> value) {
-		return super.put(key, value);
-	}
+//	@Override
+//	public List<V> put(K key, List<V> value) {
+//		return super.put(key, value);
+//	}
 
-	public List<V> put(K key, V value) {
+	public List<V> putVal(K key, V value) {
 		List<V> val = get(key);
 		if(val == null) {
 			val = new ArrayList<V>();
@@ -25,7 +25,7 @@ public class AccumulatingMap<K, V> extends HashMap<K, List<V>> {
 	}
 	
 	public List<V> putNull(K key) {
-		return put(key, (V)null);
+		return putVal(key, (V)null);
 	}
 	
 	public List<V> putKey(K key) {
