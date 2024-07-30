@@ -64,7 +64,7 @@ public class FindReplaceDialog extends JDialog {
 	public FindReplaceDialog(final Window owner, final Supplier<JTextComponent> textComp, final boolean replace) {
 		super(owner);
 		this.textComp = textComp;
-		this.labels = ResourceBundle.getBundle("it.usna.swing.dialog.LabelsFindBundle");
+		this.labels = ResourceBundle.getBundle("LabelsFindBundle");
 		initialize();
 		enableReplace(replace);
 		pack();
