@@ -84,7 +84,7 @@ public class CLI {
 	 * @return parameter value, null if parameter does not exists
 	 */
 	public String getParameter(int entryIndex) {
-		if(args.length > entryIndex + 1) {
+		if(args.length > entryIndex + 1 && used[entryIndex + 1] == false) {
 			used[entryIndex + 1] = true;
 			return args[entryIndex + 1];
 		} else {
@@ -100,12 +100,20 @@ public class CLI {
 	 */
 	public String getParameter(int entryIndex, int parIndex) {
 		int idx = entryIndex + parIndex + 1;
-		if(args.length > idx) {
+		if(args.length > idx && used[idx] == false) {
 			used[idx] = true;
 			return args[idx];
 		} else {
 			return null;
 		}
+	}
+	
+	public void rejectParameter(int entryIndex) {
+		used[entryIndex + 1] = false;
+	}
+	
+	public void rejectParameter(int entryIndex, int parIndex) {
+		used[entryIndex + parIndex + 1] = false;
 	}
 	
 	/**
