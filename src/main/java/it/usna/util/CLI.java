@@ -22,25 +22,10 @@ public class CLI {
 	 * @return entry index or -1
 	 */
 	public int hasEntry(String name) {
-		for(int i = 0; i < args.length; i++) {
-			if(args[i].equals(name)) {
-				used[i] = true;
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	/**
-	 * Same as hasEntry but doesn't mark entry as used
-	 * @param entry name
-	 * @return entry index or -1
-	 */
-	private int indexOf(String name) {
-		for(int i = 0; i < args.length; i++) {
-			if(args[i].equals(name)) {
-				return i;
-			}
+		int idx = indexOf(name);
+		if(idx >= 0) {
+			used[idx] = true;
+			return idx;
 		}
 		return -1;
 	}
@@ -73,6 +58,20 @@ public class CLI {
 			int idx = rejectEntry(name);
 			if(idx >= 0) {
 				return idx;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * index of "name"
+	 * @param entry name
+	 * @return entry index or -1
+	 */
+	private int indexOf(String name) {
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equals(name)) {
+				return i;
 			}
 		}
 		return -1;
