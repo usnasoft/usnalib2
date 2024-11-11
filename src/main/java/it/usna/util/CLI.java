@@ -132,7 +132,7 @@ public class CLI {
 				u.add(args[i]);
 			}
 		}
-		return u.toArray(new String[u.size()]);
+		return u.toArray(String[]::new);
 	}
 	
 	public String get(int idx) {

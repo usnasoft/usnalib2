@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.IntStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -83,7 +83,7 @@ public class ExTooltipTable extends TooltipTable {
 	}
 
 	public int[] getSelectedModelRows() {
-		return Arrays.stream(getSelectedRows()).map(i -> convertRowIndexToModel(i)).toArray();
+		return IntStream.of(getSelectedRows()).map(i -> convertRowIndexToModel(i)).toArray();
 	}
 
 	/*public int findFirstRow(final int col, final Object colVal) {
