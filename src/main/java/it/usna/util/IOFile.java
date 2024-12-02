@@ -57,23 +57,23 @@ public class IOFile {
 	/**
 	 * Read a text file and return its content in a string.
 	 * Use carefully; a file usually should not be read in a single big string.
-	 * @param source file
+	 * @param file source file
 	 * @return the file content
 	 * @throws IOException
 	 */
-	public static String readFile(final File srFile) throws IOException {
-		return readFile(srFile.toPath());
+	public static String readFile(final File file) throws IOException {
+		return readFile(file.toPath());
 	}
 	
 	/**
 	 * Read a text file and return its content in a string.
 	 * Use carefully; a file usually should not be read in a single big string.
-	 * @param source
+	 * @param path source path
 	 * @return the file content
 	 * @throws IOException
 	 */
-	public static String readFile(final Path srFile) throws IOException {
-		try (BufferedReader r = Files.newBufferedReader(srFile)) {
+	public static String readFile(final Path path) throws IOException {
+		try (BufferedReader r = Files.newBufferedReader(path)) {
 			return r.lines().collect(Collectors.joining("\n"));
 		}
 	}

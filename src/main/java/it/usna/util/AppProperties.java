@@ -38,7 +38,7 @@ public class AppProperties extends Properties {
 	}
 
 	/**
-	 * Store properties on a file;
+	 * Store properties on the "fileName" file;
 	 * @param alsoEmpty true: save empty properties, false: do not save empty properties
 	 * @throws IOException
 	 */
@@ -48,7 +48,7 @@ public class AppProperties extends Properties {
 		}
 	}
 
-	/** Save the properties on the file */
+	/** Save the properties on the "fileName" file */
 	public void store() throws IOException {
 		try (Writer w = Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8)) {
 			super.store(w, null);
@@ -77,6 +77,12 @@ public class AppProperties extends Properties {
 			return value == null || value.equals(oldVal) == false;
 		}
 	}
+	
+	public void defaultProperty(final String key, final String value) {
+		if(containsKey(key) == false) {
+			put(key, value);
+		}
+	}
 
 	/**
 	 * Read an integer property
@@ -103,6 +109,12 @@ public class AppProperties extends Properties {
 		return val.equals(setProperty(key, val)) == false;
 	}
 	
+	public void defaultIntProperty(final String key, final int value) {
+		if(containsKey(key) == false) {
+			put(key, value + "");
+		}
+	}
+	
 	public boolean getBoolProperty(final String key, final boolean defaultVal) {
 		final String val = getProperty(key);
 		return val == null ? defaultVal : "true".equals(val);
@@ -116,11 +128,17 @@ public class AppProperties extends Properties {
 		String val = value ? "true" : "false";
 		return val.equals(setProperty(key, val)) == false;
 	}
+	
+	public void defaultBoolProperty(final String key, final boolean value) {
+		if(containsKey(key) == false) {
+			put(key, value ? "true" : "false");
+		}
+	}
 
-	/** Legge una proprieta', la interpreta come un set di elementi e inserisce gli elementi in un array di String
-	 * @param key il nome della chiave
-	 * @param sep i separatori che delimitano gli elementi
-	 * @return null se la proprieta' non esiste; un array di String altrimenti
+	/** Return a String array from a single parameter using "sep" to split the value
+	 * @param key the property key
+	 * @param sep the separator char
+	 * @return the Strings array or null if the property does not exists
 	 */
 	public String[] getMultipleProperty(final String key, final char sep) {
 		final String val = getProperty(key);
@@ -128,10 +146,10 @@ public class AppProperties extends Properties {
 	}
 
 	/**
-	 * Write an array as a single property entry
-	 * @param key
+	 * Set a Strings array as a single property entry
+	 * @param key the property key
 	 * @param array
-	 * @param sep divider
+	 * @param sep the separator char
 	 */
 	public boolean setMultipleProperty(final String key, final String[] array, final char sep) {
 		String val = Arrays.stream(array).collect(Collectors.joining(sep + ""));
