@@ -92,7 +92,7 @@ public class TooltipTable extends JTable {
 	protected String cellTooltipValue(Object value, boolean cellTooSmall, int row, int column) {
 		if(cellTooSmall) {
 			if(value == null) return "";
-			else if(value instanceof Object[]) return Arrays.stream((Object[])value).map(v -> (v != null) ? v.toString() : "").collect(Collectors.joining(" + "));
+			else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(v -> v.toString()).collect(Collectors.joining(" + "));
 			else return value.toString();
 		} else {
 			return null;

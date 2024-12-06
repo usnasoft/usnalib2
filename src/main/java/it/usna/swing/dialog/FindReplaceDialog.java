@@ -7,20 +7,24 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
@@ -34,13 +38,9 @@ import javax.swing.text.JTextComponent;
  */
 public class FindReplaceDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
-	private JPanel jButtonsPanel = null;
-	private JPanel jPanel = null;
-	private JLabel jLabel = null;
 	private JTextField jTextFind = null;
 	private JCheckBox jCheckCase = null;
 	private JRadioButton jRadioBackward = null;
-	private JPanel jOptionsPanel = null;
 	private JRadioButton jRadioForward = null;
 	private JRadioButton jRadioFromStart = null;
 	private JRadioButton jRadioFromEnd = null;
@@ -94,6 +94,15 @@ public class FindReplaceDialog extends JDialog {
 		group.add(jRadioForward);
 		group.add(jRadioBackward);
 		jButtonReplace.setEnabled(false);
+		
+		jContentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "escape_close");
+		jContentPane.getActionMap().put("escape_close", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 	}
 
 	public void enableReplace(final boolean replace) {
@@ -105,68 +114,70 @@ public class FindReplaceDialog extends JDialog {
 	}
 
 	private JPanel getJButtonsPanel() {
-		if (jButtonsPanel == null) {
-			jButtonsPanel = new JPanel();
-			jButtonsPanel.setLayout(new FlowLayout());
-			
-			JButton jButtonFind = new JButton(labels.getString("btnFind"));
-			jButtonFind.addActionListener(event -> doFind());
-			jButtonsPanel.add(jButtonFind, null);
-			jButtonsPanel.add(getJButtonReplace(), null);
-			jButtonsPanel.add(getJButtonReplaceAll(), null);
-			
-			JButton jButtonClose = new JButton(labels.getString("dlgClose"));
-			jButtonClose.addActionListener(event -> dispose());
-			jButtonsPanel.add(jButtonClose, null);
-			
-			getRootPane().setDefaultButton(jButtonFind);
-		}
+		JPanel jButtonsPanel = new JPanel();
+		jButtonsPanel.setLayout(new FlowLayout());
+
+		JButton jButtonFind = new JButton(labels.getString("btnFind"));
+		jButtonFind.addActionListener(event -> doFind());
+		jButtonsPanel.add(jButtonFind, null);
+
+		jButtonReplace = new JButton(labels.getString("lbl_replace"));
+		jButtonReplace.addActionListener(event -> doReplace());
+		jButtonsPanel.add(jButtonReplace, null);
+
+		jButtonReplaceAll = new JButton(labels.getString("lbl_replaceAll"));
+		jButtonReplaceAll.addActionListener(event -> doReplaceAll());
+		jButtonsPanel.add(jButtonReplaceAll, null);
+
+		JButton jButtonClose = new JButton(labels.getString("dlgClose"));
+		jButtonClose.addActionListener(event -> dispose());
+		jButtonsPanel.add(jButtonClose, null);
+
+		getRootPane().setDefaultButton(jButtonFind);
 		return jButtonsPanel;
 	}
 
 	private JPanel getMainPanel() {
-		if (jPanel == null) {
-			jPanel = new JPanel();
-			GridBagLayout gbl_jPanel = new GridBagLayout();
-			jPanel.setLayout(gbl_jPanel);
-			jLabel = new JLabel(labels.getString("lbl_find"));
-			jLabel.setDisplayedMnemonic(KeyEvent.VK_UNDEFINED);
-			GridBagConstraints gbc_jLabel = new GridBagConstraints();
-			gbc_jLabel.anchor = GridBagConstraints.WEST;
-			gbc_jLabel.insets = new Insets(0, 0, 2, 3);
-			gbc_jLabel.gridx = 0;
-			gbc_jLabel.gridy = 0;
-			jPanel.add(jLabel, gbc_jLabel);
-			GridBagConstraints gbc_jTextFind = new GridBagConstraints();
-			gbc_jTextFind.weightx = 1.0;
-			gbc_jTextFind.fill = GridBagConstraints.HORIZONTAL;
-			gbc_jTextFind.insets = new Insets(0, 0, 2, 0);
-			gbc_jTextFind.gridx = 1;
-			gbc_jTextFind.gridy = 0;
-			jPanel.add(getJTextFind(), gbc_jTextFind);
-			replaceWithLabel = new JLabel(labels.getString("lbl_replaceWith"));
-			GridBagConstraints gbc_jLabel1 = new GridBagConstraints();
-			gbc_jLabel1.anchor = GridBagConstraints.WEST;
-			gbc_jLabel1.insets = new Insets(0, 0, 3, 3);
-			gbc_jLabel1.gridx = 0;
-			gbc_jLabel1.gridy = 1;
-			jPanel.add(replaceWithLabel, gbc_jLabel1);
-			GridBagConstraints gbc_jTextReplace = new GridBagConstraints();
-			gbc_jTextReplace.weightx = 1.0;
-			gbc_jTextReplace.fill = GridBagConstraints.HORIZONTAL;
-			gbc_jTextReplace.insets = new Insets(0, 0, 3, 0);
-			gbc_jTextReplace.gridx = 1;
-			gbc_jTextReplace.gridy = 1;
-			jPanel.add(getJTextReplace(), gbc_jTextReplace);
-			GridBagConstraints gbc_jCheckCase = new GridBagConstraints();
-			gbc_jCheckCase.insets = new Insets(2, 0, 0, 0);
-			gbc_jCheckCase.fill = GridBagConstraints.HORIZONTAL;
-			gbc_jCheckCase.anchor = GridBagConstraints.WEST;
-			gbc_jCheckCase.gridwidth = 2;
-			gbc_jCheckCase.gridx = 0;
-			gbc_jCheckCase.gridy = 2;
-			jPanel.add(getJCheckCase(), gbc_jCheckCase);
-		}
+		JPanel jPanel = new JPanel();
+		GridBagLayout gbl_jPanel = new GridBagLayout();
+		jPanel.setLayout(gbl_jPanel);
+		JLabel jLabel = new JLabel(labels.getString("lbl_find"));
+		jLabel.setDisplayedMnemonic(KeyEvent.VK_UNDEFINED);
+		GridBagConstraints gbc_jLabel = new GridBagConstraints();
+		gbc_jLabel.anchor = GridBagConstraints.WEST;
+		gbc_jLabel.insets = new Insets(2, 0, 2, 3);
+		gbc_jLabel.gridx = 0;
+		gbc_jLabel.gridy = 0;
+		jPanel.add(jLabel, gbc_jLabel);
+		GridBagConstraints gbc_jTextFind = new GridBagConstraints();
+		gbc_jTextFind.weightx = 1.0;
+		gbc_jTextFind.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jTextFind.insets = new Insets(2, 0, 2, 0);
+		gbc_jTextFind.gridx = 1;
+		gbc_jTextFind.gridy = 0;
+		jPanel.add(getJTextFind(), gbc_jTextFind);
+		replaceWithLabel = new JLabel(labels.getString("lbl_replaceWith"));
+		GridBagConstraints gbc_jLabel1 = new GridBagConstraints();
+		gbc_jLabel1.anchor = GridBagConstraints.WEST;
+		gbc_jLabel1.insets = new Insets(0, 0, 3, 3);
+		gbc_jLabel1.gridx = 0;
+		gbc_jLabel1.gridy = 1;
+		jPanel.add(replaceWithLabel, gbc_jLabel1);
+		GridBagConstraints gbc_jTextReplace = new GridBagConstraints();
+		gbc_jTextReplace.weightx = 1.0;
+		gbc_jTextReplace.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jTextReplace.insets = new Insets(0, 0, 3, 0);
+		gbc_jTextReplace.gridx = 1;
+		gbc_jTextReplace.gridy = 1;
+		jPanel.add(getJTextReplace(), gbc_jTextReplace);
+		GridBagConstraints gbc_jCheckCase = new GridBagConstraints();
+		gbc_jCheckCase.insets = new Insets(2, 0, 0, 0);
+		gbc_jCheckCase.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jCheckCase.anchor = GridBagConstraints.WEST;
+		gbc_jCheckCase.gridwidth = 2;
+		gbc_jCheckCase.gridx = 0;
+		gbc_jCheckCase.gridy = 2;
+		jPanel.add(getJCheckCase(), gbc_jCheckCase);
 		return jPanel;
 	}
 
@@ -205,40 +216,38 @@ public class FindReplaceDialog extends JDialog {
 	 * @return javax.swing.JPanel	
 	 */
 	private JPanel getJOptionsPanel() {
-		if (jOptionsPanel == null) {
-			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
-			gridBagConstraints6.insets = new Insets(3, 0, 0, 0);
-			gridBagConstraints6.gridx = 1;
-			gridBagConstraints6.anchor = GridBagConstraints.WEST;
-			gridBagConstraints6.gridy = 0;
-			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
-			gridBagConstraints5.insets = new Insets(2, 0, 3, 0);
-			gridBagConstraints5.gridx = 1;
-			gridBagConstraints5.anchor = GridBagConstraints.NORTHWEST;
-			gridBagConstraints5.weighty = 10.0D;
-			gridBagConstraints5.gridy = 1;
-			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-			gridBagConstraints4.insets = new Insets(3, 0, 0, 0);
-			gridBagConstraints4.gridx = 3;
-			gridBagConstraints4.anchor = GridBagConstraints.WEST;
-			gridBagConstraints4.gridy = 0;
-			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.insets = new Insets(2, 0, 3, 0);
-			gridBagConstraints3.gridx = 3;
-			gridBagConstraints3.anchor = GridBagConstraints.NORTHWEST;
-			gridBagConstraints3.weighty = 10.0D;
-			gridBagConstraints3.gridy = 1;
-			jOptionsPanel = new JPanel();
-			GridBagLayout gbl_jOptionsPanel = new GridBagLayout();
-			gbl_jOptionsPanel.columnWidths = new int[] {30, 1, 30, 1, 30};
-			gbl_jOptionsPanel.columnWeights = new double[]{2.0, 1.0, 3.0, 1.0, 2.0};
-			jOptionsPanel.setLayout(gbl_jOptionsPanel);
-			jOptionsPanel.setBorder(BorderFactory.createLineBorder(SystemColor.controlShadow, 1));
-			jOptionsPanel.add(getJRadioBackward(), gridBagConstraints3);
-			jOptionsPanel.add(getJRadioForward(), gridBagConstraints4);
-			jOptionsPanel.add(getJRadioFromStart(), gridBagConstraints6);
-			jOptionsPanel.add(getJRadioFromEnd(), gridBagConstraints5);
-		}
+		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+		gridBagConstraints6.insets = new Insets(3, 0, 0, 0);
+		gridBagConstraints6.gridx = 1;
+		gridBagConstraints6.anchor = GridBagConstraints.WEST;
+		gridBagConstraints6.gridy = 0;
+		GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+		gridBagConstraints5.insets = new Insets(2, 0, 3, 0);
+		gridBagConstraints5.gridx = 1;
+		gridBagConstraints5.anchor = GridBagConstraints.NORTHWEST;
+		gridBagConstraints5.weighty = 10.0D;
+		gridBagConstraints5.gridy = 1;
+		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+		gridBagConstraints4.insets = new Insets(3, 0, 0, 0);
+		gridBagConstraints4.gridx = 3;
+		gridBagConstraints4.anchor = GridBagConstraints.WEST;
+		gridBagConstraints4.gridy = 0;
+		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+		gridBagConstraints3.insets = new Insets(2, 0, 3, 0);
+		gridBagConstraints3.gridx = 3;
+		gridBagConstraints3.anchor = GridBagConstraints.NORTHWEST;
+		gridBagConstraints3.weighty = 10.0D;
+		gridBagConstraints3.gridy = 1;
+		JPanel jOptionsPanel = new JPanel();
+		GridBagLayout gbl_jOptionsPanel = new GridBagLayout();
+		gbl_jOptionsPanel.columnWidths = new int[] {30, 1, 30, 1, 30};
+		gbl_jOptionsPanel.columnWeights = new double[]{2.0, 1.0, 3.0, 1.0, 2.0};
+		jOptionsPanel.setLayout(gbl_jOptionsPanel);
+		jOptionsPanel.setBorder(BorderFactory.createLineBorder(SystemColor.controlShadow, 1));
+		jOptionsPanel.add(getJRadioBackward(), gridBagConstraints3);
+		jOptionsPanel.add(getJRadioForward(), gridBagConstraints4);
+		jOptionsPanel.add(getJRadioFromStart(), gridBagConstraints6);
+		jOptionsPanel.add(getJRadioFromEnd(), gridBagConstraints5);
 		return jOptionsPanel;
 	}
 
@@ -289,22 +298,6 @@ public class FindReplaceDialog extends JDialog {
 			jTextReplace.setFocusAccelerator('R');
 		}
 		return jTextReplace;
-	}
-
-	private JButton getJButtonReplace() {
-		if (jButtonReplace == null) {
-			jButtonReplace = new JButton(labels.getString("lbl_replace"));
-			jButtonReplace.addActionListener(event -> doReplace());
-		}
-		return jButtonReplace;
-	}
-
-	private JButton getJButtonReplaceAll() {
-		if (jButtonReplaceAll == null) {
-			jButtonReplaceAll = new JButton(labels.getString("lbl_replaceAll"));
-			jButtonReplaceAll.addActionListener(event -> doReplaceAll());
-		}
-		return jButtonReplaceAll;
 	}
 
 	protected void doFind() {
