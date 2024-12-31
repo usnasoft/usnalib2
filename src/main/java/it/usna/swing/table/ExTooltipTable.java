@@ -128,8 +128,10 @@ public class ExTooltipTable extends TooltipTable {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object cellValue = getValueAt(getSelectedRow(), getSelectedColumn());
-				StringSelection stringSelection = new StringSelection(cellTooltipValue(cellValue, true, 0, 0));
+				final int row = getSelectedRow();
+				final int col = getSelectedColumn();
+				Object cellValue = getValueAt(row, col);
+				StringSelection stringSelection = new StringSelection(cellTooltipValue(cellValue, true, row, col));
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
 			}
 		});
