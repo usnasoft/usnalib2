@@ -77,8 +77,10 @@ public class TooltipTable extends JTable {
 				//if (getCellRect(r, c, false).width <= /*strWidth*/comp.getPreferredSize().width && (strVal = cellValueToString(value, r, c)).length() > 0) {
 				//	return strVal;
 				//}
-				final String strVal = cellTooltipValue(value, getCellRect(r, c, false).width <= comp.getPreferredSize().width, r, c);
-				if (strVal != null && strVal.length() > 0) {
+				final String strVal;
+				if(getCellRect(r, c, false).width <= comp.getPreferredSize().width &&
+						(strVal = cellValueAsString(value, r, c)) != null &&
+						strVal.isEmpty() == false) {
 					return strVal;
 				}
 			}
@@ -89,14 +91,10 @@ public class TooltipTable extends JTable {
 	/**
 	 * Try to map an Object cell value to a String value
 	 */
-	protected String cellTooltipValue(Object value, boolean cellTooSmall, int row, int column) {
-		if(cellTooSmall) {
-			if(value == null) return "";
-			else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(v -> v.toString()).collect(Collectors.joining(" + "));
-			else return value.toString();
-		} else {
-			return null;
-		}
+	protected String cellValueAsString(Object value, /*boolean cellTooSmall,*/ int row, int column) {
+		if(value == null) return "";
+		else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(v -> v.toString()).collect(Collectors.joining(" + "));
+		else return value.toString();
 	}
 
 	/**

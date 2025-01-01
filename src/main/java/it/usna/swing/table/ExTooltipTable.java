@@ -131,7 +131,7 @@ public class ExTooltipTable extends TooltipTable {
 				final int row = getSelectedRow();
 				final int col = getSelectedColumn();
 				Object cellValue = getValueAt(row, col);
-				StringSelection stringSelection = new StringSelection(cellTooltipValue(cellValue, true, row, col));
+				StringSelection stringSelection = new StringSelection(cellValueAsString(cellValue, row, col));
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
 			}
 		});
