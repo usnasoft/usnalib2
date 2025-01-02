@@ -72,17 +72,30 @@ public class TooltipTable extends JTable {
 			final int r, c;
 			final Object value;
 			if ((r = rowAtPoint(evt.getPoint())) >= 0 && (c = columnAtPoint(evt.getPoint())) >= 0 && (value = getValueAt(r, c)) != null) {
-				final Component comp = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
+				final Component rendererComponent = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
 				//final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), value.toString()); // Nota: se la stringa e' di tipo html il calcolo dell'estensione non e' valido!
 				//if (getCellRect(r, c, false).width <= /*strWidth*/comp.getPreferredSize().width && (strVal = cellValueToString(value, r, c)).length() > 0) {
 				//	return strVal;
 				//}
-				final String strVal;
-				if(getCellRect(r, c, false).width <= comp.getPreferredSize().width &&
-						(strVal = cellValueAsString(value, r, c)) != null &&
-						strVal.isEmpty() == false) {
-					return strVal;
-				}
+				return getToolTipText(value, getCellRect(r, c, false).width <= rendererComponent.getPreferredSize().width, r, c);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * By default TooltipTable write a tooltip if the cell is too small to show the full value
+	 * @param value
+	 * @param cellTooSmall true if getCellRect(r, c, false).width <= rendererComponent.getPreferredSize().width
+	 * @param row table coordinates
+	 * @param column table coordinates
+	 * @return the String value or null if no tooltip must be displayed
+	 */
+	protected String getToolTipText(Object value, boolean cellTooSmall, int row, int column) {
+		if(cellTooSmall) {
+			final String strVal = cellValueAsString(value, row, column);
+			if(strVal != null && strVal.isEmpty() == false) {
+				return strVal;
 			}
 		}
 		return null;
@@ -91,7 +104,7 @@ public class TooltipTable extends JTable {
 	/**
 	 * Try to map an Object cell value to a String value
 	 */
-	protected String cellValueAsString(Object value, /*boolean cellTooSmall,*/ int row, int column) {
+	protected String cellValueAsString(Object value, int row, int column) {
 		if(value == null) return "";
 		else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(v -> v.toString()).collect(Collectors.joining(" + "));
 		else return value.toString();

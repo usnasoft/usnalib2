@@ -14,8 +14,8 @@ import javax.swing.text.InternationalFormatter;
 import javax.swing.text.NumberFormatter;
 
 /**
- * <p>JIntegerTextField</p>
- * <p>Formatted field for integer numbers (long) with minimum
+ * <p>NumericTextField</p>
+ * <p>Formatted field for Number subclasses with minimum
  * and maximum values specified.<br>
  * Can also generate buttons to increment and decrement the value.</p>
  * <p>Copyright (c) 2021 - 2006 as IntegerTextField</p>
@@ -23,7 +23,7 @@ import javax.swing.text.NumberFormatter;
  * @version 2.0
  * @author Antonio Flaccomio
  */
-public class NumericTextField<T extends Number & Comparable<T>>  extends JFormattedTextField {
+public class NumericTextField<T extends Number & Comparable<T>> extends JFormattedTextField {
 	private static final long serialVersionUID = 3L;
 	private boolean allowNull;
 

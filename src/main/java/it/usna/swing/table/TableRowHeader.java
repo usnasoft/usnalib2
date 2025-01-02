@@ -84,7 +84,7 @@ public class TableRowHeader extends JList<String> {
 
 			@Override
 			public Component getListCellRendererComponent(final JList<? extends String> list, final String value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-				res.setText((String) value);
+				res.setText(value);
 				return res;
 			}
 		});
