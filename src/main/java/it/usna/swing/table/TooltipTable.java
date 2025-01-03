@@ -68,21 +68,18 @@ public class TooltipTable extends JTable {
 	 */
 	@Override
 	public String getToolTipText(final MouseEvent evt) {
-		if(this.isVisible()) {
-			final int r, c;
-			if ((r = rowAtPoint(evt.getPoint())) >= 0 && (c = columnAtPoint(evt.getPoint())) >= 0) {
-				final Object value = getValueAt(r, c);
-				final Component rendererComponent = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
-				//final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), value.toString()); // Nota: se la stringa e' di tipo html il calcolo dell'estensione non e' valido!
-				//if (getCellRect(r, c, false).width <= /*strWidth*/comp.getPreferredSize().width && (strVal = cellValueToString(value, r, c)).length() > 0) {
-				//	return strVal;
-				//}
-				return getToolTipText(value, getCellRect(r, c, false).width <= rendererComponent.getPreferredSize().width, r, c);
+		if(isVisible()) {
+			final int row, column;
+			if ((row = rowAtPoint(evt.getPoint())) >= 0 && (column = columnAtPoint(evt.getPoint())) >= 0) {
+//				final Object value = getValueAt(r, c);
+//				final Component rendererComponent = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
+				final Component rendererComponent = prepareRenderer(getCellRenderer(row, column), row, column);
+				return getToolTipText(getValueAt(row, column), getCellRect(row, column, false).width <= rendererComponent.getPreferredSize().width, row, column);
 			}
 		}
 		return null;
 	}
-	
+
 	/**
 	 * By default TooltipTable write a tooltip if the cell is too small to show the full value
 	 * @param value
@@ -259,4 +256,4 @@ public class TooltipTable extends JTable {
 	public boolean isColumnVisible(final int modelInd) {
 		return hiddenColumns == null || hiddenColumns[modelInd] == null;
 	}
-} // 230 - 245
+}
