@@ -19,7 +19,7 @@ import it.usna.util.AppProperties;
  * A swing JTable with column header tooltips, cell tooltips, column visibility control and
  * property (columns sizes, positions and visibility) saving abilities.
  * @author USNA - Antonio Flaccomio
- * @version 1.0
+ * @version 1.1
  */
 public class TooltipTable extends JTable {
 	private static final long serialVersionUID = 1L;
@@ -68,10 +68,10 @@ public class TooltipTable extends JTable {
 	 */
 	@Override
 	public String getToolTipText(final MouseEvent evt) {
-		if(((Component) evt.getSource()).isVisible()) {
+		if(this.isVisible()) {
 			final int r, c;
-			final Object value;
-			if ((r = rowAtPoint(evt.getPoint())) >= 0 && (c = columnAtPoint(evt.getPoint())) >= 0 && (value = getValueAt(r, c)) != null) {
+			if ((r = rowAtPoint(evt.getPoint())) >= 0 && (c = columnAtPoint(evt.getPoint())) >= 0) {
+				final Object value = getValueAt(r, c);
 				final Component rendererComponent = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
 				//final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), value.toString()); // Nota: se la stringa e' di tipo html il calcolo dell'estensione non e' valido!
 				//if (getCellRect(r, c, false).width <= /*strWidth*/comp.getPreferredSize().width && (strVal = cellValueToString(value, r, c)).length() > 0) {
@@ -111,7 +111,7 @@ public class TooltipTable extends JTable {
 	}
 
 	/**
-	 * Override the default method to show tooltip if the cell is not wide enough to fully show the value
+	 * Override the default method to show tooltip over the cell (if the cell is not wide enough to fully show the value)
 	 */
 	@Override
 	public Point getToolTipLocation(final MouseEvent evt) {
