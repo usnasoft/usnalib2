@@ -29,8 +29,7 @@ import java.awt.LayoutManager;
 
 // https://stackoverflow.com/questions/8196530/java-vertical-flowlayout-with-horizontal-scrolling
 
-public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
-{
+public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -51,7 +50,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 */
 	public static final int BOTTOM = 2;
 	
-	public static final int LEFT = 3; // for horizontal alignement
+	public static final int LEFT = 3; // for horizontal alignment
 
 	/**
 	 * <code>align</code> is the property that determines
@@ -96,8 +95,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * Constructs a new <code>VerticalFlowLayout</code> with a centered alignment and a
 	 * default 5-unit horizontal and vertical gap.
 	 */
-	public VerticalFlowLayout()
-	{
+	public VerticalFlowLayout() {
 		this(CENTER, CENTER, 5, 5);
 	}
 
@@ -109,8 +107,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * or <code>VerticalFlowLayout.CENTER</code>
 	 * @param align the alignment value
 	 */
-	public VerticalFlowLayout(int align, int hAalign)
-	{
+	public VerticalFlowLayout(int align, int hAalign) {
 		this(align, hAalign, 5, 5);
 	}
 
@@ -129,8 +126,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 *                   and between the components and the
 	 *                   borders of the <code>Container</code>
 	 */
-	public VerticalFlowLayout(int align, int hAalign, int hgap, int vgap)
-	{
+	public VerticalFlowLayout(int align, int hAalign, int hgap, int vgap) {
 		this.hgap = hgap;
 		this.vgap = vgap;
 		setAlignment(align);
@@ -144,8 +140,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @return   the alignment value for this layout
 	 * @see     java.awt.VerticalFlowLayout#setAlignment
 	 */
-	public int getAlignment()
-	{
+	public int getAlignment() {
 		return align;
 	}
 
@@ -159,18 +154,15 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @param     align one of the alignment values shown above
 	 * @see     #getAlignment()
 	 */
-	public void setAlignment(int align)
-	{
+	public void setAlignment(int align) {
 		this.align = align;
 	}
 	
-	public void setHAlignment(int align)
-	{
+	public void setHAlignment(int align) {
 		this.hAlign = align;
 	}
 	
-	public int getHAlignment()
-	{
+	public int getHAlignment() {
 		return hAlign;
 	}
 
@@ -261,15 +253,14 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @see #minimumLayoutSize
 	 * @see    java.awt.Container#getPreferredSize
 	 */
-	public Dimension preferredLayoutSize(Container target)
-	{
+	public Dimension preferredLayoutSize(Container target) {
 		synchronized (target.getTreeLock())
 		{
 			Dimension dim = new Dimension(0, 0);
 			int nmembers = target.getComponentCount();
 			boolean firstVisibleComponent = true;
 
-			for (int i = 0 ; i < nmembers ; i++) {
+			for (int i = 0; i < nmembers; i++) {
 				Component m = target.getComponent(i);
 
 				if (m.isVisible()) {
@@ -287,8 +278,8 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 			}
 
 			Insets insets = target.getInsets();
-			dim.width += insets.left + insets.right + hgap*2;
-			dim.height += insets.top + insets.bottom + vgap*2;
+			dim.width += insets.left + insets.right + hgap << 1;
+			dim.height += insets.top + insets.bottom + vgap << 1;
 			return dim;
 		}
 	}
@@ -303,16 +294,14 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @see    java.awt.Container
 	 * @see    java.awt.Container#doLayout
 	 */
-	public Dimension minimumLayoutSize(Container target)
-	{
+	public Dimension minimumLayoutSize(Container target) {
 		synchronized (target.getTreeLock())
 		{
 			Dimension dim = new Dimension(0, 0);
 			int nmembers = target.getComponentCount();
 			boolean firstVisibleComponent = true;
 
-			for (int i = 0 ; i < nmembers ; i++)
-			{
+			for (int i = 0; i < nmembers; i++) {
 				Component m = target.getComponent(i);
 				if (m.isVisible()) {
 					Dimension d = m.getMinimumSize();
@@ -329,8 +318,8 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 			}
 
 			Insets insets = target.getInsets();
-			dim.width += insets.left + insets.right + hgap*2;
-			dim.height += insets.top + insets.bottom + vgap*2;
+			dim.width += insets.left + insets.right + hgap << 1;
+			dim.height += insets.top + insets.bottom + vgap << 1;
 			return dim;
 		}
 	}
@@ -346,8 +335,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @see Container
 	 * @see    java.awt.Container#doLayout
 	 */
-	public void layoutContainer(Container target)
-	{
+	public void layoutContainer(Container target) {
 		synchronized (target.getTreeLock())
 		{
 			Insets insets = target.getInsets();
@@ -360,26 +348,21 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 
 			boolean ttb = target.getComponentOrientation().isLeftToRight();
 
-			for (int i = 0 ; i < nmembers ; i++)
-			{
+			for (int i = 0 ; i < nmembers ; i++) {
 				Component m = target.getComponent(i);
 
 				if (m.isVisible()) {
 					Dimension d = m.getPreferredSize();
 					m.setSize(d.width, d.height);
 
-					if ((y == 0) || ((y + d.height) <= maxHeight))
-					{
-						if (y > 0)
-						{
+					if ((y == 0) || ((y + d.height) <= maxHeight)) {
+						if (y > 0) {
 							y += vgap;
 						}
 
 						y += d.height;
 						columnWidth = Math.max(columnWidth, d.width);
-					}
-					else
-					{
+					} else {
 						if(m instanceof javax.swing.Box.Filler == false) {
 							moveComponents(target, x, insets.top + vgap, columnWidth, maxHeight - y, start, i, ttb);
 							y = d.height;
@@ -405,40 +388,33 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable
 	 * @param columnStart the beginning of the column
 	 * @param columnEnd the the ending of the column
 	 */
-	private void moveComponents(Container target, int x, int y, int width, int height, int columnStart, int columnEnd, boolean ttb)
-	{
-		switch (align)
-		{
+	private void moveComponents(Container target, int x, int y, int width, int height, int columnStart, int columnEnd, boolean ttb) {
+		switch (align) {
 		case TOP:
 			y += ttb ? 0 : height;
 			break;
 		case CENTER:
-			y += height / 2;
+			y += height >> 1;
 			break;
 		case BOTTOM:
 			y += ttb ? height : 0;
 			break;
 		}
 
-		for (int i = columnStart; i < columnEnd; i++)
-		{
+		for (int i = columnStart; i < columnEnd; i++) {
 			Component m = target.getComponent(i);
 
-			if (m.isVisible())
-			{
+			if (m.isVisible()) {
 				int cx;
 				if(hAlign == LEFT) {
 					cx = x;
 				} else { // hAlign == CENTER
-					cx = x + (width - m.getSize().width) / 2;
+					cx = x + (width - m.getSize().width) >> 1;
 				}
 
-				if (ttb)
-				{
+				if (ttb) {
 					m.setLocation(cx, y);
-				}
-				else
-				{
+				} else {
 					m.setLocation(cx, target.getSize().height - y - m.getSize().height);
 				}
 

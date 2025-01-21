@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -18,11 +17,15 @@ public class ArrayTableCellRenderer extends DefaultTableCellRenderer {
 	private static Border EMPTY_BORDER;
 	private final static Border FOCUS_BORDER = UIManager.getBorder("Table.focusCellHighlightBorder");
 	private JPanel p = new JPanel();
-
-	public ArrayTableCellRenderer() {
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+	
+	public ArrayTableCellRenderer(int align, int hAalign, int hgap, int vgap) {
+		p.setLayout(/*new BoxLayout(p, BoxLayout.Y_AXIS)*/new VerticalFlowLayout(align, hAalign, hgap, vgap));
 		final Insets borderInsets = FOCUS_BORDER.getBorderInsets(this);
 		EMPTY_BORDER = BorderFactory.createEmptyBorder(borderInsets.top, borderInsets.left, borderInsets.bottom, borderInsets.right);
+	}
+
+	public ArrayTableCellRenderer() {
+		this(VerticalFlowLayout.CENTER, VerticalFlowLayout.LEFT, 0, 0);
 	}
 
 	@Override
