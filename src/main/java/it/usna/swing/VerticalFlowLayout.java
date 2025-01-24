@@ -269,11 +269,10 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 
 					if (firstVisibleComponent) {
 						firstVisibleComponent = false;
+						dim.height += d.height;
 					} else {
-						dim.height += vgap;
+						dim.height += vgap + d.height;
 					}
-
-					dim.height += d.height;
 				}
 			}
 
@@ -421,3 +420,6 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 		}
 	}
 }
+
+//void	setHorizontalFill(boolean hfill)
+//void	setVerticalFill(boolean vfill)
