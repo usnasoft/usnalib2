@@ -278,8 +278,8 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 			}
 
 			Insets insets = target.getInsets();
-			dim.width += insets.left + insets.right + hgap << 1;
-			dim.height += insets.top + insets.bottom + vgap << 1;
+			dim.width += insets.left + insets.right + (hgap << 1);
+			dim.height += insets.top + insets.bottom + (vgap << 1);
 			return dim;
 		}
 	}
@@ -309,17 +309,16 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 
 					if (firstVisibleComponent) {
 						firstVisibleComponent = false;
+						dim.height += d.height;
 					} else {
-						dim.height += vgap;
+						dim.height += vgap + d.height;
 					}
-
-					dim.height += d.height;
 				}
 			}
 
 			Insets insets = target.getInsets();
-			dim.width += insets.left + insets.right + hgap << 1;
-			dim.height += insets.top + insets.bottom + vgap << 1;
+			dim.width += insets.left + insets.right + (hgap << 1);
+			dim.height += insets.top + insets.bottom + (vgap << 1);
 			return dim;
 		}
 	}
@@ -339,7 +338,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 		synchronized (target.getTreeLock())
 		{
 			Insets insets = target.getInsets();
-			int maxHeight = target.getSize().height - (insets.top + insets.bottom + vgap*2);
+			int maxHeight = target.getSize().height - (insets.top + insets.bottom + (vgap << 1));
 			int nmembers = target.getComponentCount();
 			int x = insets.left + hgap;
 			int y = 0;
@@ -355,12 +354,11 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 					Dimension d = m.getPreferredSize();
 					m.setSize(d.width, d.height);
 
-					if ((y == 0) || ((y + d.height) <= maxHeight)) {
-						if (y > 0) {
-							y += vgap;
-						}
-
+					if(y == 0) {
 						y += d.height;
+						columnWidth = Math.max(columnWidth, d.width);
+					} else if((y + d.height) <= maxHeight) { // y > 0
+						y += d.height + vgap;
 						columnWidth = Math.max(columnWidth, d.width);
 					} else {
 						if(m instanceof javax.swing.Box.Filler == false) {
@@ -409,7 +407,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 				if(hAlign == LEFT) {
 					cx = x;
 				} else { // hAlign == CENTER
-					cx = x + (width - m.getSize().width) >> 1;
+					cx = x + ((width - m.getSize().width) >> 1);
 				}
 
 				if (ttb) {
