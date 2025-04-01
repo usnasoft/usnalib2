@@ -85,6 +85,10 @@ public class ExTooltipTable extends TooltipTable {
 	public int[] getSelectedModelRows() {
 		return IntStream.of(getSelectedRows()).map(i -> convertRowIndexToModel(i)).toArray();
 	}
+	
+	public IntStream getSelectedModelRowsStream() {
+		return IntStream.of(getSelectedRows()).map(i -> convertRowIndexToModel(i));
+	}
 
 	/*public int findFirstRow(final int col, final Object colVal) {
 		for(int i = 0; i < getRowCount(); i++) {
