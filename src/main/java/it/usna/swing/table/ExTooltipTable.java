@@ -21,7 +21,7 @@ import javax.swing.table.TableModel;
  * <p>extends ToolTipTable providing new constructors and sorting support.</p>
  * <p>Company: USNA</p>
  * @author Antonio Flaccomio
- * @version 1.0
+ * @version 1.1
  */
 public class ExTooltipTable extends TooltipTable {
 	private static final long serialVersionUID = 1L;
@@ -81,13 +81,13 @@ public class ExTooltipTable extends TooltipTable {
 		int sel = getSelectedRow();
 		return sel >= 0 ? convertRowIndexToModel(sel) : -1;
 	}
-
-	public int[] getSelectedModelRows() {
-		return IntStream.of(getSelectedRows()).map(i -> convertRowIndexToModel(i)).toArray();
-	}
 	
 	public IntStream getSelectedModelRowsStream() {
-		return IntStream.of(getSelectedRows()).map(i -> convertRowIndexToModel(i));
+		return IntStream.of(getSelectedRows()).map(this::convertRowIndexToModel);
+	}
+	
+	public int[] getSelectedModelRows() {
+		return IntStream.of(getSelectedRows()).map(this::convertRowIndexToModel).toArray();
 	}
 
 	/*public int findFirstRow(final int col, final Object colVal) {
