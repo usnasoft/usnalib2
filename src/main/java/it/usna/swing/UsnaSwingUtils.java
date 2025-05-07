@@ -1,8 +1,14 @@
 package it.usna.swing;
 
+import java.awt.Component;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Enumeration;
 
+import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -24,6 +30,54 @@ public class UsnaSwingUtils {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		return false;
+	}
+	
+	/**
+	 * Sets the location of thisComponent according to a reference Component
+	 * @param thisComponent
+	 * @param reference
+	 * @param hRef SwingConstants.LEFT, SwingConstants.RIGHT, SwingConstants.CENTER
+	 */
+	public static void setLocationRelativeTo(Component thisComponent, Component reference, int hRef, int hBias, int vBias) {
+		Rectangle screenBounds = getCurrentScreenBounds(reference);
+		Point newLocation = reference.getLocationOnScreen();
+		Rectangle refBounds = reference.getBounds();
+		Rectangle thisBounds = thisComponent.getBounds();
+		newLocation.x += hBias;
+		newLocation.y += vBias;
+		if(hRef == SwingConstants.RIGHT) {
+			newLocation.x += refBounds.width;
+		} else if(hRef == SwingConstants.LEFT) {
+			newLocation.x += refBounds.x - thisBounds.width;
+		} else if(hRef == SwingConstants.CENTER) {
+			newLocation.x += refBounds.width / 2 - thisBounds.width / 2;
+		}
+		if(newLocation.x + thisBounds.width > screenBounds.x + screenBounds.width) {
+			newLocation.x = screenBounds.x + screenBounds.width - thisBounds.width;
+		}
+		if(newLocation.y < screenBounds.y) {
+			newLocation.y = screenBounds.y;
+		}
+		if(newLocation.y + thisBounds.height > screenBounds.y + screenBounds.height) {
+			newLocation.y = screenBounds.y + screenBounds.height - thisBounds.height;
+		}
+		thisComponent.setLocation(newLocation);
+	}
+	
+	/**
+	 * Gets the bounds of the screen where the component "c" is.
+	 * On systems with multiple displays if (getBounds().x, getBounds().y) is not fully contained in a display, bounds of primary display are returned
+	 */
+	public static Rectangle getCurrentScreenBounds(Component c) {
+		final Point topLeft = c.getLocationOnScreen();
+		final GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		for(GraphicsDevice graphicsDevice: graphicsDevices) {
+			Rectangle graphicsConfigurationBounds = graphicsDevice.getDefaultConfiguration().getBounds();
+			if(graphicsConfigurationBounds.contains(topLeft)) {
+				return graphicsConfigurationBounds;
+			}
+		}
+		return graphicsDevices[0].getDefaultConfiguration().getBounds();
 	}
 	
 //	https://stackoverflow.com/questions/1043872/are-there-any-built-in-methods-in-java-to-increase-font-size

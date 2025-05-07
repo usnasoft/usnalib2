@@ -3,12 +3,12 @@ package it.usna.mvc.singlewindow;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+import it.usna.swing.UsnaSwingUtils;
 import it.usna.util.AppProperties;
 
 /**
@@ -91,25 +91,18 @@ public class MainWindow extends JFrame {
 			super.setExtendedState(state);
 		} else if(state == MAXIMIZED_HORIZ && getExtendedState() != JFrame.MAXIMIZED_BOTH) {
 			final Rectangle currentBounds = getBounds();
-			Rectangle screen = getCurrentScreenBounds();
+			Rectangle screen = UsnaSwingUtils.getCurrentScreenBounds(this);
 			currentBounds.x = screen.x;
 			currentBounds.width = screen.width;
 			setBounds(currentBounds);
 		}
 	}
+	
 	/**
 	 * Gets the bounds of the screen. On systems with multiple displays if (getBounds().x, getBounds().y) is not fully contained in a display, bounds of primary display are returned
 	 */
 	public Rectangle getCurrentScreenBounds() {
-		final Point topLeft = getLocationOnScreen();
-		final GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		for(GraphicsDevice graphicsDevice: graphicsDevices) {
-			Rectangle graphicsConfigurationBounds = graphicsDevice.getDefaultConfiguration().getBounds();
-			if(graphicsConfigurationBounds.contains(topLeft)) {
-				return graphicsConfigurationBounds;
-			}
-		}
-		return graphicsDevices[0].getDefaultConfiguration().getBounds();
+		return UsnaSwingUtils.getCurrentScreenBounds(this);
 	}
 
 	/**
