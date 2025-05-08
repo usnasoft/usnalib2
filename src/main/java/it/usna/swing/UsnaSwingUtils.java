@@ -1,6 +1,7 @@
 package it.usna.swing;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -42,24 +43,24 @@ public class UsnaSwingUtils {
 		Rectangle screenBounds = getCurrentScreenBounds(reference);
 		Point newLocation = reference.getLocationOnScreen();
 		Rectangle refBounds = reference.getBounds();
-		Rectangle thisBounds = thisComponent.getBounds();
+		Dimension thisSize = thisComponent.getSize();
 		newLocation.x += hBias;
 		newLocation.y += vBias;
 		if(hRef == SwingConstants.RIGHT) {
 			newLocation.x += refBounds.width;
 		} else if(hRef == SwingConstants.LEFT) {
-			newLocation.x += refBounds.x - thisBounds.width;
+			newLocation.x -= thisSize.width;
 		} else if(hRef == SwingConstants.CENTER) {
-			newLocation.x += refBounds.width / 2 - thisBounds.width / 2;
+			newLocation.x += refBounds.width / 2 - thisSize.width / 2;
 		}
-		if(newLocation.x + thisBounds.width > screenBounds.x + screenBounds.width) {
-			newLocation.x = screenBounds.x + screenBounds.width - thisBounds.width;
+		if(newLocation.x + thisSize.width > screenBounds.x + screenBounds.width) {
+			newLocation.x = screenBounds.x + screenBounds.width - thisSize.width;
 		}
 		if(newLocation.y < screenBounds.y) {
 			newLocation.y = screenBounds.y;
 		}
-		if(newLocation.y + thisBounds.height > screenBounds.y + screenBounds.height) {
-			newLocation.y = screenBounds.y + screenBounds.height - thisBounds.height;
+		if(newLocation.y + thisSize.height > screenBounds.y + screenBounds.height) {
+			newLocation.y = screenBounds.y + screenBounds.height - thisSize.height;
 		}
 		thisComponent.setLocation(newLocation);
 	}
