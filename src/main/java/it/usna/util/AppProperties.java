@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
@@ -18,27 +19,35 @@ import java.util.stream.Collectors;
  * <p>Copyright (c) 2003</p>
  * <p>Company: USNA</p>
  * @author Antonio Flaccomio
- * @version 1.0
+ * @version 1.2
  */
 public class AppProperties extends Properties {
 	private static final long serialVersionUID = 1L;
-	private final String fileName;
+	private final Path file;
+	
+	/**
+	 * Constructor; read the configuration file
+	 * @param file Path - configuration file
+	 * @since 1.2
+	 */
+	public AppProperties(final Path file) {
+		this.file = file;
+	}
 
 	/**
 	 * Constructor; read the configuration file
 	 * @param fileName String - configuration file name
-	 * @throws IOException
 	 */
 	public AppProperties(final String fileName) {
-		this.fileName = fileName;
+		this.file = Paths.get(fileName);
 	}
 
 	public AppProperties() {
-		this.fileName = "properties.conf";
+		this.file = Paths.get("properties.conf");
 	}
 
 	/**
-	 * Store properties on the "fileName" file;
+	 * Save the properties
 	 * @param alsoEmpty true: save empty properties, false: do not save empty properties
 	 * @throws IOException
 	 */
@@ -48,15 +57,17 @@ public class AppProperties extends Properties {
 		}
 	}
 
-	/** Save the properties on the "fileName" file */
+	/** Save the properties
+	 * @throws IOException
+	 */
 	public void store() throws IOException {
-		try (Writer w = Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8)) {
+		try (Writer w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
 			super.store(w, null);
 		}
 	}
 
 	public void load(final boolean acceptEmpty) throws IOException {
-		try (Reader r = Files.newBufferedReader(Paths.get(fileName), StandardCharsets.UTF_8)) {
+		try (Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
 			super.load(r);
 		} catch(FileNotFoundException | NoSuchFileException e) {
 			if(acceptEmpty == false) {
@@ -66,7 +77,11 @@ public class AppProperties extends Properties {
 	}
 
 	public String getFileName() {
-		return fileName;
+		return file.toString();
+	}
+	
+	public Path getFile() {
+		return file;
 	}
 	
 	public boolean changeProperty(final String key, final String value) {

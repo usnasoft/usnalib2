@@ -25,7 +25,7 @@ public class UsnaPopupMenu extends JPopupMenu {
 	}
 
 	/**
-	 * Costrunt a menu with an array of items
+	 * Construct a menu with an array of items
 	 * @see add(Object ... items)
 	 * @param items
 	 */
