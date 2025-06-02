@@ -55,7 +55,8 @@ public class TooltipTable extends JTable {
 					return headerTips[mc];
 				} else {
 					final String name = getColumnName(tc);
-					final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), name);
+//					final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), name);
+					final int strWidth = SwingUtilities.computeStringWidth(getFontMetrics(getFont()), name);
 					return (getHeaderRect(tc).width <= strWidth) ? name : null;
 				}
 			}

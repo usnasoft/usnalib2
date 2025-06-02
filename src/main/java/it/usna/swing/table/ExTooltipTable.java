@@ -1,7 +1,6 @@
 package it.usna.swing.table;
 
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -103,9 +102,11 @@ public class ExTooltipTable extends TooltipTable {
 	 * Adapt columns width to content (toString()). Call only after the table is displayed
 	 */
 	public void columnsWidthAdapt() {
-		Graphics g = getGraphics();
-		if(g != null) {
-			final FontMetrics fm = g.getFontMetrics();
+//		Graphics g = getGraphics();
+//		if(g != null) {
+		try {
+			final FontMetrics fm = getFontMetrics(getFont());
+//			final FontMetrics fm = g.getFontMetrics();
 			final int columnCount = getColumnCount();
 			final int rowCount =  getRowCount();
 			for(int c = 0; c < columnCount; c++) {
@@ -124,7 +125,8 @@ public class ExTooltipTable extends TooltipTable {
 				}
 				tc.setPreferredWidth(width);
 			}
-		}
+//		}
+		} catch(RuntimeException e) {}
 	}
 	
 	public void activateSingleCellStringCopy() {
