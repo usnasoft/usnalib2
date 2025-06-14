@@ -3,6 +3,7 @@ package it.usna.swing;
 import java.awt.event.ActionEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -33,28 +34,45 @@ public class NumericTextField<T extends Number & Comparable<T>> extends JFormatt
 	 */
 	public NumericTextField(final T init, final T min, final T max) {
 		this.allowNull = false;
-		init(min, max);
+		init(min, max, null);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T init, final T min, final T max, boolean allowNull) {
 		this.allowNull = allowNull;
-		init(min, max);
+		init(min, max, null);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T min, final T max) {
 		this.allowNull = true;
-		init(min, max);
+		init(min, max, null);
+	}
+	
+	public NumericTextField(final T init, final T min, final T max, Locale locale) {
+		this.allowNull = false;
+		init(min, max, locale);
+		setValue(init);
+	}
+	
+	public NumericTextField(final T init, final T min, final T max, boolean allowNull, Locale locale) {
+		this.allowNull = allowNull;
+		init(min, max, locale);
+		setValue(init);
+	}
+	
+	public NumericTextField(final T min, final T max, Locale locale) {
+		this.allowNull = true;
+		init(min, max, locale);
 	}
 	
 	public void allowNull(boolean allow) {
 		this.allowNull = allow;
 	}
 	
-	private void init(final T min, final T max) {
+	private void init(final T min, final T max, Locale locale) {
 		final DefaultFormatterFactory ff = new DefaultFormatterFactory();
-		final InternationalFormatter formatter = new NumberOrNullFormatter();
+		final InternationalFormatter formatter = (locale == null) ? new NumberOrNullFormatter(Locale.getDefault()) : new NumberOrNullFormatter(locale);
 		ff.setDefaultFormatter(formatter);
 		ff.setEditFormatter(formatter);
 		formatter.setMaximum(max);
@@ -64,6 +82,10 @@ public class NumericTextField<T extends Number & Comparable<T>> extends JFormatt
 
 	private class NumberOrNullFormatter extends NumberFormatter {
 		private static final long serialVersionUID = 1L;
+
+		public NumberOrNullFormatter(Locale locale) {
+			super(NumberFormat.getNumberInstance(locale));
+		}
 
 		@Override
 		public Object stringToValue(String string) throws ParseException {
@@ -82,6 +104,14 @@ public class NumericTextField<T extends Number & Comparable<T>> extends JFormatt
 
 	public void setGroupingUsed(final boolean use) {
 		((NumberFormat)((InternationalFormatter) getFormatter()).getFormat()).setGroupingUsed(use);
+	}
+	
+	public void setMaximumFractionDigits(int fractionalDigits) {
+		((NumberFormat)((InternationalFormatter) getFormatter()).getFormat()).setMaximumFractionDigits(fractionalDigits);
+	}
+	
+	public void setMinimumFractionDigits(int fractionalDigits) {
+		((NumberFormat)((InternationalFormatter) getFormatter()).getFormat()).setMinimumFractionDigits(fractionalDigits);
 	}
 	
 	public boolean isEmpty() {
