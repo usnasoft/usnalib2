@@ -25,7 +25,7 @@ import javax.swing.text.NumberFormatter;
  * @author Antonio Flaccomio
  */
 public class NumericTextField<T extends Number & Comparable<T>> extends JFormattedTextField {
-	private static final long serialVersionUID = 3L;
+	private static final long serialVersionUID = 4L;
 	private boolean allowNull;
 
 	/**
@@ -34,57 +34,60 @@ public class NumericTextField<T extends Number & Comparable<T>> extends JFormatt
 	 */
 	public NumericTextField(final T init, final T min, final T max) {
 		this.allowNull = false;
-		init(min, max, null);
+		init(min, max);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T init, final T min, final T max, boolean allowNull) {
 		this.allowNull = allowNull;
-		init(min, max, null);
+		init(min, max);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T min, final T max) {
 		this.allowNull = true;
-		init(min, max, null);
+		init(min, max);
 	}
 	
 	public NumericTextField(final T init, final T min, final T max, Locale locale) {
 		this.allowNull = false;
-		init(min, max, locale);
+		setLocale(locale);
+		init(min, max);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T init, final T min, final T max, boolean allowNull, Locale locale) {
 		this.allowNull = allowNull;
-		init(min, max, locale);
+		setLocale(locale);
+		init(min, max);
 		setValue(init);
 	}
 	
 	public NumericTextField(final T min, final T max, Locale locale) {
 		this.allowNull = true;
-		init(min, max, locale);
+		setLocale(locale);
+		init(min, max);
 	}
 	
 	public void allowNull(boolean allow) {
 		this.allowNull = allow;
 	}
 	
-	private void init(final T min, final T max, Locale locale) {
+	private void init(final T min, final T max) {
 		final DefaultFormatterFactory ff = new DefaultFormatterFactory();
-		final InternationalFormatter formatter = (locale == null) ? new NumberOrNullFormatter(Locale.getDefault()) : new NumberOrNullFormatter(locale);
+		final InternationalFormatter formatter = new NumberOrNullFormatter();
 		ff.setDefaultFormatter(formatter);
 		ff.setEditFormatter(formatter);
 		formatter.setMaximum(max);
 		formatter.setMinimum(min);
 		setFormatterFactory(ff);
-	}	
+	}
 
 	private class NumberOrNullFormatter extends NumberFormatter {
 		private static final long serialVersionUID = 1L;
 
-		public NumberOrNullFormatter(Locale locale) {
-			super(NumberFormat.getNumberInstance(locale));
+		public NumberOrNullFormatter() {
+			super(NumberFormat.getNumberInstance(NumericTextField.this.getLocale()));
 		}
 
 		@Override
