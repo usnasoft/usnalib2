@@ -7,7 +7,9 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
@@ -63,6 +65,32 @@ public class UsnaSwingUtils {
 			newLocation.y = screenBounds.y + screenBounds.height - thisSize.height;
 		}
 		thisComponent.setLocation(newLocation);
+	}
+	
+	/**
+	 * Sets the location of toBeOpened relative to the owner as usual but if a owned window exixts woith the same (x,y) move the new window some puxel right and below.
+	 * @param toBeOpened - the window to be opened
+	 * @param owner - the owner window
+	 * @param sameClass - if true only the same toBeOpened windows (by class) are considered
+	 */
+	public static void setLocationRelativeTo(Window toBeOpened, Window owner, boolean sameClass) {
+		HashSet<Integer> x = new HashSet<>();
+		toBeOpened.setLocationRelativeTo(owner);
+		for(Window w: owner.getOwnedWindows()) {
+			if(w != toBeOpened && w.isVisible() && (sameClass == false || w.getClass() == toBeOpened.getClass())) {
+				x.add(w.getX());
+			}	
+		}
+		int newX = toBeOpened.getX();
+		int newY = toBeOpened.getY();
+		while(x.contains(newX)) {
+			newX += 16;
+			newY += 16;
+		}
+		Rectangle screenBounds = getCurrentScreenBounds(owner);
+		if(newX + 32 < screenBounds.x + screenBounds.width && newY + 32 < screenBounds.y + screenBounds.height) {
+			toBeOpened.setLocation(newX, newY);
+		}
 	}
 	
 	/**
