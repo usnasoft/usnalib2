@@ -109,14 +109,13 @@ public class UsnaPopupMenu extends JPopupMenu {
 			
 			private void selectAndPopup(java.awt.event.MouseEvent e) {
 				final int r = table.rowAtPoint(e.getPoint());
-				if (table.isRowSelected(r) == false) {
+				if (r >= 0 && table.isRowSelected(r) == false) {
 					table.setRowSelectionInterval(r, r);
-					doPopup(e);
 				}
+				doPopup(e);
 			}
 		};
 	}
-
 
 	/**
 	 *  Override to add specific functions e.g.: select item below the pointer
