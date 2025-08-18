@@ -12,8 +12,8 @@ public class EdModel extends ModelImpl {
 	private boolean docChanged;
 	private boolean notAFile;
 	
-	public final static int LOAD_TEXT = 0;
-	public final static int TITLE_CHANGED = 1;
+	public static final int LOAD_TEXT = 0;
+	public static final int TITLE_CHANGED = 1;
 	
 	public String getContent() {
 		if (notAFile) {

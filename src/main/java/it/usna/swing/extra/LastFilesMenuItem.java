@@ -15,7 +15,7 @@ import javax.swing.JMenuItem;
  */
 public class LastFilesMenuItem extends JMenuItem {
 	private static final long serialVersionUID = 1L;
-	private final static String PROP_LAST_FILE = "LastFiles_";
+	private static final String PROP_LAST_FILE = "LastFiles_";
 	private final LinkedList<File> files;
 	private final int maxFiles;
 

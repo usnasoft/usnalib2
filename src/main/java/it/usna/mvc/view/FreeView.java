@@ -26,7 +26,7 @@ import it.usna.mvc.model.Model;
 
 public abstract class FreeView <M extends Model> extends JFrame implements View {
 	private static final long serialVersionUID = 1L;
-	private final static String DEF_ICON = "/img/usna16.gif"; 
+	private static final String DEF_ICON = "/img/usna16.gif"; 
 	private static int uniqueIdSequence = 0;
 	private int uniqueId;
 	protected final Controller controller;

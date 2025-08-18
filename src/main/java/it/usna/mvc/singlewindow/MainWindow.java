@@ -5,6 +5,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.Window;
 
 import javax.swing.JFrame;
 
@@ -17,11 +18,11 @@ import it.usna.util.AppProperties;
  */
 public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
-	protected final static String PROP_WIDTH = "APP_USNA_WIDTH";
-	protected final static String PROP_HEIGHT = "APP_USNA_HEIGHT";
-	protected final static String PROP_XPOS = "APP_USNA_XPOS";
-	protected final static String PROP_YPOS = "APP_USNA_YPOS";
-	protected final static String PROP_EXT = "APP_USNA_EXTENDED";
+	protected static final String PROP_WIDTH = "APP_USNA_WIDTH";
+	protected static final String PROP_HEIGHT = "APP_USNA_HEIGHT";
+	protected static final String PROP_XPOS = "APP_USNA_XPOS";
+	protected static final String PROP_YPOS = "APP_USNA_YPOS";
+	protected static final String PROP_EXT = "APP_USNA_EXTENDED";
 
 	/**
 	 * Load windows stored position and size; default position is middle; default size is width/2, height/2
@@ -130,5 +131,16 @@ public class MainWindow extends JFrame {
 			frameSize.width = screenSize.width;
 		}
 		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+	}
+	
+	public void setLocationRelativeTo(Window toBeOpened, boolean sameClass) {
+		toBeOpened.setLocationRelativeTo(this);
+		for(Window w: getOwnedWindows()) {
+			if(sameClass == false || w.getClass() == toBeOpened.getClass()) {
+				if(w.getX() == toBeOpened.getX() && w.getY() == toBeOpened.getY()) {
+					toBeOpened.setLocation(w.getX() + 10, w.getY());
+				}
+			}	
+		}
 	}
 }

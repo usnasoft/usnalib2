@@ -15,7 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class ArrayTableCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 	private static Border EMPTY_BORDER;
-	private final static Border FOCUS_BORDER = UIManager.getBorder("Table.focusCellHighlightBorder");
+	private static final Border FOCUS_BORDER = UIManager.getBorder("Table.focusCellHighlightBorder");
 	private JPanel p = new JPanel();
 	
 	public ArrayTableCellRenderer(int align, int hAalign, int hgap, int vgap) {

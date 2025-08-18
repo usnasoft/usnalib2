@@ -20,7 +20,7 @@ import it.usna.mvc.view.View;
 public class LookAndFeelMenu extends JMenu {
 
 	private static final long serialVersionUID = 1L;
-	private final static String PROP_L_AND_F = "LOOK_AND_FEEL";
+	private static final String PROP_L_AND_F = "LOOK_AND_FEEL";
 	protected Container baseContainer;
 	protected ControllerImpl<?> contr;
 

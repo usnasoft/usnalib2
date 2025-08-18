@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 
 /**
  * JPopupMenu extension; utility class.
@@ -19,13 +20,13 @@ public class UsnaPopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;
 	protected Point invocationPoint;
 	/**
-	 * Construct an empty menu
+	 * Construct an empty UsnaPopupMenu
 	 */
 	public UsnaPopupMenu() {
 	}
 
 	/**
-	 * Construct a menu with an array of items
+	 * Construct a UsnaPopupMenu with an array of items
 	 * @see add(Object ... items)
 	 * @param items
 	 */
@@ -85,6 +86,37 @@ public class UsnaPopupMenu extends JPopupMenu {
 			}
 		};
 	}
+	
+	/**
+	 * Create and return the standard listener for this popup menu for a JTable;
+	 * if the row where the event has origin is not selected -> select it and then popup
+	 * @return an implementation of MouseListener
+	 */
+	public MouseListener getMouseListener(JTable table) {
+		return new MouseAdapter() {
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					selectAndPopup(e);
+				}
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					selectAndPopup(e);
+				}
+			}
+			
+			private void selectAndPopup(java.awt.event.MouseEvent e) {
+				final int r = table.rowAtPoint(e.getPoint());
+				if (table.isRowSelected(r) == false) {
+					table.setRowSelectionInterval(r, r);
+					doPopup(e);
+				}
+			}
+		};
+	}
+
 
 	/**
 	 *  Override to add specific functions e.g.: select item below the pointer

@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class IOFile {
-	private final static String lineSeparator = System.getProperty("line.separator");
-	private final static int MAX_EXTENSION_LEN = 6;
+	private static final String lineSeparator = System.getProperty("line.separator");
+	private static final int MAX_EXTENSION_LEN = 6;
 	
 	/**
 	 * @Deprecated 

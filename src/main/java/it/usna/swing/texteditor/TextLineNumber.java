@@ -40,11 +40,11 @@ import javax.swing.text.Utilities;
  */
 public class TextLineNumber extends JPanel implements CaretListener, DocumentListener, PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
-	public final static float LEFT = 0.0f;
-	public final static float CENTER = 0.5f;
-	public final static float RIGHT = 1.0f;
+	public static final float LEFT = 0.0f;
+	public static final float CENTER = 0.5f;
+	public static final float RIGHT = 1.0f;
 
-	private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
+	private static final int HEIGHT = Integer.MAX_VALUE - 1000000;
 
 	// Text component this TextTextLineNumber component is in sync with
 	private final JTextComponent textComponent;

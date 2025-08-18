@@ -33,14 +33,14 @@ import it.usna.swing.NumericTextField;
 public class CalendarPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	public final static String EVT_DAY_SELECTED = "DAY_SEL";  //  @jve:decl-index=0:
-	public final static String EVT_YEAR_SELECTED = "YEAR_SEL";  //  @jve:decl-index=0:
-	public final static String EVT_MONTH_SELECTED = "MONTH_SEL";
+	public static final String EVT_DAY_SELECTED = "DAY_SEL";  //  @jve:decl-index=0:
+	public static final String EVT_YEAR_SELECTED = "YEAR_SEL";  //  @jve:decl-index=0:
+	public static final String EVT_MONTH_SELECTED = "MONTH_SEL";
 
 	private JPanel daysPanel = null;
 	//private JLabel dataOggi = null; // Label in basso con data in chiaro
 	//private final DateFormat dateFormatter;
-	private final static java.awt.Color SEL_DAY_COLOR = new java.awt.Color(240, 128, 20);
+	private static final java.awt.Color SEL_DAY_COLOR = new java.awt.Color(240, 128, 20);
 	private JComboBox<String> comboMonths = null;
 	private final GregorianCalendar today;
 	private JPanel meseAnno = null;

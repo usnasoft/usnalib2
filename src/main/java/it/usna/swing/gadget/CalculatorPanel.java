@@ -34,11 +34,11 @@ import javax.swing.border.BevelBorder;
 public class CalculatorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	private final static Color NUMKEY_COLOR = Color.white;
-	private final static Color UTILKEY_COLOR = Color.lightGray;
-	private final static Color OPKEY_COLOR = Color.lightGray;
-	private final static Color OPKEY_SEL_COLOR = Color.darkGray;
-	private final static Color DISP_COLOR = new Color(245, 255, 234);
+	private static final Color NUMKEY_COLOR = Color.white;
+	private static final Color UTILKEY_COLOR = Color.lightGray;
+	private static final Color OPKEY_COLOR = Color.lightGray;
+	private static final Color OPKEY_SEL_COLOR = Color.darkGray;
+	private static final Color DISP_COLOR = new Color(245, 255, 234);
 
 	private JTextField calcDisplay = null;
 	private JPanel calcKeyboard = null;
@@ -46,7 +46,7 @@ public class CalculatorPanel extends JPanel {
 	private JButton opPlus = null;
 	private JButton opMinus = null;
 
-	private final static MathContext MATH_CONT = MathContext.DECIMAL64;
+	private static final MathContext MATH_CONT = MathContext.DECIMAL64;
 	private BigDecimal acc = BigDecimal.ZERO;
 	private BigDecimal mem = BigDecimal.ZERO; 
 	private boolean opExecuted = true;
@@ -56,7 +56,7 @@ public class CalculatorPanel extends JPanel {
 	}
 
 	private Oper prevOp = Oper.NOP;
-	private final static Pattern dispPattern = Pattern.compile("-?([1-9]\\d*(\\.\\d*)?)|(0?\\.\\d*)|0");
+	private static final Pattern dispPattern = Pattern.compile("-?([1-9]\\d*(\\.\\d*)?)|(0?\\.\\d*)|0");
 
 	private JButton bPlusMinus = null;
 	private JButton opMul = null;
@@ -71,7 +71,7 @@ public class CalculatorPanel extends JPanel {
 	private JButton bMemAdd = null;
 	private JButton bMemSubtract = null;
 	
-	private final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // from 1.10 getMenuShortcutKeyMaskEx
+	private static final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // from 1.10 getMenuShortcutKeyMaskEx
 
 	public CalculatorPanel() {
 		super();

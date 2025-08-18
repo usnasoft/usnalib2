@@ -35,7 +35,7 @@ import it.usna.swing.texteditor.TextLineNumber;
 public class SyntacticTextEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("deprecation")
-	public final static int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // getMenuShortcutKeyMaskEx() from java 10
+	public static final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // getMenuShortcutKeyMaskEx() from java 10
 
 	public SyntacticTextEditor() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(SyntacticTextEditor.class.getResource("/img/usna16.gif")));

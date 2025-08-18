@@ -19,7 +19,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
 public class UsnaSwingUtils {
-	public final static String LF_NIMBUS = "Nimbus";
+	public static final String LF_NIMBUS = "Nimbus";
 
 	public static boolean setLookAndFeel(String lf) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		try {

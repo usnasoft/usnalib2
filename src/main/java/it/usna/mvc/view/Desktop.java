@@ -15,7 +15,7 @@ import it.usna.mvc.singlewindow.MainWindow;
  * @param <C>
  */
 public class Desktop<C extends Controller> extends MainWindow {
-	private final static String DEF_ICON = "/img/usna16.gif"; 
+	private static final String DEF_ICON = "/img/usna16.gif"; 
 	
 	protected final C controller;
 

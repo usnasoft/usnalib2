@@ -17,8 +17,8 @@ import it.usna.mvc.view.View;
 public class ViewsTabBar extends JToolBar {
 
 	private static final long serialVersionUID = 1L;
-	private final static Color DEF_SEL_COLOR = Color.RED;
-	private final static Color DEF_UNSEL_COLOR = Color.BLACK;
+	private static final Color DEF_SEL_COLOR = Color.RED;
+	private static final Color DEF_UNSEL_COLOR = Color.BLACK;
 	
 	protected final Map<View, JButton> viewsList = new HashMap<>();
 	protected boolean showCloseButton;

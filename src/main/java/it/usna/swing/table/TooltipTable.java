@@ -23,8 +23,8 @@ import it.usna.util.AppProperties;
  */
 public class TooltipTable extends JTable {
 	private static final long serialVersionUID = 1L;
-	protected final static String COL_WIDTH_PROP = "COL_W";
-	protected final static String COL_POSITION_PROP = "COL_P";
+	protected static final String COL_WIDTH_PROP = "COL_W";
+	protected static final String COL_POSITION_PROP = "COL_P";
 
 	private TableColumn[] hiddenColumns;
 

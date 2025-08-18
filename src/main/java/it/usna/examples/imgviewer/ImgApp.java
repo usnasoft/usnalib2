@@ -6,9 +6,9 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 public class ImgApp {
-	public final static String APP_NAME = "MVC Image Viewer";
-	public final static String VERSION = "0.1";
-	public final static String PROP_FILE = System.getProperty("user.home") + File.separator + ".mvcimgv";
+	public static final String APP_NAME = "MVC Image Viewer";
+	public static final String VERSION = "0.1";
+	public static final String PROP_FILE = System.getProperty("user.home") + File.separator + ".mvcimgv";
 	
 	public static void main(String args[]) {
 		try {
