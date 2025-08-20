@@ -26,8 +26,10 @@ public class IOFile {
 	private static final String lineSeparator = System.getProperty("line.separator");
 	private static final int MAX_EXTENSION_LEN = 6;
 	
+	private IOFile() {}
+	
 	/**
-	 * @Deprecated 
+	 * @deprecated 
 	 * use java.nio.file.Files(...) instead
 	 */
 	@Deprecated
@@ -38,7 +40,7 @@ public class IOFile {
 	}
 	
 	/**
-	 * @Deprecated 
+	 * @deprecated 
 	 * use java.nio.file.Files(...) instead
 	 */
 	@Deprecated
@@ -94,7 +96,7 @@ public class IOFile {
 	 * extension is the sum of at most 2 extensions; max extension length (for each extension) is defined.
 	 */
 	public static String getExtension(final String fileName) {
-		if (fileName.length() > 0) {
+		if (fileName.isEmpty() == false) {
 			final int ultimoDot = fileName.lastIndexOf('.');
 			if (ultimoDot > 0 && fileName.length() - ultimoDot <= MAX_EXTENSION_LEN + 1) {
 				// Ok, it's a valid extension

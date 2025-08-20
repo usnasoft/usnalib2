@@ -102,11 +102,8 @@ public class ExTooltipTable extends TooltipTable {
 	 * Adapt columns width to content (toString()). Call only after the table is displayed
 	 */
 	public void columnsWidthAdapt() {
-//		Graphics g = getGraphics();
-//		if(g != null) {
 		try {
 			final FontMetrics fm = getFontMetrics(getFont());
-//			final FontMetrics fm = g.getFontMetrics();
 			final int columnCount = getColumnCount();
 			final int rowCount =  getRowCount();
 			for(int c = 0; c < columnCount; c++) {
@@ -125,8 +122,9 @@ public class ExTooltipTable extends TooltipTable {
 				}
 				tc.setPreferredWidth(width);
 			}
-//		}
-		} catch(RuntimeException e) {}
+		} catch(RuntimeException e) {
+			// silently go on
+		}
 	}
 	
 	public void activateSingleCellStringCopy() {

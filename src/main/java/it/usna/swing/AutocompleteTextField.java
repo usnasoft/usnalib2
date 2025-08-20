@@ -31,7 +31,7 @@ public class AutocompleteTextField extends JFormattedTextField {
 	/**
 	 * include combo items criteria
 	 */
-	public enum SearchMode {START_WITH, CONTAINS, ALL};
+	public enum SearchMode {START_WITH, CONTAINS, ALL}
 
 	protected String[] itemList;
 	protected int maxItems = 1000;
@@ -88,19 +88,15 @@ public class AutocompleteTextField extends JFormattedTextField {
 	}
 
 	private void init() {
-		final Runnable fillTask = new Runnable() {
-			public void run() {
-				if(AutocompleteTextField.this.isFocusOwner()) {
-					fillCombo();
-				}
-			}
-		};
-		
 		//autocompleteList.setBorder(BorderFactory.createEmptyBorder()) ;
 		
 		getDocument().addDocumentListener(new TextDocumentListener() {
 			public void textChanged(DocumentEvent e) {
-				SwingUtilities.invokeLater(fillTask);
+				SwingUtilities.invokeLater(() -> {
+					if(AutocompleteTextField.this.isFocusOwner()) {
+						fillCombo();
+					}
+				});
 			}
 		});
 
@@ -117,6 +113,7 @@ public class AutocompleteTextField extends JFormattedTextField {
     });*/
 
 		this.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_DOWN) {
 					autocompleteList.dispatchEvent(e);
@@ -136,6 +133,7 @@ public class AutocompleteTextField extends JFormattedTextField {
 		});
 
 		addFocusListener(new FocusAdapter() {
+			@Override
 			public void focusLost(FocusEvent e) {
 				final Component opposite = e.getOppositeComponent();
 				if(opposite != autocompleteList && e.isTemporary() == false) {
@@ -182,11 +180,7 @@ public class AutocompleteTextField extends JFormattedTextField {
 					}
 					it.setBorder(itemBorder);
 					autocompleteList.add(it);
-					it.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
-							AutocompleteTextField.this.setText(itemText);
-						}
-					});
+					it.addActionListener(e -> AutocompleteTextField.this.setText(itemText));
 				}
 
 				if(this.isShowing()) { // if the field (or its container) is not visible the list in not shown
@@ -219,7 +213,7 @@ public class AutocompleteTextField extends JFormattedTextField {
 		} else {
 			pattern = Pattern.compile(".*"); // All
 		}
-		final ArrayList<String> il = new ArrayList<String>();
+		final ArrayList<String> il = new ArrayList<>();
 		for(int i = 0; i < itemList.length && il.size() <= maxItems; i++) {
 			final String item = itemList[i];
 			if(pattern.matcher(item).matches() && edited.equals(item) == false) {
@@ -235,7 +229,7 @@ public class AutocompleteTextField extends JFormattedTextField {
 		@Override
 		public Object stringToValue(final String text) throws ParseException {
 			//System.out.println("xx " + text);
-			if((allowNullValue && text.length() == 0) == false && accept(text) == false) {
+			if((allowNullValue && text.isEmpty()) == false && accept(text) == false) {
 				throw new ParseException("text not in set", 0);
 			}
 			return text;

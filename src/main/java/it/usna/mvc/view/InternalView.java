@@ -107,6 +107,7 @@ public abstract class InternalView<M extends Model> extends JInternalFrame imple
 		controller.viewClosed(this);
 	}
 	
+	@Override
 	public void setSelected(final boolean sel) {
 		try {
 			super.setSelected(sel);
@@ -115,6 +116,7 @@ public abstract class InternalView<M extends Model> extends JInternalFrame imple
 		}
 	}
 	
+	@Override
 	public void setMaximum(boolean maximize) {
 		try {
 			super.setMaximum(maximize);

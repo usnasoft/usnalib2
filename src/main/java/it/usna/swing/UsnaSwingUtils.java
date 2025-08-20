@@ -20,6 +20,8 @@ import javax.swing.plaf.FontUIResource;
 
 public class UsnaSwingUtils {
 	public static final String LF_NIMBUS = "Nimbus";
+	
+	private UsnaSwingUtils() {}
 
 	public static boolean setLookAndFeel(String lf) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		try {
@@ -115,7 +117,6 @@ public class UsnaSwingUtils {
 		for (Enumeration<Object> e = defaults.keys(); e.hasMoreElements();) {
 			Object key = e.nextElement();
 			Object value = defaults.get(key);
-//			System.out.println(key + "-" + value);
 			@SuppressWarnings("unused")
 			String dummy = value != null ? value.toString() : ""; // !!!
 			if (value instanceof Font) {

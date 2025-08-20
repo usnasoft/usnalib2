@@ -35,13 +35,13 @@ public class CommandsMap<K extends Enum<K>> extends EnumMap<K, Action> {
 			private static final long serialVersionUID = 1L;
 			{
 				if(accelerator != null) {
-					putValue(AbstractAction.ACCELERATOR_KEY, accelerator);
+					putValue(Action.ACCELERATOR_KEY, accelerator);
 				}
 				if(tooltip != null) {
-					putValue(AbstractAction.SHORT_DESCRIPTION, tooltip);
+					putValue(Action.SHORT_DESCRIPTION, tooltip);
 				}
 				if(icon != null) {
-					putValue(AbstractAction.LARGE_ICON_KEY, new ImageIcon(getClass().getResource(icon)));
+					putValue(Action.LARGE_ICON_KEY, new ImageIcon(getClass().getResource(icon)));
 				}
 				setEnabled(active);
 			}

@@ -306,7 +306,7 @@ public class FindReplaceDialog extends JDialog {
 			Document doc = textComponent.getDocument();
 			String text = doc.getText(0, doc.getLength());
 			String toFind = jTextFind.getText();
-			if(toFind.length() > 0 && text.length() > 0) {
+			if(!toFind.isEmpty() && !text.isEmpty()) {
 				final boolean forward = jRadioForward.getModel().isSelected();
 				int startPos;
 				if(jRadioFromStart.getModel().isSelected()) {
@@ -378,7 +378,7 @@ public class FindReplaceDialog extends JDialog {
 
 	protected void doReplaceAll() {
 		final String findText = jTextFind.getText();
-		if(findText.length() > 0) {
+		if(!findText.isEmpty()) {
 			JTextComponent textComponent = textComp.get();
 			textComponent.selectAll();
 			textComponent.replaceSelection(textComponent.getText().replace(findText, jTextReplace.getText()));

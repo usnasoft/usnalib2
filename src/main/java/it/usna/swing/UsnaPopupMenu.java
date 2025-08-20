@@ -131,5 +131,6 @@ public class UsnaPopupMenu extends JPopupMenu {
 	 * @param ind the index in the array when the item has been added
 	 */
 	protected void itemSelected(JMenuItem item, int ind) {
+		// override if needed
 	}
 }

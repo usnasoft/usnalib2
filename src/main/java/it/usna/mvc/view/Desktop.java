@@ -45,6 +45,7 @@ public class Desktop<C extends Controller> extends MainWindow {
 	protected void initialize() {
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				controller.closeApp();
 			}

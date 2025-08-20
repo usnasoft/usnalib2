@@ -47,7 +47,7 @@ public class IntegerTableCellEditor extends AbstractCellEditor implements TableC
 	@Override
 	public Component getTableCellEditorComponent(final JTable table, final Object value, final boolean isSelected, final int row, final int col) {
 		final long val = ((Number)value).longValue();
-		itf = new NumericTextField<Long>(val, min, max);
+		itf = new NumericTextField<>(val, min, max);
 		itf.setHorizontalAlignment(NumericTextField.RIGHT);
 		itf.setEditable(editable);
 		itf.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -76,7 +76,7 @@ public class IntegerTableCellEditor extends AbstractCellEditor implements TableC
 		try {
 			itf.commitEdit();
 		} catch (ParseException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return Integer.valueOf(itf.getIntValue());
 	}

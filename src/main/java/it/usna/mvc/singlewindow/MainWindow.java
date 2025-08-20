@@ -5,7 +5,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 
 import javax.swing.JFrame;
 
@@ -131,16 +130,5 @@ public class MainWindow extends JFrame {
 			frameSize.width = screenSize.width;
 		}
 		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-	}
-	
-	public void setLocationRelativeTo(Window toBeOpened, boolean sameClass) {
-		toBeOpened.setLocationRelativeTo(this);
-		for(Window w: getOwnedWindows()) {
-			if(sameClass == false || w.getClass() == toBeOpened.getClass()) {
-				if(w.getX() == toBeOpened.getX() && w.getY() == toBeOpened.getY()) {
-					toBeOpened.setLocation(w.getX() + 10, w.getY());
-				}
-			}	
-		}
 	}
 }

@@ -18,6 +18,7 @@ public class AKDockLayout extends BorderLayout {
 	private Component center = null;
 	private int northHeight, southHeight, eastWidth, westWidth;
 
+	@Override
 	public void addLayoutComponent(Component c, Object con) {
 		synchronized (c.getTreeLock()) {
 			if (con != null) {
@@ -29,7 +30,8 @@ public class AKDockLayout extends BorderLayout {
 			}
 		}
 	}
-	 
+
+	@Override
 	public void removeLayoutComponent(Component c) {
 		if (c == center) {
 			center = null;
@@ -39,7 +41,8 @@ public class AKDockLayout extends BorderLayout {
 		east.remove(c);
 		west.remove(c);
 	}
-	 
+
+	@Override
 	public void layoutContainer(Container target) {
 		synchronized (target.getTreeLock()) {
 			final Insets insets = target.getInsets();

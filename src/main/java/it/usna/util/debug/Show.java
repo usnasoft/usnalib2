@@ -15,6 +15,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class Show {
+	private Show() {}
 	/**
 	 * Object representation on standard input standard output
 	 * @param o Object
@@ -116,7 +117,7 @@ public class Show {
 
 	private static String classToString(final Class<?> cl) {
 		String res = cl + " \nCampi: \n";
-		final Field f[] = cl.getDeclaredFields();
+		final Field[] f = cl.getDeclaredFields();
 		for (int i = 0; i < f.length; i++) {
 			res += f[i];
 			try {
@@ -126,7 +127,7 @@ public class Show {
 			res += " \n";
 		}
 		res += "Metodi: \n";
-		final Method m[] = cl.getDeclaredMethods();
+		final Method[] m = cl.getDeclaredMethods();
 		for (int i = 0; i < m.length; i++) {
 			res += m[i] + " \n";
 		}
