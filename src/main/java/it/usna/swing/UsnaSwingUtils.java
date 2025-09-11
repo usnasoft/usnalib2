@@ -59,13 +59,15 @@ public class UsnaSwingUtils {
 				{"TextPane.focusInputMap", "FormattedTextField.focusInputMap", "TextArea.focusInputMap", "PasswordField.focusInputMap",
 						"EditorPane.focusInputMap", "List.focusInputMap", "TextField.focusInputMap",
 						"Table.ancestorInputMap"}) {
-			InputMap im = (InputMap) UIManager.get(comp);
-			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, SHORTCUT_KEY), DefaultEditorKit.copyAction);
-			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, SHORTCUT_KEY), DefaultEditorKit.pasteAction);
-			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, SHORTCUT_KEY), DefaultEditorKit.cutAction);
+			try {
+				InputMap im = (InputMap) UIManager.get(comp);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, SHORTCUT_KEY), DefaultEditorKit.copyAction);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, SHORTCUT_KEY), DefaultEditorKit.pasteAction);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, SHORTCUT_KEY), DefaultEditorKit.cutAction);
+			} catch(RuntimeException e) {}
 		}
 	}
-	
+
 	/**
 	 * Sets the location of thisComponent according to a reference Component
 	 * @param thisComponent

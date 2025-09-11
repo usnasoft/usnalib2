@@ -14,6 +14,7 @@ import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.text.DefaultEditorKit;
 
 /**
  * <p>Title: ExTootipTable</p>
@@ -127,8 +128,11 @@ public class ExTooltipTable extends TooltipTable {
 		}
 	}
 	
+	/**
+	 * Copy action will act on a single cell instead of a full row
+	 */
 	public void activateSingleCellStringCopy() {
-		getActionMap().put("copy", new AbstractAction() {
+		AbstractAction copyAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -138,6 +142,8 @@ public class ExTooltipTable extends TooltipTable {
 				StringSelection stringSelection = new StringSelection(cellValueAsString(cellValue, row, col));
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
 			}
-		});
+		};
+		getActionMap().put(DefaultEditorKit.copyAction, copyAction);
+		getActionMap().put("copy", copyAction);
 	}
 }
