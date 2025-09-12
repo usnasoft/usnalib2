@@ -7,19 +7,25 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 import java.util.HashSet;
 
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.DefaultEditorKit;
 
 public class UsnaSwingUtils {
 	public static final String LF_NIMBUS = "Nimbus";
+	
 	
 	private UsnaSwingUtils() {}
 
@@ -35,6 +41,29 @@ public class UsnaSwingUtils {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		return false;
+	}
+	
+	/**
+	 * Generate standard shortcuts cmd-C, cmd-V, cmd-X for macOS.
+	 * Tested on Nimbus look&feel.<br>
+	 * Call this method after setLookAndFeel(...).<br>
+	 * Also useful:<br>
+	 * <pre>
+	static {
+		System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS"); // macOS specific - cmd-Q / -Dapple.eawt.quitStrategy=CLOSE_ALL_WINDOWS
+	} </pre>
+	 */
+	public static void macOddities() {
+		final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		for(String comp: new String[]
+				{"TextPane.focusInputMap", "FormattedTextField.focusInputMap", "TextArea.focusInputMap", "PasswordField.focusInputMap",
+						"EditorPane.focusInputMap", "List.focusInputMap", "TextField.focusInputMap",
+						"Table.ancestorInputMap"}) {
+			InputMap im = (InputMap) UIManager.get(comp);
+			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, SHORTCUT_KEY), DefaultEditorKit.copyAction);
+			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, SHORTCUT_KEY), DefaultEditorKit.pasteAction);
+			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, SHORTCUT_KEY), DefaultEditorKit.cutAction);
+		}
 	}
 	
 	/**
@@ -70,7 +99,7 @@ public class UsnaSwingUtils {
 	}
 	
 	/**
-	 * Sets the location of toBeOpened relative to the owner as usual but if a owned window exixts woith the same (x,y) move the new window some puxel right and below.
+	 * Sets the location of toBeOpened relative to the owner as usual but if a owned window exists with the same (x,y) move the new window some pixel right and below.
 	 * @param toBeOpened - the window to be opened
 	 * @param owner - the owner window
 	 * @param sameClass - if true only the same toBeOpened windows (by class) are considered
