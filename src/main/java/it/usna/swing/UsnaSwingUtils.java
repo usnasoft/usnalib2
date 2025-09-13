@@ -54,18 +54,21 @@ public class UsnaSwingUtils {
 	} </pre>
 	 */
 	public static void macOddities() {
-		final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		final int shortcutKey = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 		for(String comp: new String[]
 				{"TextPane.focusInputMap", "FormattedTextField.focusInputMap", "TextArea.focusInputMap", "PasswordField.focusInputMap",
 						"EditorPane.focusInputMap", "List.focusInputMap", "TextField.focusInputMap",
 						"Table.ancestorInputMap"}) {
 			try {
 				InputMap im = (InputMap) UIManager.get(comp);
-				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, SHORTCUT_KEY), DefaultEditorKit.copyAction);
-				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, SHORTCUT_KEY), DefaultEditorKit.pasteAction);
-				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, SHORTCUT_KEY), DefaultEditorKit.cutAction);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, shortcutKey), DefaultEditorKit.copyAction);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, shortcutKey), DefaultEditorKit.pasteAction);
+				im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, shortcutKey), DefaultEditorKit.cutAction);
 			} catch(RuntimeException e) {}
 		}
+		try {
+			((InputMap) UIManager.get("Table.ancestorInputMap")).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, shortcutKey), "copy");
+		} catch(RuntimeException e) {}
 	}
 
 	/**
