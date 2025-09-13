@@ -47,7 +47,7 @@ public class UsnaSwingUtils {
 	 * Generate standard shortcuts cmd-C, cmd-V, cmd-X for macOS.
 	 * Tested on Nimbus look&feel.<br>
 	 * Call this method after setLookAndFeel(...).<br>
-	 * Also useful:<br>
+	 * Also useful (to solve a mac oddity):<br>
 	 * <pre>
 	static {
 		System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS"); // macOS specific - cmd-Q / -Dapple.eawt.quitStrategy=CLOSE_ALL_WINDOWS
@@ -67,7 +67,7 @@ public class UsnaSwingUtils {
 			} catch(RuntimeException e) {}
 		}
 		try {
-			((InputMap) UIManager.get("Table.ancestorInputMap")).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, shortcutKey), "copy");
+			((InputMap) UIManager.get("Table.ancestorInputMap")).put(KeyStroke.getKeyStroke(KeyEvent.VK_C, shortcutKey), "copy");
 		} catch(RuntimeException e) {}
 	}
 
