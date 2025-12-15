@@ -63,6 +63,12 @@ public class CLI {
 		return -1;
 	}
 	
+	public void rejectEntry(int entryIndex) {
+		if(args.length > entryIndex) {
+			used[entryIndex] = false;
+		}
+	}
+	
 	/**
 	 * index of "name"
 	 * @param entry name
@@ -106,13 +112,23 @@ public class CLI {
 			return null;
 		}
 	}
-	
-	public void rejectParameter(int entryIndex) {
-		used[entryIndex + 1] = false;
+
+	public boolean rejectParameter(int entryIndex) {
+		try {
+			used[entryIndex + 1] = false;
+			return true;
+		} catch(IndexOutOfBoundsException e) {
+			return false;
+		}
 	}
-	
-	public void rejectParameter(int entryIndex, int parIndex) {
-		used[entryIndex + parIndex + 1] = false;
+
+	public boolean rejectParameter(int entryIndex, int parIndex) {
+		try {
+			used[entryIndex + parIndex + 1] = false;
+			return true;
+		} catch(IndexOutOfBoundsException e) {
+			return false;
+		}
 	}
 	
 	/**
