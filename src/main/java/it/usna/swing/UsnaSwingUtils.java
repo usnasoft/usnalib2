@@ -21,6 +21,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
 
 public class UsnaSwingUtils {
@@ -41,6 +42,29 @@ public class UsnaSwingUtils {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		return false;
+	}
+	
+	// https://stackoverflow.com/questions/949353/java-altering-ui-fonts-nimbus-doesnt-work
+	public static boolean setNimbusLookAndFeel(float fontMultiplier) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		try {
+			if(fontMultiplier == 1f) {
+				UIManager.setLookAndFeel(new NimbusLookAndFeel());
+			} else {
+				UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+					@Override
+					public UIDefaults getDefaults() {
+						UIDefaults ret = super.getDefaults();
+						Font df = (Font)ret.get("defaultFont");
+						ret.put("defaultFont", df.deriveFont(df.getSize() * fontMultiplier));
+						return ret;
+					}
+				});
+			}
+			return true;
+		} catch (UnsupportedLookAndFeelException e1) {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			return false;
+		}
 	}
 	
 	/**
