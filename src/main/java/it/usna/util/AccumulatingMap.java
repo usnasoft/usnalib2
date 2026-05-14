@@ -40,12 +40,17 @@ public class AccumulatingMap<K, V> extends HashMap<K, List<V>> {
 	public V getFirst(K key) {
 		return get(key).get(0);
 	}
+	
+	public boolean removeValue(K key, V value) {
+		List<V> list = get(key);
+		return list != null && list.remove(value);
+	}
 
 //	public static void main(String ...strings ) {
 //		AccumulatingMap<String, Object> map = new AccumulatingMap<>();
-//		map.put("test", 1);
-//		map.put("test", 2);
-//		map.put("test_", 3);
+//		map.putVal("test", 1);
+//		map.putVal("test", 2);
+//		map.putVal("test_", 3);
 //		System.out.println(map);
 //	}
 }
