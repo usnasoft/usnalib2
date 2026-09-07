@@ -55,7 +55,6 @@ public class TooltipTable extends JTable {
 					return headerTips[mc];
 				} else {
 					final String name = getColumnName(tc);
-//					final int strWidth = SwingUtilities.computeStringWidth(getGraphics().getFontMetrics(), name);
 					final int strWidth = SwingUtilities.computeStringWidth(getFontMetrics(getFont()), name);
 					return (getHeaderRect(tc).width <= strWidth) ? name : null;
 				}
@@ -72,8 +71,6 @@ public class TooltipTable extends JTable {
 		if(isVisible()) {
 			final int row, column;
 			if ((row = rowAtPoint(evt.getPoint())) >= 0 && (column = columnAtPoint(evt.getPoint())) >= 0) {
-//				final Object value = getValueAt(r, c);
-//				final Component rendererComponent = this.getCellRenderer(r, c).getTableCellRendererComponent(this, value, false, false, r, c);
 				final Component rendererComponent = prepareRenderer(getCellRenderer(row, column), row, column);
 				return getToolTipText(getValueAt(row, column), getCellRect(row, column, false).width <= rendererComponent.getPreferredSize().width, row, column);
 			}
@@ -104,7 +101,7 @@ public class TooltipTable extends JTable {
 	 */
 	protected String cellValueAsString(Object value, int row, int column) {
 		if(value == null) return "";
-		else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(v -> v.toString()).collect(Collectors.joining(" + "));
+		else if(value instanceof Object[]) return Arrays.stream((Object[])value).filter(v -> v != null).map(Object::toString).collect(Collectors.joining(" + "));
 		else return value.toString();
 	}
 

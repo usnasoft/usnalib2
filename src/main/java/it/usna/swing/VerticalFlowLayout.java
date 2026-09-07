@@ -230,6 +230,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @param name the name of the component
 	 * @param comp the component to be added
 	 */
+	@Override
 	public void addLayoutComponent(String name, Component comp) {
 	}
 
@@ -239,6 +240,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @param comp the component to remove
 	 * @see    java.awt.Container#removeAll
 	 */
+	@Override
 	public void removeLayoutComponent(Component comp) {
 	}
 
@@ -253,6 +255,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @see #minimumLayoutSize
 	 * @see    java.awt.Container#getPreferredSize
 	 */
+	@Override
 	public Dimension preferredLayoutSize(Container target) {
 		synchronized (target.getTreeLock())
 		{
@@ -293,6 +296,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @see    java.awt.Container
 	 * @see    java.awt.Container#doLayout
 	 */
+	@Override
 	public Dimension minimumLayoutSize(Container target) {
 		synchronized (target.getTreeLock())
 		{
@@ -333,9 +337,9 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @see Container
 	 * @see    java.awt.Container#doLayout
 	 */
+	@Override
 	public void layoutContainer(Container target) {
-		synchronized (target.getTreeLock())
-		{
+		synchronized (target.getTreeLock()) {
 			Insets insets = target.getInsets();
 			int maxHeight = target.getSize().height - (insets.top + insets.bottom + (vgap << 1));
 			int nmembers = target.getComponentCount();
@@ -370,7 +374,6 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 					}
 				}
 			}
-
 			moveComponents(target, x, insets.top + vgap, columnWidth, maxHeight - y, start, nmembers, ttb);
 		}
 	}
