@@ -124,8 +124,8 @@ public class VerticalFlowLayout2 implements LayoutManager2, java.io.Serializable
 	 * and the indicated horizontal and vertical gaps.
 	 * <p>
 	 * The value of the alignment argument must be one of
-	 * <code>VerticalFlowLayout.TOP</code>, <code>VerticalFlowLayout.BOTTOM</code>,
-	 * or <code>VerticalFlowLayout.CENTER</code>.
+	 * <code>VerticalFlowLayout2.VAlign.TOP</code>, <code>VerticalFlowLayout2.VAlign.BOTTOM</code>,
+	 * or <code>VerticalFlowLayout2.VAlign.CENTER</code>.
 	 * @param     align   the alignment value
 	 * @param     hgap  the horizontal gap between components
 	 *                   and between the components and the
