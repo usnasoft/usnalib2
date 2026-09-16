@@ -12,18 +12,25 @@ import javax.swing.SwingUtilities;
 
 /**
  *  VerticalFlowLayout subclass that fully supports wrapping of components.
+ *  Note that if the panel is wrapped by a JScrollPane container the layout must be as in the example below:
+ *  <pre>
+ *	JPanel panel = new JPanel();
+ *	final JScrollPane scroll = new JScrollPane(panel);
+ *	panel.setLayout(new VerticalWrapLayout(pensPalette, VerticalWrapLayout.VAlign.TOP, VerticalWrapLayout.HAlign.LEFT, 0, 0));
+ *	</pre>
  */
-public class VerticalWrapLayout extends VerticalFlowLayout {
+public class VerticalWrapLayout extends VerticalFlowLayout2 {
 	private static final long serialVersionUID = 1L;
 
 	private boolean preferVericalScrolling = true;
 
 	/**
-	 * Constructs a new <code>WrapLayout</code> with a left
+	 * Constructs a new <code>WrapLayout</code> with a CENTER
 	 * alignment and a default 5-unit horizontal and vertical gap.
 	 */
-	public VerticalWrapLayout() {
+	public VerticalWrapLayout(Container target) {
 		super();
+		listenJScrollPane(target);
 	}
 
 	/**
@@ -34,8 +41,9 @@ public class VerticalWrapLayout extends VerticalFlowLayout {
 	 * or <code>WrapLayout</code>.
 	 * @param align the alignment value
 	 */
-	public VerticalWrapLayout(int align, int hAlign) {
-		super(align, hAlign);
+	public VerticalWrapLayout(Container target, VAlign align, HAlign hAalign) {
+		super(align, hAalign);
+		listenJScrollPane(target);
 	}
 
 	/**
@@ -49,8 +57,9 @@ public class VerticalWrapLayout extends VerticalFlowLayout {
 	 * @param hgap the horizontal gap between components
 	 * @param vgap the vertical gap between components
 	 */
-	public VerticalWrapLayout(int align, int hAlign, int hgap, int vgap) {
-		super(align, hAlign, hgap, vgap);
+	public VerticalWrapLayout(Container target, VAlign align, HAlign hAalign, int hgap, int vgap) {
+		super(align, hAalign, hgap, vgap);
+		listenJScrollPane(target);
 	}
 	
 	public void setPreferVerticalScrolling(boolean v) {
@@ -151,7 +160,7 @@ public class VerticalWrapLayout extends VerticalFlowLayout {
 	}
 
 	// Register the wrapping JScrollPane of the target to force target.revalidate() on JScrollPane resize
-	public static void listenJScrollPane(final Container target) {
+	private static void listenJScrollPane(final Container target) {
 		final Container scrollPane = SwingUtilities.getAncestorOfClass(JScrollPane.class, target);
 		if(scrollPane != null) {
 			scrollPane.addComponentListener(new ComponentAdapter() {

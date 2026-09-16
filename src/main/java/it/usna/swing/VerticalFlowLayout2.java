@@ -254,8 +254,10 @@ public class VerticalFlowLayout2 implements LayoutManager2, java.io.Serializable
 	 */
 	@Override
 	public void addLayoutComponent(Component comp, Object constraints) {
-		if(compAlign == null) compAlign = new HashMap<>();
-		compAlign.put(comp, (HAlign)constraints);
+		if(constraints instanceof HAlign ha) {
+			if(compAlign == null) compAlign = new HashMap<>();
+			compAlign.put(comp, ha);
+		}
 	}
 
 	@Override
