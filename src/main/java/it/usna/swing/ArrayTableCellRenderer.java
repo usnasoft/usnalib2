@@ -18,22 +18,22 @@ public class ArrayTableCellRenderer extends DefaultTableCellRenderer {
 	private Border emptyBorder;
 	private JPanel p = new JPanel();
 	
-	public ArrayTableCellRenderer(int align, int hAalign, int hgap, int vgap) {
-		p.setLayout(new VerticalFlowLayout(align, hAalign, hgap, vgap));
+	public ArrayTableCellRenderer(VerticalFlowLayout2.VAlign align, VerticalFlowLayout2.HAlign hAalign, int hgap, int vgap) {
+		p.setLayout(new VerticalFlowLayout2(align, hAalign, hgap, vgap));
 		final Insets borderInsets = FOCUS_BORDER.getBorderInsets(this);
 		emptyBorder = BorderFactory.createEmptyBorder(borderInsets.top, borderInsets.left, borderInsets.bottom, borderInsets.right);
 	}
 
 	public ArrayTableCellRenderer() {
-		this(VerticalFlowLayout.CENTER, VerticalFlowLayout.LEFT, 0, 0);
+		this(VerticalFlowLayout2.VAlign.CENTER, VerticalFlowLayout2.HAlign.LEFT, 0, 0);
 	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		if(value instanceof Object[]) {
+		if(value instanceof Object[] arr) {
 			p.removeAll();
 			final Color foregroundColor = isSelected ? table.getSelectionForeground() : table.getForeground();
-			for(Object v: (Object[])value) {
+			for(Object v: arr) {
 				try {
 					JLabel l = new JLabel(v.toString());
 					l.setForeground(foregroundColor);

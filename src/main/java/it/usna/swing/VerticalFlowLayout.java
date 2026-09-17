@@ -29,6 +29,7 @@ import java.awt.LayoutManager;
 
 // https://stackoverflow.com/questions/8196530/java-vertical-flowlayout-with-horizontal-scrolling
 
+@Deprecated
 public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
