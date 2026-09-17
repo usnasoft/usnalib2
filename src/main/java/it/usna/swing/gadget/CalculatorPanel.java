@@ -71,7 +71,7 @@ public class CalculatorPanel extends JPanel {
 	private JButton bMemAdd = null;
 	private JButton bMemSubtract = null;
 	
-	private static final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // from 1.10 getMenuShortcutKeyMaskEx
+	private static final int SHORTCUT_KEY = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx(); // from 1.10 getMenuShortcutKeyMaskEx
 
 	public CalculatorPanel() {
 		super();

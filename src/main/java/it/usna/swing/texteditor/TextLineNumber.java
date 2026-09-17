@@ -226,8 +226,8 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 		Rectangle clip = g.getClipBounds();
 //		int rowStartOffset = textComponent.viewToModel2D(new Point(0, clip.y));
 //		int endOffset = textComponent.viewToModel2D(new Point(0, clip.y + clip.height));
-		int rowStartOffset = textComponent.viewToModel(new Point(0, clip.y));
-		int endOffset = textComponent.viewToModel(new Point(0, clip.y + clip.height));
+		int rowStartOffset = textComponent.viewToModel2D(new Point(0, clip.y));
+		int endOffset = textComponent.viewToModel2D(new Point(0, clip.y + clip.height));
 		
 		final Element root = textComponent.getDocument().getDefaultRootElement();
 		final int caretElIndex = root.getElementIndex(textComponent.getCaretPosition());
@@ -284,7 +284,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 		// Get the bounding rectangle of the row
 
 //		Rectangle2D r = textComponent.modelToView2D(rowStartOffset);
-		Rectangle2D r = textComponent.modelToView(rowStartOffset);
+		Rectangle2D r = textComponent.modelToView2D(rowStartOffset);
 		int lineHeight = fontMetrics.getHeight();
 		int y = (int)r.getY() + (int)r.getHeight();
 		int descent = 0;
@@ -371,7 +371,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 				try {
 					int endPos = textComponent.getDocument().getLength();
 //					Rectangle2D rect = textComponent.modelToView2D(endPos);
-					Rectangle2D rect = textComponent.modelToView(endPos);
+					Rectangle2D rect = textComponent.modelToView2D(endPos);
 
 					if (rect != null && rect.getY() != lastHeight) {
 						setPreferredWidth();

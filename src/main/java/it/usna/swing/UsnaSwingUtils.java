@@ -78,7 +78,7 @@ public class UsnaSwingUtils {
 	} </pre>
 	 */
 	public static void macOddities() {
-		final int shortcutKey = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		final int shortcutKey = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 		for(String comp: new String[]
 				{"TextPane.focusInputMap", "FormattedTextField.focusInputMap", "TextArea.focusInputMap", "PasswordField.focusInputMap",
 						"EditorPane.focusInputMap", "List.focusInputMap", "TextField.focusInputMap",
