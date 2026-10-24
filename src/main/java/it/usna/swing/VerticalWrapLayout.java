@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
  *	panel.setLayout(new VerticalWrapLayout(pensPalette, VerticalWrapLayout.VAlign.TOP, VerticalWrapLayout.HAlign.LEFT, 0, 0));
  *	</pre>
  */
-public class VerticalWrapLayout extends VerticalFlowLayout2 {
+public class VerticalWrapLayout extends VerticalFlowLayout {
 	private static final long serialVersionUID = 1L;
 
 	private boolean preferVericalScrolling = true;

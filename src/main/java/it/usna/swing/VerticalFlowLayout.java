@@ -4,7 +4,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.LayoutManager;
+import java.awt.LayoutManager2;
+import java.util.HashMap;
 
 /**
  * A flow vertical layout arranges components in a vertical flow.
@@ -15,47 +16,31 @@ import java.awt.LayoutManager;
  * <li><code>ComponentOrientation.BOTTOM_TO_TOP</code>
  * </ul>
  * Vertical alignment can be TOP, CENTER or BOTTOM.<br>
- * Components can be horizontally aligned CENTER or LEFT.<br>
- * javax.swing.Box.Filler are ignored at the top of a column
- * <ul>
- * <li>{@link #TOP TOP}
- * <li>{@link #BOTTOM BOTTOM}
- * <li>{@link #CENTER CENTER}
- * <li>{@link #LEADING LEADING}
- * <li>{@link #TRAILING TRAILING}
- * </ul>
- * <p>
+ * Components can be horizontally aligned CENTER, LEFT or RIGHT by default or singularly.<br>
+ * javax.swing.Box.Filler are ignored at the top of a column,
  */
 
 // https://stackoverflow.com/questions/8196530/java-vertical-flowlayout-with-horizontal-scrolling
 
-@Deprecated
-public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
+public class VerticalFlowLayout implements LayoutManager2, java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * This value indicates that each row of components
-	 * should be left-justified.
-	 */
-	public static final int TOP = 0;
-
-	/**
-	 * This value indicates that each row of components
-	 * should be centered.
-	 */
-	public static final int CENTER = 1;
-
-	/**
-	 * This value indicates that each row of components
-	 * should be right-justified.
-	 */
-	public static final int BOTTOM = 2;
 	
-	public static final int LEFT = 3; // for horizontal alignment
+	public enum VAlign {
+		CENTER,
+		TOP,
+		BOTTOM
+	};
+
+	public enum HAlign {
+		LEFT, // This value indicates that each row of components should be left-justified
+		RIGHT, // This value indicates that each row of components should be right-justified
+		CENTER, // This value indicates that each row of components should be centered
+	};
+	
+	private HashMap<Component, HAlign> compAlign;
 
 	/**
-	 * <code>align</code> is the property that determines
-	 * how each column distributes empty space.
+	 * <code>align</code> is the property that determines how each column distributes empty space.
 	 * It can be one of the following three values:
 	 * <ul>
 	 * <code>TOP</code>
@@ -66,15 +51,25 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * @see #getAlignment
 	 * @see #setAlignment
 	 */
-	private int align;     // This is the one we actually use
-	private int hAlign;
+	private VAlign align;
+	
+	/**
+	 * <code>hAlign</code> is the property that determines how each row distributes empty space.
+	 * It can be one of the following three values:
+	 * <ul>
+	 * <code>LEFT</code>
+	 * <code>RIGHT</code>
+	 * <code>CENTER</code>
+	 * </ul>
+	 *
+	 * @see #getHAlignment
+	 * @see #setHAlignment
+	 */
+	private HAlign hAlign;
 
 	/**
-	 * The flow layout manager allows a separation of
-	 * components with gaps.  The horizontal gap will
-	 * specify the space between components and between
-	 * the components and the borders of the
-	 * <code>Container</code>.
+	 * The flow layout manager allows a separation of components with gaps.  The horizontal gap will
+	 * specify the space between components and between the components and the borders of the <code>Container</code>.
 	 *
 	 * @see #getHgap()
 	 * @see #setHgap(int)
@@ -82,10 +77,8 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	protected int hgap;
 
 	/**
-	 * The flow layout manager allows a separation of
-	 * components with gaps.  The vertical gap will
-	 * specify the space between rows and between the
-	 * the rows and the borders of the <code>Container</code>.
+	 * The flow layout manager allows a separation of components with gaps.  The vertical gap will
+	 * specify the space between rows and between the the rows and the borders of the <code>Container</code>.
 	 *
 	 * @see #getHgap()
 	 * @see #setHgap(int)
@@ -97,7 +90,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * default 5-unit horizontal and vertical gap.
 	 */
 	public VerticalFlowLayout() {
-		this(CENTER, CENTER, 5, 5);
+		this(VAlign.CENTER, HAlign.CENTER, 5, 5);
 	}
 
 	/**
@@ -108,7 +101,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * or <code>VerticalFlowLayout.CENTER</code>
 	 * @param align the alignment value
 	 */
-	public VerticalFlowLayout(int align, int hAalign) {
+	public VerticalFlowLayout(VAlign align, HAlign hAalign) {
 		this(align, hAalign, 5, 5);
 	}
 
@@ -117,17 +110,18 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * and the indicated horizontal and vertical gaps.
 	 * <p>
 	 * The value of the alignment argument must be one of
-	 * <code>VerticalFlowLayout.TOP</code>, <code>VerticalFlowLayout.BOTTOM</code>,
-	 * or <code>VerticalFlowLayout.CENTER</code>.
+	 * <code>VerticalFlowLayout2.VAlign.TOP</code>, <code>VerticalFlowLayout2.VAlign.BOTTOM</code>,
+	 * or <code>VerticalFlowLayout2.VAlign.CENTER</code>.
 	 * @param     align   the alignment value
-	 * @param     hgap  the horizontal gap between components
+	 * @param     hAlign  the horizontal alignment value
+	 * @param     hgap   the horizontal gap between components
 	 *                   and between the components and the
 	 *                   borders of the <code>Container</code>
-	 * @param     vgap  the vertical gap between components
+	 * @param     vgap   the vertical gap between components
 	 *                   and between the components and the
 	 *                   borders of the <code>Container</code>
 	 */
-	public VerticalFlowLayout(int align, int hAalign, int hgap, int vgap) {
+	public VerticalFlowLayout(VAlign align, HAlign hAalign, int hgap, int vgap) {
 		this.hgap = hgap;
 		this.vgap = vgap;
 		setAlignment(align);
@@ -138,45 +132,43 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 * Gets the alignment for this layout.
 	 * Possible values are <code>VerticalFlowLayout.TOP</code>,
 	 * <code>VerticalFlowLayout.BOTTOM</code> or <code>VerticalFlowLayout.CENTER</code>,
-	 * @return   the alignment value for this layout
+	 * @return  the alignment value for this layout
 	 * @see     java.awt.VerticalFlowLayout#setAlignment
 	 */
-	public int getAlignment() {
+	public VAlign getAlignment() {
 		return align;
 	}
 
 	/**
 	 * Sets the alignment for this layout. Possible values are
 	 * <ul>
-	 * <li><code>VerticalFlowLayout.TOP</code>
-	 * <li><code>VerticalFlowLayout.BOTTOM</code>
-	 * <li><code>VerticalFlowLayout.CENTER</code>
+	 * <li><code>VerticalFlowLayout2.VAlign.TOP</code>
+	 * <li><code>VerticalFlowLayout2.VAlign.BOTTOM</code>
+	 * <li><code>VerticalFlowLayout2.VAlign.CENTER</code>
 	 * </ul>
-	 * @param     align one of the alignment values shown above
+	 * @param   align one of the alignment values shown above
 	 * @see     #getAlignment()
 	 */
-	public void setAlignment(int align) {
+	public void setAlignment(VAlign align) {
 		this.align = align;
 	}
 	
-	public void setHAlignment(int align) {
+	public void setHAlignment(HAlign align) {
 		this.hAlign = align;
 	}
 	
-	public int getHAlignment() {
+	public HAlign getHAlignment() {
 		return hAlign;
 	}
 
 	/**
-	 * Gets the horizontal gap between components
-	 * and between the components and the borders
+	 * Gets the horizontal gap between components and between the components and the borders
 	 * of the <code>Container</code>
 	 *
 	 * @return   the horizontal gap between components
 	 *           and between the components and the borders
 	 *           of the <code>Container</code>
 	 * @see     java.awt.VerticalFlowLayout#setHgap
-	 * @since     JDK1.1
 	 */
 	public int getHgap() {
 		return hgap;
@@ -191,7 +183,6 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 *           and between the components and the borders
 	 *           of the <code>Container</code>
 	 * @see     java.awt.VerticalFlowLayout#getHgap
-	 * @since     JDK1.1
 	 */
 	public void setHgap(int hgap) {
 		this.hgap = hgap;
@@ -206,7 +197,6 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 *           and between the components and the borders
 	 *           of the <code>Container</code>
 	 * @see     java.awt.VerticalFlowLayout#setVgap
-	 * @since     JDK1.1
 	 */
 	public int getVgap() {
 		return vgap;
@@ -225,14 +215,9 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 		this.vgap = vgap;
 	}
 
-	/**
-	 * Adds the specified component to the layout.
-	 * Not used by this class.
-	 * @param name the name of the component
-	 * @param comp the component to be added
-	 */
 	@Override
 	public void addLayoutComponent(String name, Component comp) {
+		// not used on a LayoutManager2 implemetation; addLayoutComponent(Component, Object) instead
 	}
 
 	/**
@@ -243,6 +228,39 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 */
 	@Override
 	public void removeLayoutComponent(Component comp) {
+	}
+	
+	/**
+	 * Adds the specified component to the layout; alignment can be forced to be not default.
+	 * @param comp the component to be added
+	 * @param constraints horizontal alignment: LEFT, RIGHT or CENTER.
+	 */
+	@Override
+	public void addLayoutComponent(Component comp, Object constraints) {
+		if(constraints instanceof HAlign ha) {
+			if(compAlign == null) compAlign = new HashMap<>();
+			compAlign.put(comp, ha);
+		}
+	}
+
+	@Override
+	public Dimension maximumLayoutSize(Container target) {
+		return null;
+	}
+
+	@Override
+	public float getLayoutAlignmentX(Container target) {
+		return 0.5f;
+	}
+
+	@Override
+	public float getLayoutAlignmentY(Container target) {
+		return 0.5f;
+	}
+
+	@Override
+	public void invalidateLayout(Container target) {
+		// nothing to do
 	}
 
 	/**
@@ -258,8 +276,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 */
 	@Override
 	public Dimension preferredLayoutSize(Container target) {
-		synchronized (target.getTreeLock())
-		{
+		synchronized (target.getTreeLock()) {
 			Dimension dim = new Dimension(0, 0);
 			int nmembers = target.getComponentCount();
 			boolean firstVisibleComponent = true;
@@ -299,8 +316,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 */
 	@Override
 	public Dimension minimumLayoutSize(Container target) {
-		synchronized (target.getTreeLock())
-		{
+		synchronized (target.getTreeLock()) {
 			Dimension dim = new Dimension(0, 0);
 			int nmembers = target.getComponentCount();
 			boolean firstVisibleComponent = true;
@@ -328,10 +344,8 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	}
 
 	/**
-	 * Lays out the container. This method lets each
-	 * <i>visible</i> component take
-	 * its preferred size by reshaping the components in the
-	 * target container in order to satisfy the alignment of
+	 * Lays out the container. This method lets each <i>visible</i> component take
+	 * its preferred size by reshaping the components in the target container in order to satisfy the alignment of
 	 * this <code>VerticalFlowLayout</code> object.
 	 *
 	 * @param target the specified component being laid out
@@ -391,15 +405,9 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 	 */
 	private void moveComponents(Container target, int x, int y, int width, int height, int columnStart, int columnEnd, boolean ttb) {
 		switch (align) {
-		case TOP:
-			y += ttb ? 0 : height;
-			break;
-		case CENTER:
-			y += height >> 1;
-			break;
-		case BOTTOM:
-			y += ttb ? height : 0;
-			break;
+		case TOP ->	y += ttb ? 0 : height;
+		case CENTER -> y += height >> 1;
+		case BOTTOM -> y += ttb ? height : 0;
 		}
 
 		for (int i = columnStart; i < columnEnd; i++) {
@@ -407,10 +415,23 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 
 			if (m.isVisible()) {
 				int cx;
-				if(hAlign == LEFT) {
-					cx = x;
-				} else { // hAlign == CENTER
-					cx = x + ((width - m.getSize().width) >> 1);
+				HAlign customAlign;
+				if(compAlign != null && (customAlign = compAlign.get(m)) != null) {
+					if(customAlign == HAlign.LEFT) {
+						cx = x;
+					} else if(customAlign == HAlign.RIGHT) {
+						cx = x + (width - m.getSize().width);
+					} else { // customAlign == CENTER
+						cx = x + ((width - m.getSize().width) >> 1);
+					}
+				} else {
+					if(hAlign == HAlign.LEFT) {
+						cx = x;
+					} else if(hAlign == HAlign.RIGHT) {
+						cx = x + (width - m.getSize().width);
+					} else { // hAlign == CENTER
+						cx = x + ((width - m.getSize().width) >> 1);
+					}
 				}
 
 				if (ttb) {
