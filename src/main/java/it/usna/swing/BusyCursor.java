@@ -2,11 +2,11 @@ package it.usna.swing;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.KeyboardFocusManager;
 
 /**
+ * Closable cursor setter
  * Using this class on a "try with resources" the cursor will automatically be restored
- * usage: try (var res = new BusyCursor(this)) { ... }
+ * usage: try (var cres = new BusyCursor(this)) { ... }
  */
 public class BusyCursor implements AutoCloseable {
 	private final Component w;
@@ -16,9 +16,10 @@ public class BusyCursor implements AutoCloseable {
 		this.w = w;
 	}
 	
-//	public BusyCursor() {
-//		this.w = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-//	}
+	public BusyCursor(Component w, Cursor c) {
+		w.setCursor(c);
+		this.w = w;
+	}
 	
 	@Override
 	public void close() {
