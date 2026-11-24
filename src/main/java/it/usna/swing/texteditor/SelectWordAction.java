@@ -13,7 +13,7 @@ import javax.swing.text.TextAction;
  */
 public class SelectWordAction extends TextAction {
 	private static final long serialVersionUID = 1L;
-	public static final Set<Character> SEPARATORS = Set.of(' ', '\t', '\n', '\r', '"', '\'', '.', ',', ';', '?', '!', '|', '&', '=', '%', '(', ')', '[', ']', '{', '}', '+', '-', '*', '/', '\\');
+	public static final Set<Character> SEPARATORS = Set.of(' ', '\t', '\n', '\r', '"', '\'', '.', ',', ';', '?', ':', '!', '|', '&', '=', '%', '<', '>', '(', ')', '[', ']', '{', '}', '+', '-', '*', '/', '\\');
 	
 	private final Set<Character> separators;
 
