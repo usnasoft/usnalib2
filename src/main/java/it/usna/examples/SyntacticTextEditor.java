@@ -20,6 +20,7 @@ import javax.swing.text.StyleConstants;
 
 import it.usna.swing.UsnaSwingUtils;
 import it.usna.swing.dialog.FindReplaceDialog;
+import it.usna.swing.texteditor.SelectWordAction;
 import it.usna.swing.texteditor.SyntaxEditor;
 import it.usna.swing.texteditor.TextLineNumber;
 
@@ -128,6 +129,8 @@ public class SyntacticTextEditor extends JFrame {
 				f.setVisible(true);
 			}
 		});
+
+		editor.getActionMap().put("select-word", new SelectWordAction(SelectWordAction.SEPARATORS));
 		
 		setContentPane(jContentPane);
 		setSize(600, 400);
